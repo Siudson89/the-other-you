@@ -6,6 +6,2071 @@
 <title>MIRROR</title>
 
 <style>
+:root{
+    --bg:#050505;
+    --fg:#e9e9e9;
+    --muted:#777;
+    --red:#d40000;
+    --darkred:#450000;
+    --line:#222;
+}
+
+*{
+    box-sizing:border-box;
+}
+
+html,body{
+    margin:0;
+    width:100%;
+    height:100%;
+    background:#050505;
+    color:var(--fg);
+    font-family:Arial,Helvetica,sans-serif;
+    overflow:hidden;
+}
+
+body{
+    position:relative;
+}
+
+body::before{
+    content:"";
+    position:fixed;
+    inset:0;
+    pointer-events:none;
+    z-index:100;
+    opacity:.09;
+    background:
+        repeating-linear-gradient(
+            to bottom,
+            transparent 0px,
+            transparent 2px,
+            #fff 3px,
+            transparent 4px
+        );
+    mix-blend-mode:screen;
+}
+
+body::after{
+    content:"";
+    position:fixed;
+    inset:0;
+    pointer-events:none;
+    z-index:101;
+    background:radial-gradient(
+        ellipse at center,
+        transparent 35%,
+        rgba(0,0,0,.72) 100%
+    );
+}
+
+button,
+textarea{
+    font-family:inherit;
+}
+
+#app{
+    width:100%;
+    height:100%;
+    position:relative;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+}
+
+#noise{
+    position:absolute;
+    inset:0;
+    pointer-events:none;
+    opacity:0;
+    z-index:40;
+    background:
+        repeating-linear-gradient(
+            0deg,
+            rgba(255,255,255,.06) 0px,
+            rgba(255,255,255,.06) 1px,
+            transparent 1px,
+            transparent 4px
+        );
+}
+
+#redFlash{
+    position:absolute;
+    inset:0;
+    background:#ff0000;
+    opacity:0;
+    pointer-events:none;
+    z-index:60;
+}
+
+#blackout{
+    position:absolute;
+    inset:0;
+    background:#000;
+    opacity:0;
+    pointer-events:none;
+    z-index:70;
+}
+
+#corner{
+    position:absolute;
+    top:20px;
+    left:22px;
+    color:#333;
+    font-size:10px;
+    letter-spacing:3px;
+    z-index:20;
+}
+
+#status{
+    position:absolute;
+    top:20px;
+    right:22px;
+    color:#333;
+    font-size:10px;
+    letter-spacing:2px;
+    z-index:20;
+}
+
+.screen{
+    width:min(900px,90vw);
+    min-height:500px;
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    position:relative;
+    z-index:10;
+}
+
+.hidden{
+    display:none !important;
+}
+
+/* START */
+
+#startScreen{
+    text-align:center;
+    align-items:center;
+}
+
+.logo{
+    font-size:clamp(55px,12vw,130px);
+    letter-spacing:clamp(8px,2vw,24px);
+    font-weight:900;
+    line-height:.9;
+    margin-bottom:30px;
+}
+
+.subtitle{
+    color:#666;
+    font-size:12px;
+    letter-spacing:5px;
+    margin-bottom:65px;
+}
+
+.startText{
+    max-width:500px;
+    color:#777;
+    line-height:1.8;
+    font-size:13px;
+    margin-bottom:35px;
+}
+
+#startBtn{
+    background:transparent;
+    color:#eee;
+    border:1px solid #555;
+    padding:16px 45px;
+    letter-spacing:5px;
+    font-size:12px;
+    cursor:pointer;
+    transition:.25s;
+}
+
+#startBtn:hover{
+    background:#eee;
+    color:#000;
+}
+
+/* GAME */
+
+#gameScreen{
+    justify-content:center;
+}
+
+#sceneNumber{
+    color:#333;
+    font-size:10px;
+    letter-spacing:4px;
+    margin-bottom:28px;
+}
+
+#question{
+    font-size:clamp(25px,4vw,44px);
+    line-height:1.2;
+    font-weight:400;
+    min-height:100px;
+    max-width:780px;
+    transition:.2s;
+}
+
+#subtext{
+    color:#555;
+    font-size:11px;
+    letter-spacing:2px;
+    margin-top:15px;
+    min-height:20px;
+}
+
+#answerArea{
+    margin-top:38px;
+}
+
+textarea{
+    width:100%;
+    height:115px;
+    resize:none;
+    background:transparent;
+    color:#eee;
+    border:none;
+    border-bottom:1px solid #333;
+    outline:none;
+    font-size:20px;
+    line-height:1.5;
+    padding:10px 0;
+    caret-color:#fff;
+}
+
+textarea::placeholder{
+    color:#333;
+}
+
+#bottom{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-top:18px;
+}
+
+#hint{
+    color:#333;
+    font-size:10px;
+    letter-spacing:2px;
+}
+
+#continueBtn{
+    background:transparent;
+    color:#777;
+    border:1px solid #333;
+    padding:11px 20px;
+    cursor:pointer;
+    letter-spacing:3px;
+    font-size:10px;
+    opacity:0;
+    pointer-events:none;
+    transition:.2s;
+}
+
+#continueBtn.visible{
+    opacity:1;
+    pointer-events:auto;
+}
+
+#continueBtn:hover{
+    color:#fff;
+    border-color:#777;
+}
+
+/* EVENT */
+
+#eventScreen{
+    text-align:center;
+    align-items:center;
+}
+
+#eventText{
+    font-size:clamp(24px,4vw,52px);
+    line-height:1.25;
+    max-width:850px;
+    min-height:120px;
+}
+
+#eventSub{
+    margin-top:30px;
+    color:#555;
+    font-size:11px;
+    letter-spacing:3px;
+}
+
+#eventBtn{
+    margin-top:45px;
+    background:transparent;
+    border:1px solid #333;
+    color:#777;
+    padding:12px 30px;
+    letter-spacing:4px;
+    cursor:pointer;
+    opacity:0;
+}
+
+#eventBtn.visible{
+    opacity:1;
+}
+
+#eventBtn:hover{
+    color:#fff;
+    border-color:#777;
+}
+
+/* FINAL */
+
+#finalScreen{
+    justify-content:center;
+}
+
+.finalTitle{
+    color:#444;
+    font-size:10px;
+    letter-spacing:5px;
+    margin-bottom:35px;
+}
+
+#finalMain{
+    font-size:clamp(26px,4vw,47px);
+    line-height:1.3;
+    max-width:850px;
+}
+
+#finalDetails{
+    margin-top:35px;
+    border-left:1px solid #333;
+    padding-left:20px;
+    color:#777;
+    line-height:1.8;
+    font-size:13px;
+    max-width:700px;
+}
+
+.quote{
+    color:#aaa;
+    margin:15px 0;
+}
+
+.finalButton{
+    margin-top:40px;
+    background:transparent;
+    border:1px solid #333;
+    color:#666;
+    padding:12px 25px;
+    cursor:pointer;
+    letter-spacing:3px;
+}
+
+.finalButton:hover{
+    color:#fff;
+    border-color:#777;
+}
+
+/* RED TEXT */
+
+.red{
+    color:#d40000;
+}
+
+/* ANIMATIONS */
+
+.glitch{
+    animation:glitch .18s steps(2) 4;
+}
+
+@keyframes glitch{
+    0%{transform:translate(0)}
+    25%{transform:translate(-5px,2px)}
+    50%{transform:translate(4px,-1px)}
+    75%{transform:translate(-2px,-2px)}
+    100%{transform:translate(0)}
+}
+
+.shake{
+    animation:shake .07s linear 8;
+}
+
+@keyframes shake{
+    0%{transform:translate(0)}
+    25%{transform:translate(4px,-2px)}
+    50%{transform:translate(-4px,2px)}
+    75%{transform:translate(3px,1px)}
+    100%{transform:translate(0)}
+}
+
+.flicker{
+    animation:flicker .12s linear 8;
+}
+
+@keyframes flicker{
+    0%,100%{opacity:1}
+    50%{opacity:.15}
+}
+
+.redMode{
+    color:#d40000 !important;
+}
+
+.cursorHidden{
+    caret-color:transparent !important;
+}
+
+.freeze{
+    filter:contrast(1.5);
+}
+
+/* MOBILE */
+
+@media(max-width:600px){
+    .screen{
+        width:86vw;
+        min-height:450px;
+    }
+
+    #question{
+        font-size:27px;
+    }
+
+    textarea{
+        font-size:18px;
+    }
+
+    .logo{
+        font-size:65px;
+    }
+
+    #corner,
+    #status{
+        font-size:8px;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<div id="app">
+
+    <div id="corner">MIRROR / 01</div>
+    <div id="status">LOCAL SESSION</div>
+
+    <div id="noise"></div>
+    <div id="redFlash"></div>
+    <div id="blackout"></div>
+
+    <!-- START -->
+
+    <section id="startScreen" class="screen">
+
+        <div class="logo">MIRROR</div>
+
+        <div class="subtitle">
+            NIE JESTEŚ TESTOWANY
+        </div>
+
+        <div class="startText">
+            To nie jest test osobowości.<br>
+            Nie ma tutaj poprawnych odpowiedzi.<br><br>
+            Odpowiadaj normalnie.<br>
+            Nie próbuj zgadywać, co aplikacja chce usłyszeć.
+        </div>
+
+        <button id="startBtn">
+            ROZPOCZNIJ
+        </button>
+
+    </section>
+
+
+    <!-- GAME -->
+
+    <section id="gameScreen" class="screen hidden">
+
+        <div id="sceneNumber">01 / 12</div>
+
+        <div id="question"></div>
+
+        <div id="subtext"></div>
+
+        <div id="answerArea">
+
+            <textarea
+                id="answer"
+                autocomplete="off"
+                spellcheck="false"
+                placeholder="Napisz odpowiedź..."
+            ></textarea>
+
+            <div id="bottom">
+
+                <div id="hint">
+                    ENTER = DALEJ
+                </div>
+
+                <button id="continueBtn">
+                    DALEJ
+                </button>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- EVENT -->
+
+    <section id="eventScreen" class="screen hidden">
+
+        <div id="eventText"></div>
+
+        <div id="eventSub"></div>
+
+        <button id="eventBtn">
+            KONTYNUUJ
+        </button>
+
+    </section>
+
+
+    <!-- FINAL -->
+
+    <section id="finalScreen" class="screen hidden">
+
+        <div class="finalTitle">
+            KONIEC REKONSTRUKCJI
+        </div>
+
+        <div id="finalMain"></div>
+
+        <div id="finalDetails"></div>
+
+        <button class="finalButton" onclick="location.reload()">
+            ZAMKNIJ
+        </button>
+
+    </section>
+
+</div>
+
+
+<script>
+
+/* =========================================================
+   MIRROR
+   PSYCHOLOGICAL HORROR
+   Wszystko lokalnie.
+   Brak kamery / mikrofonu / geolokalizacji / serwera.
+   ========================================================= */
+
+
+/* ---------- ELEMENTS ---------- */
+
+const startScreen = document.getElementById("startScreen");
+const gameScreen = document.getElementById("gameScreen");
+const eventScreen = document.getElementById("eventScreen");
+const finalScreen = document.getElementById("finalScreen");
+
+const startBtn = document.getElementById("startBtn");
+
+const question = document.getElementById("question");
+const subtext = document.getElementById("subtext");
+const answer = document.getElementById("answer");
+const continueBtn = document.getElementById("continueBtn");
+
+const eventText = document.getElementById("eventText");
+const eventSub = document.getElementById("eventSub");
+const eventBtn = document.getElementById("eventBtn");
+
+const sceneNumber = document.getElementById("sceneNumber");
+
+const noise = document.getElementById("noise");
+const redFlash = document.getElementById("redFlash");
+const blackout = document.getElementById("blackout");
+
+
+/* ---------- STATE ---------- */
+
+let scene = 0;
+let locked = false;
+let started = false;
+let answers = [];
+
+let typingStarted = false;
+let typingCount = 0;
+
+let audioCtx = null;
+
+
+/* ---------- QUESTIONS ---------- */
+
+const questions = [
+
+    {
+        q:"Co robiłeś dzisiaj rano?",
+        sub:"Normalna odpowiedź wystarczy.",
+        type:"normal"
+    },
+
+    {
+        q:"Co widzisz teraz przed sobą?",
+        sub:"Nie opisuj wszystkiego. Jedną rzecz.",
+        type:"normal"
+    },
+
+    {
+        q:"Co ostatnio naprawdę Cię zirytowało?",
+        sub:"Nie musisz tego ubierać w ładne słowa.",
+        type:"normal"
+    },
+
+    {
+        q:"Napisz pierwszą rzecz, która przyszła Ci teraz do głowy.",
+        sub:"Nie zastanawiaj się.",
+        type:"fast"
+    },
+
+    {
+        q:"Czy jesteś teraz sam?",
+        sub:"Odpowiedz tylko: tak albo nie.",
+        type:"alone"
+    },
+
+    {
+        q:"Jaki dźwięk słyszysz teraz?",
+        sub:"Jeżeli jest cicho, napisz: cisza.",
+        type:"sound"
+    },
+
+    {
+        q:"Czego ostatnio chciałeś, ale tego nie zrobiłeś?",
+        sub:"Pierwsza szczera odpowiedź.",
+        type:"personal"
+    },
+
+    {
+        q:"Kogo najczęściej sprawdzasz, kiedy martwisz się, że coś jest nie tak?",
+        sub:"Możesz podać tylko relację. Nie potrzebuję imienia.",
+        type:"person"
+    },
+
+    {
+        q:"Czego najbardziej nie chciałbyś stracić?",
+        sub:"",
+        type:"fear"
+    },
+
+    {
+        q:"Kiedy ostatnio udawałeś, że wszystko jest w porządku?",
+        sub:"",
+        type:"deep"
+    },
+
+    {
+        q:"Gdyby nikt Cię nie oceniał, co zmieniłbyś w swoim życiu jako pierwsze?",
+        sub:"",
+        type:"deep"
+    },
+
+    {
+        q:"A teraz najważniejsze.",
+        sub:"Nie odpowiadaj jeszcze.",
+        type:"final"
+    }
+
+];
+
+
+/* =========================================================
+   AUDIO
+   ========================================================= */
+
+function initAudio(){
+
+    try{
+
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+    }catch(e){
+
+        audioCtx = null;
+
+    }
+
+}
+
+
+function tone(freq=100,duration=.08,type="sine",volume=.025){
+
+    if(!audioCtx) return;
+
+    try{
+
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+
+        osc.type = type;
+        osc.frequency.value = freq;
+
+        gain.gain.setValueAtTime(0.0001,audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(volume,audioCtx.currentTime+.01);
+        gain.gain.exponentialRampToValueAtTime(0.0001,audioCtx.currentTime+duration);
+
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+
+        osc.start();
+        osc.stop(audioCtx.currentTime+duration+.02);
+
+    }catch(e){}
+
+}
+
+
+function scarySound(){
+
+    tone(48,.5,"sawtooth",.035);
+
+    setTimeout(()=>{
+        tone(31,.8,"sine",.025);
+    },100);
+
+}
+
+
+/* =========================================================
+   VISUAL EFFECTS
+   ========================================================= */
+
+function flash(){
+
+    redFlash.style.opacity=".75";
+
+    setTimeout(()=>{
+        redFlash.style.opacity="0";
+    },60);
+
+}
+
+
+function glitch(){
+
+    document.body.classList.add("glitch");
+    noise.style.opacity=".5";
+
+    setTimeout(()=>{
+        document.body.classList.remove("glitch");
+        noise.style.opacity="0";
+    },700);
+
+}
+
+
+function shake(){
+
+    document.body.classList.add("shake");
+
+    setTimeout(()=>{
+        document.body.classList.remove("shake");
+    },600);
+
+}
+
+
+function flicker(){
+
+    document.body.classList.add("flicker");
+
+    setTimeout(()=>{
+        document.body.classList.remove("flicker");
+    },1000);
+
+}
+
+
+function blackoutFor(ms){
+
+    blackout.style.opacity="1";
+
+    setTimeout(()=>{
+        blackout.style.opacity="0";
+    },ms);
+
+}
+
+
+/* =========================================================
+   TEXT EFFECT
+   ========================================================= */
+
+function typeText(element,text,speed=28){
+
+    return new Promise(resolve=>{
+
+        element.textContent="";
+
+        let i=0;
+
+        const interval=setInterval(()=>{
+
+            element.textContent += text.charAt(i);
+
+            i++;
+
+            if(i>=text.length){
+
+                clearInterval(interval);
+                resolve();
+
+            }
+
+        },speed);
+
+    });
+
+}
+
+
+/* =========================================================
+   ANSWER ANALYSIS
+   ========================================================= */
+
+function saveAnswer(){
+
+    const value=answer.value.trim();
+
+    if(!value) return false;
+
+    answers.push({
+        scene:scene,
+        text:value,
+        time:Date.now()
+    });
+
+    return true;
+
+}
+
+
+function allText(){
+
+    return answers
+        .map(x=>x.text)
+        .join(" ")
+        .toLowerCase();
+
+}
+
+
+function findAnswer(type){
+
+    for(let i=answers.length-1;i>=0;i--){
+
+        if(questions[answers[i].scene] &&
+           questions[answers[i].scene].type===type){
+
+            return answers[i].text;
+
+        }
+
+    }
+
+    return "";
+
+}
+
+
+function hasWord(words){
+
+    const text=allText();
+
+    return words.some(w=>text.includes(w));
+
+}
+
+
+/* =========================================================
+   PERSONALIZATION ENGINE
+   ========================================================= */
+
+function detectPattern(){
+
+    const text=allText();
+
+    let pattern="";
+
+    if(
+        /sam|samot|samotno|cisza|pust|nik/.test(text)
+    ){
+
+        pattern="samotność";
+
+    }
+
+    else if(
+        /rodzin|mama|tata|brat|siostr|dziewczyn|chłopak|partner|partnerk/.test(text)
+    ){
+
+        pattern="relacje";
+
+    }
+
+    else if(
+        /pieniądz|kasa|praca|prac|zarab|firma|szef/.test(text)
+    ){
+
+        pattern="kontrola";
+
+    }
+
+    else if(
+        /przysz|jutro|plan|wyjazd|podróż|zmieni/.test(text)
+    ){
+
+        pattern="przyszłość";
+
+    }
+
+    else if(
+        /śmier|umr|strac|chor|wypad|ból|boję|strach|lęk/.test(text)
+    ){
+
+        pattern="utrata";
+
+    }
+
+    else{
+
+        pattern="niepewność";
+
+    }
+
+    return pattern;
+
+}
+
+
+function getStrongestAnswer(){
+
+    const useful=answers
+        .filter(a=>a.text.length>8)
+        .sort((a,b)=>b.text.length-a.text.length);
+
+    if(!useful.length) return "";
+
+    return useful[0].text;
+
+}
+
+
+function getFearAnswer(){
+
+    return findAnswer("fear") || "";
+}
+
+
+function getPersonAnswer(){
+
+    return findAnswer("person") || "";
+}
+
+
+/* =========================================================
+   START
+   ========================================================= */
+
+startBtn.addEventListener("click",async()=>{
+
+    if(started) return;
+
+    started=true;
+
+    initAudio();
+
+    if(audioCtx){
+
+        try{
+            await audioCtx.resume();
+        }catch(e){}
+
+    }
+
+    startScreen.classList.add("hidden");
+    gameScreen.classList.remove("hidden");
+
+    tone(70,.25,"sine",.02);
+
+    setTimeout(()=>{
+        loadScene();
+    },700);
+
+});
+
+
+/* =========================================================
+   LOAD SCENE
+   ========================================================= */
+
+async function loadScene(){
+
+    locked=false;
+
+    answer.value="";
+    answer.disabled=false;
+
+    continueBtn.classList.remove("visible");
+
+    const data=questions[scene];
+
+    sceneNumber.textContent =
+        String(scene+1).padStart(2,"0") +
+        " / " +
+        questions.length;
+
+    question.className="";
+    question.textContent="";
+
+    subtext.textContent=data.sub || "";
+
+    answer.placeholder="Napisz odpowiedź...";
+
+    /* FINAL SCENE */
+
+    if(data.type==="final"){
+
+        runFinalQuestion();
+        return;
+
+    }
+
+    await typeText(question,data.q,24);
+
+    answer.focus();
+
+    /* special behavior */
+
+    if(data.type==="alone"){
+
+        setTimeout(()=>{
+            answer.placeholder="tak / nie";
+        },300);
+
+    }
+
+    if(data.type==="fast"){
+
+        setTimeout(()=>{
+            question.classList.add("glitch");
+            tone(150,.05,"square",.015);
+        },1000);
+
+    }
+
+}
+
+
+/* =========================================================
+   FINAL QUESTION SETUP
+   ========================================================= */
+
+async function runFinalQuestion(){
+
+    locked=true;
+
+    answer.style.display="none";
+    continueBtn.classList.remove("visible");
+
+    await typeText(
+        question,
+        "A teraz najważniejsze.",
+        55
+    );
+
+    await sleep(1400);
+
+    question.textContent="Nie musisz już niczego udowadniać.";
+
+    await sleep(1600);
+
+    blackoutFor(300);
+
+    await sleep(800);
+
+    question.textContent="Czy przez cały czas odpowiadałeś szczerze?";
+
+    await sleep(1800);
+
+    question.classList.add("redMode");
+
+    await sleep(1200);
+
+    runFinal();
+
+}
+
+
+/* =========================================================
+   CONTINUE
+   ========================================================= */
+
+continueBtn.addEventListener("click",()=>{
+    advance();
+});
+
+
+answer.addEventListener("keydown",(e)=>{
+
+    if(e.key==="Enter" && !e.shiftKey){
+
+        e.preventDefault();
+
+        advance();
+
+    }
+
+});
+
+
+/* =========================================================
+   TYPING DETECTION
+   ========================================================= */
+
+answer.addEventListener("input",()=>{
+
+    if(!typingStarted){
+
+        typingStarted=true;
+
+        typingCount++;
+
+        /* First interruption */
+
+        if(scene===0){
+
+            setTimeout(()=>{
+
+                if(scene===0 && answer.value.length>4){
+
+                    glitch();
+
+                }
+
+            },1200);
+
+        }
+
+    }
+
+});
+
+
+/* =========================================================
+   ADVANCE
+   ========================================================= */
+
+async function advance(){
+
+    if(locked) return;
+
+    if(!saveAnswer()){
+
+        answer.focus();
+        return;
+
+    }
+
+    locked=true;
+
+    const data=questions[scene];
+
+    answer.disabled=true;
+
+    /* -----------------------------------------
+       SPECIAL SCENES
+       ----------------------------------------- */
+
+    if(data.type==="alone"){
+
+        await eventAlone();
+
+        scene++;
+
+        gameScreen.classList.remove("hidden");
+        eventScreen.classList.add("hidden");
+
+        await loadScene();
+
+        return;
+
+    }
+
+
+    if(data.type==="sound"){
+
+        await eventSound();
+
+        scene++;
+
+        gameScreen.classList.remove("hidden");
+        eventScreen.classList.add("hidden");
+
+        await loadScene();
+
+        return;
+
+    }
+
+
+    if(data.type==="personal"){
+
+        await eventPersonal();
+
+        scene++;
+
+        gameScreen.classList.remove("hidden");
+        eventScreen.classList.add("hidden");
+
+        await loadScene();
+
+        return;
+
+    }
+
+
+    if(data.type==="person"){
+
+        await eventPerson();
+
+        scene++;
+
+        gameScreen.classList.remove("hidden");
+        eventScreen.classList.add("hidden");
+
+        await loadScene();
+
+        return;
+
+    }
+
+
+    if(data.type==="fear"){
+
+        await eventFear();
+
+        scene++;
+
+        gameScreen.classList.remove("hidden");
+        eventScreen.classList.add("hidden");
+
+        await loadScene();
+
+        return;
+
+    }
+
+
+    if(data.type==="deep"){
+
+        await eventDeep();
+
+        scene++;
+
+        gameScreen.classList.remove("hidden");
+        eventScreen.classList.add("hidden");
+
+        await loadScene();
+
+        return;
+
+    }
+
+
+    /* -----------------------------------------
+       NORMAL SCENES
+       ----------------------------------------- */
+
+    scene++;
+
+    await sleep(400);
+
+    loadScene();
+
+}
+
+
+/* =========================================================
+   EVENT SYSTEM
+   ========================================================= */
+
+function showEvent(){
+
+    gameScreen.classList.add("hidden");
+    eventScreen.classList.remove("hidden");
+
+    eventText.textContent="";
+    eventSub.textContent="";
+    eventBtn.classList.remove("visible");
+
+}
+
+
+function closeEvent(){
+
+    eventScreen.classList.add("hidden");
+    gameScreen.classList.remove("hidden");
+
+}
+
+
+function sleep(ms){
+
+    return new Promise(resolve=>setTimeout(resolve,ms));
+
+}
+
+
+/* =========================================================
+   EVENT: ALONE
+   ========================================================= */
+
+async function eventAlone(){
+
+    showEvent();
+
+    await sleep(700);
+
+    await typeText(
+        eventText,
+        "Dobrze.",
+        100
+    );
+
+    await sleep(1300);
+
+    eventText.textContent="";
+
+    await sleep(900);
+
+    await typeText(
+        eventText,
+        "Nie pytam, gdzie jesteś.",
+        55
+    );
+
+    await sleep(1500);
+
+    eventText.textContent="";
+
+    await sleep(1200);
+
+    await typeText(
+        eventText,
+        "Pytam tylko, czy naprawdę jesteś sam.",
+        48
+    );
+
+    scarySound();
+
+    await sleep(1700);
+
+    eventText.classList.add("redMode");
+
+    await typeText(
+        eventSub,
+        "sprawdź otoczenie",
+        50
+    );
+
+    await sleep(1800);
+
+    eventText.classList.remove("redMode");
+
+    eventText.textContent="";
+
+    await sleep(800);
+
+    await typeText(
+        eventText,
+        "Dobrze. Możemy iść dalej.",
+        45
+    );
+
+    await sleep(1200);
+
+}
+
+
+/* =========================================================
+   EVENT: SOUND
+   ========================================================= */
+
+async function eventSound(){
+
+    showEvent();
+
+    const sound=findAnswer("sound");
+
+    await sleep(900);
+
+    await typeText(
+        eventText,
+        "Rozumiem.",
+        90
+    );
+
+    await sleep(1200);
+
+    eventText.textContent="";
+
+    await sleep(900);
+
+    await typeText(
+        eventText,
+        "A ten drugi?",
+        85
+    );
+
+    tone(37,.7,"sine",.02);
+
+    await sleep(1700);
+
+    eventText.textContent="";
+
+    await sleep(900);
+
+    await typeText(
+        eventText,
+        "Nieważne.",
+        110
+    );
+
+    await sleep(1500);
+
+    glitch();
+
+    eventText.textContent="";
+
+    await sleep(500);
+
+    await typeText(
+        eventText,
+        sound
+        ? "Zapamiętałem odpowiedź."
+        : "Zapamiętałem ciszę.",
+        50
+    );
+
+    await sleep(1400);
+
+}
+
+
+/* =========================================================
+   EVENT: PERSONAL
+   ========================================================= */
+
+async function eventPersonal(){
+
+    showEvent();
+
+    const text=findAnswer("personal");
+
+    await sleep(900);
+
+    await typeText(
+        eventText,
+        "To ciekawe.",
+        65
+    );
+
+    await sleep(1200);
+
+    eventText.textContent="";
+
+    await sleep(600);
+
+    await typeText(
+        eventText,
+        "Bo większość ludzi odpowiada tutaj czymś bezpiecznym.",
+        30
+    );
+
+    await sleep(1600);
+
+    eventText.textContent="";
+
+    await sleep(600);
+
+    await typeText(
+        eventText,
+        "Ty nie musisz.",
+        80
+    );
+
+    await sleep(1300);
+
+    eventText.textContent="";
+
+    await typeText(
+        eventText,
+        "Zapamiętaj, co właśnie napisałeś.",
+        45
+    );
+
+    await sleep(1600);
+
+    eventText.textContent="";
+
+    await typeText(
+        eventText,
+        "Jeszcze do tego wrócimy.",
+        55
+    );
+
+    await sleep(1500);
+
+}
+
+
+/* =========================================================
+   EVENT: PERSON
+   ========================================================= */
+
+async function eventPerson(){
+
+    showEvent();
+
+    const person=getPersonAnswer();
+
+    await sleep(800);
+
+    await typeText(
+        eventText,
+        "Dobrze.",
+        90
+    );
+
+    await sleep(1000);
+
+    eventText.textContent="";
+
+    await typeText(
+        eventText,
+        "To znaczy, że jest ktoś, kogo sprawdziłbyś pierwszy.",
+        35
+    );
+
+    await sleep(1500);
+
+    eventText.textContent="";
+
+    await sleep(600);
+
+    await typeText(
+        eventText,
+        "Interesujące.",
+        70
+    );
+
+    await sleep(1200);
+
+    eventText.textContent="";
+
+    await typeText(
+        eventText,
+        person
+        ? "Nie potrzebuję znać tej osoby."
+        : "Nie potrzebuję nazwiska.",
+        42
+    );
+
+    await sleep(1300);
+
+    eventText.textContent="";
+
+    await typeText(
+        eventText,
+        "Wystarczy, że Ty wiesz, o kogo chodzi.",
+        42
+    );
+
+    await sleep(1500);
+
+}
+
+
+/* =========================================================
+   EVENT: FEAR
+   ========================================================= */
+
+async function eventFear(){
+
+    showEvent();
+
+    const fear=getFearAnswer();
+
+    await sleep(900);
+
+    await typeText(
+        eventText,
+        "Właśnie tutaj zaczyna się właściwa część.",
+        40
+    );
+
+    await sleep(1500);
+
+    eventText.textContent="";
+
+    await sleep(700);
+
+    if(fear){
+
+        await typeText(
+            eventText,
+            "Najbardziej boisz się utraty czegoś, co już masz.",
+            42
+        );
+
+    }else{
+
+        await typeText(
+            eventText,
+            "Nie musisz nazywać swojego strachu.",
+            45
+        );
+
+    }
+
+    await sleep(1600);
+
+    eventText.textContent="";
+
+    await sleep(700);
+
+    await typeText(
+        eventText,
+        "Bo właśnie dlatego działa.",
+        50
+    );
+
+    await sleep(1400);
+
+    glitch();
+    shake();
+
+    await sleep(500);
+
+    eventText.textContent="";
+
+    await typeText(
+        eventText,
+        "Zapamiętaj jedną rzecz.",
+        55
+    );
+
+    await sleep(1100);
+
+    eventText.textContent="";
+
+    await typeText(
+        eventText,
+        "Najłatwiej przestraszyć człowieka tym, co już nosi w głowie.",
+        30
+    );
+
+    await sleep(1900);
+
+}
+
+
+/* =========================================================
+   EVENT: DEEP
+   ========================================================= */
+
+async function eventDeep(){
+
+    showEvent();
+
+    const pattern=detectPattern();
+
+    await sleep(800);
+
+    await typeText(
+        eventText,
+        "Okej.",
+        90
+    );
+
+    await sleep(1100);
+
+    eventText.textContent="";
+
+    await sleep(500);
+
+    let line="";
+
+    if(pattern==="samotność"){
+
+        line="Wygląda na to, że samotność pojawia się u Ciebie częściej, niż pokazujesz.";
+
+    }
+
+    else if(pattern==="relacje"){
+
+        line="Ważniejsi są dla Ciebie ludzie, niż czasem chciałbyś przyznać.";
+
+    }
+
+    else if(pattern==="kontrola"){
+
+        line="Dużo rzeczy próbujesz utrzymać pod kontrolą.";
+
+    }
+
+    else if(pattern==="przyszłość"){
+
+        line="Częściej patrzysz do przodu, niż pozwalasz sobie zatrzymać się tutaj.";
+
+    }
+
+    else if(pattern==="utrata"){
+
+        line="Wygląda na to, że bardziej niż bólu boisz się utraty.";
+
+    }
+
+    else{
+
+        line="W Twoich odpowiedziach jest więcej niepewności, niż początkowo wyglądało.";
+
+    }
+
+    await typeText(
+        eventText,
+        line,
+        30
+    );
+
+    await sleep(1900);
+
+    eventText.textContent="";
+
+    await typeText(
+        eventText,
+        "To nie jest diagnoza.",
+        55
+    );
+
+    await sleep(900);
+
+    eventText.textContent="";
+
+    await typeText(
+        eventText,
+        "To tylko wzorzec.",
+        55
+    );
+
+    await sleep(1400);
+
+}
+
+
+/* =========================================================
+   FINAL
+   ========================================================= */
+
+async function runFinal(){
+
+    gameScreen.classList.add("hidden");
+    eventScreen.classList.add("hidden");
+    finalScreen.classList.remove("hidden");
+
+    const pattern=detectPattern();
+
+    const strongest=getStrongestAnswer();
+
+    const fear=getFearAnswer();
+
+    const person=getPersonAnswer();
+
+    await sleep(1000);
+
+    const main=document.getElementById("finalMain");
+    const details=document.getElementById("finalDetails");
+
+    main.textContent="";
+
+    await typeText(
+        main,
+        "ZEBRANO WYSTARCZAJĄCO DUŻO.",
+        50
+    );
+
+    await sleep(1700);
+
+    main.textContent="";
+
+    await typeText(
+        main,
+        "Nie potrzebuję już kolejnych odpowiedzi.",
+        42
+    );
+
+    await sleep(1800);
+
+    main.textContent="";
+
+    await typeText(
+        main,
+        "Potrzebuję tylko sprawdzić jedną rzecz.",
+        42
+    );
+
+    await sleep(1800);
+
+    main.textContent="";
+
+    await typeText(
+        main,
+        "Czy wiesz już, czego naprawdę się boisz?",
+        45
+    );
+
+    await sleep(2000);
+
+    details.innerHTML="";
+
+    /* PERSONAL QUOTE */
+
+    if(strongest){
+
+        const quote=document.createElement("div");
+        quote.className="quote";
+        quote.textContent='„'+strongest.slice(0,180)+'”';
+
+        details.appendChild(quote);
+
+        await sleep(1200);
+
+    }
+
+    const explanation=document.createElement("div");
+
+    let conclusion="";
+
+    if(pattern==="samotność"){
+
+        conclusion=
+        "W Twoich odpowiedziach wracał motyw samotności. " +
+        "Możliwa obawa nie polega na samym byciu samemu, " +
+        "ale na tym, że w pewnym momencie możesz zostać z czymś sam.";
+
+    }
+
+    else if(pattern==="relacje"){
+
+        conclusion=
+        "W Twoich odpowiedziach wracały relacje. " +
+        "Możliwa obawa dotyczy utraty ludzi, którzy są dla Ciebie ważni, " +
+        "albo sytuacji, w której nie będziesz już mógł ich ochronić.";
+
+    }
+
+    else if(pattern==="kontrola"){
+
+        conclusion=
+        "W Twoich odpowiedziach pojawiała się potrzeba kontroli. " +
+        "Możliwy lęk nie dotyczy samego chaosu, tylko momentu, " +
+        "w którym przestajesz mieć wpływ na to, co dzieje się dalej.";
+
+    }
+
+    else if(pattern==="przyszłość"){
+
+        conclusion=
+        "W odpowiedziach mocno zaznaczyła się przyszłość. " +
+        "Możliwa obawa dotyczy nie tego, co wydarzy się jutro, " +
+        "ale tego, że pewnego dnia obudzisz się w życiu, którego nie wybrałeś.";
+
+    }
+
+    else if(pattern==="utrata"){
+
+        conclusion=
+        "W Twoich odpowiedziach pojawiał się motyw utraty. " +
+        "Możliwy lęk jest bardziej związany z tym, co możesz stracić, " +
+        "niż z tym, co może Ci się stać.";
+
+    }
+
+    else{
+
+        conclusion=
+        "Najmocniejszy wzorzec nie jest jednoznaczny. " +
+        "I właśnie to jest ciekawe. " +
+        "Wygląda na to, że część rzeczy zostawiasz dla siebie.";
+
+    }
+
+    explanation.textContent=conclusion;
+
+    details.appendChild(explanation);
+
+    await sleep(2200);
+
+    main.textContent="";
+
+    await typeText(
+        main,
+        "Ale jest jeszcze coś.",
+        65
+    );
+
+    await sleep(1500);
+
+    main.textContent="";
+
+    await typeText(
+        main,
+        "Przez cały czas myślałeś, że odpowiadasz aplikacji.",
+        38
+    );
+
+    await sleep(1800);
+
+    main.textContent="";
+
+    await typeText(
+        main,
+        "Tak naprawdę odpowiadałeś sobie.",
+        50
+    );
+
+    await sleep(2200);
+
+    /* LAST QUESTION */
+
+    finalScreen.innerHTML=`
+
+        <div class="finalTitle">MIRROR</div>
+
+        <div id="finalMain">
+            Czy po tym wszystkim nadal jesteś pewien,<br>
+            że jesteś tutaj sam?
+        </div>
+
+        <div style="
+            margin-top:45px;
+            color:#333;
+            font-size:10px;
+            letter-spacing:3px;
+        ">
+            KONIEC
+        </div>
+
+        <button
+            class="finalButton"
+            onclick="location.reload()"
+        >
+            ZAMKNIJ
+        </button>
+
+    `;
+
+    await sleep(5000);
+
+    /* very subtle final effect */
+
+    blackoutFor(180);
+
+    await sleep(500);
+
+    tone(28,.8,"sine",.018);
+
+}
+
+
+/* =========================================================
+   EXTRA RANDOM MICRO EVENTS
+   ========================================================= */
+
+/*
+   Te zdarzenia są celowo rzadkie.
+   Nie zmieniają logiki gry.
+*/
+
+setInterval(()=>{
+
+    if(!started || locked) return;
+
+    if(Math.random()<0.035){
+
+        noise.style.opacity=".18";
+
+        setTimeout(()=>{
+            noise.style.opacity="0";
+        },120);
+
+    }
+
+},900);
+
+
+/* =========================================================
+   OCCASIONAL CURSOR INTERRUPTION
+   ========================================================= */
+
+setInterval(()=>{
+
+    if(!started || locked) return;
+
+    if(scene>=4 && scene<10 && Math.random()<0.025){
+
+        answer.classList.add("cursorHidden");
+
+        setTimeout(()=>{
+
+            answer.classList.remove("cursorHidden");
+
+        },900);
+
+    }
+
+},1200);
+
+
+/* =========================================================
+   PROTECTION
+   ========================================================= */
+
+window.addEventListener("beforeunload",()=>{
+
+    /* intentionally no data is saved */
+
+});
+
+
+/* =========================================================
+   END
+   ========================================================= */
+
+</script>
+
+</body>
+</html><!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MIRROR</title>
+
+<style>
 *{
     box-sizing:border-box;
     margin:0;
