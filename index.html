@@ -3,397 +3,695 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>MIRROR — DO NOT LOOK AWAY</title>
+<title>MIRROR — THE DESCENT</title>
 
 <style>
+/* =========================================================
+   MIRROR
+   INTERACTIVE PSYCHOLOGICAL HORROR
+   VERSION 7
+========================================================= */
+
+:root{
+    --white:#f4f4f4;
+    --gray:#777;
+    --dark:#080808;
+    --red:#b00000;
+    --deep-red:#310000;
+}
+
 *{
     box-sizing:border-box;
     margin:0;
     padding:0;
 }
 
-html,body{
+html,
+body{
     width:100%;
     height:100%;
     overflow:hidden;
-    background:#030303;
-    color:#eee;
-    font-family:Arial,Helvetica,sans-serif;
+    background:#000;
+    color:var(--white);
+    font-family:
+        Arial,
+        Helvetica,
+        sans-serif;
 }
 
 body{
-    transition:filter .15s,background .5s;
+    user-select:none;
 }
 
 #app{
-    position:relative;
-    width:100vw;
-    height:100vh;
+    position:fixed;
+    inset:0;
     overflow:hidden;
     background:
-        radial-gradient(circle at 50% 48%,#141414 0%,#070707 43%,#010101 100%);
+        radial-gradient(
+            ellipse at center,
+            #151515 0%,
+            #080808 42%,
+            #010101 100%
+        );
+    transition:
+        background 900ms ease,
+        filter 120ms ease,
+        transform 100ms ease;
+}
+
+#world{
+    position:absolute;
+    inset:0;
+    pointer-events:none;
+    z-index:5;
 }
 
 #grain{
     position:absolute;
-    inset:-50%;
-    z-index:90;
+    inset:-60%;
+    z-index:100;
     pointer-events:none;
-    opacity:.045;
+    opacity:.055;
     background-image:
         repeating-radial-gradient(
             circle at 0 0,
             rgba(255,255,255,.8) 0 1px,
             transparent 1px 4px
         );
-    animation:grain .14s steps(2) infinite;
+    animation:
+        grain .11s steps(2) infinite;
 }
 
-#scan{
+#scanlines{
     position:absolute;
     inset:0;
-    z-index:89;
+    z-index:99;
     pointer-events:none;
-    opacity:.08;
+    opacity:.06;
     background:
         repeating-linear-gradient(
             to bottom,
             transparent 0,
             transparent 3px,
-            rgba(255,255,255,.12) 4px
+            rgba(255,255,255,.18) 4px
         );
 }
 
 #vignette{
     position:absolute;
     inset:0;
-    z-index:88;
+    z-index:98;
     pointer-events:none;
     background:
         radial-gradient(
             ellipse at center,
-            transparent 25%,
-            rgba(0,0,0,.25) 55%,
-            rgba(0,0,0,.94) 100%
+            transparent 20%,
+            rgba(0,0,0,.2) 52%,
+            rgba(0,0,0,.97) 100%
         );
 }
 
-#flash,
-#redFlash{
+#flash{
     position:absolute;
     inset:0;
+    z-index:500;
     pointer-events:none;
     opacity:0;
-}
-
-#flash{
-    z-index:200;
     background:#fff;
 }
 
 #redFlash{
-    z-index:201;
-    background:#b00000;
+    position:absolute;
+    inset:0;
+    z-index:501;
+    pointer-events:none;
+    opacity:0;
+    background:#d00000;
     mix-blend-mode:screen;
+}
+
+#blackout{
+    position:absolute;
+    inset:0;
+    z-index:490;
+    pointer-events:none;
+    opacity:0;
+    background:#000;
+}
+
+#redAtmosphere{
+    position:absolute;
+    inset:-20%;
+    z-index:2;
+    pointer-events:none;
+    opacity:0;
+    background:
+        radial-gradient(
+            ellipse at center,
+            rgba(160,0,0,.24),
+            transparent 65%
+        );
+    transition:opacity 800ms ease;
 }
 
 #content{
     position:absolute;
+    z-index:50;
     left:50%;
     top:50%;
+    width:min(920px,90vw);
+    min-height:520px;
     transform:translate(-50%,-50%);
-    width:min(900px,90vw);
-    min-height:460px;
     display:flex;
     flex-direction:column;
     align-items:center;
     justify-content:center;
     text-align:center;
-    z-index:30;
 }
 
 #chapter{
     min-height:18px;
-    margin-bottom:24px;
-    color:#555;
+    margin-bottom:25px;
+    color:#505050;
     font-size:10px;
     letter-spacing:6px;
     text-transform:uppercase;
+    transition:opacity .25s;
 }
 
 #main{
-    min-height:75px;
     max-width:900px;
-    font-size:clamp(28px,4.4vw,62px);
+    min-height:76px;
+    color:#eee;
+    font-size:
+        clamp(
+            28px,
+            4.5vw,
+            64px
+        );
     line-height:1.02;
     font-weight:600;
     letter-spacing:-1.5px;
-    text-shadow:0 0 35px rgba(255,255,255,.04);
+    transition:
+        opacity .2s,
+        filter .2s,
+        transform .2s;
 }
 
 #sub{
+    max-width:700px;
     min-height:25px;
-    max-width:680px;
-    margin-top:20px;
-    color:#666;
+    margin-top:22px;
+    color:#656565;
     font-size:14px;
     line-height:1.5;
+    transition:opacity .2s;
+}
+
+#start{
+    margin-top:45px;
+    padding:15px 38px;
+    border:1px solid #444;
+    background:#080808;
+    color:#eee;
+    font-size:11px;
+    letter-spacing:4px;
+    cursor:pointer;
+    transition:
+        background .2s,
+        color .2s,
+        transform .2s,
+        border .2s;
+}
+
+#start:hover{
+    background:#eee;
+    color:#000;
+    border-color:#eee;
+    transform:scale(1.04);
 }
 
 #input{
-    width:min(620px,85vw);
-    margin-top:42px;
+    width:min(640px,88vw);
+    margin-top:43px;
     opacity:0;
     transform:translateY(15px);
     pointer-events:none;
-    transition:.3s;
+    transition:
+        opacity .3s,
+        transform .3s;
 }
 
 #answer{
     width:100%;
-    padding:12px 5px;
+    padding:13px 5px;
     border:0;
-    border-bottom:1px solid #444;
+    border-bottom:1px solid #414141;
     outline:0;
     background:transparent;
     color:#fff;
     text-align:center;
-    font-size:25px;
+    font-size:24px;
     letter-spacing:1px;
-}
-
-#answer:focus{
-    border-bottom-color:#aaa;
+    user-select:text;
 }
 
 #answer::placeholder{
     color:#303030;
 }
 
+#answer:focus{
+    border-bottom-color:#999;
+}
+
 #send{
-    margin-top:23px;
+    margin-top:24px;
+    padding:12px 29px;
     border:1px solid #444;
     background:#eee;
     color:#050505;
-    padding:12px 28px;
-    cursor:pointer;
-    font-size:11px;
+    font-size:10px;
     font-weight:bold;
     letter-spacing:3px;
-    transition:.2s;
+    cursor:pointer;
 }
 
 #send:hover{
-    transform:scale(1.05);
+    transform:scale(1.04);
 }
 
-#send:active{
-    transform:scale(.94);
-}
-
-#start{
-    margin-top:42px;
-    padding:14px 34px;
-    background:#070707;
-    border:1px solid #555;
-    color:#eee;
-    letter-spacing:4px;
-    cursor:pointer;
-    transition:.25s;
-}
-
-#start:hover{
-    color:#000;
-    background:#eee;
-}
-
-#bar{
+#progress{
     position:absolute;
+    z-index:70;
     left:25px;
-    bottom:23px;
-    width:190px;
+    bottom:24px;
+    width:200px;
     height:2px;
     background:#181818;
-    z-index:40;
 }
 
-#barFill{
-    height:100%;
+#progressFill{
     width:0%;
+    height:100%;
     background:#aaa;
-    transition:width 1s;
+    transition:width 900ms ease;
 }
 
-#count{
+#counter{
     position:absolute;
+    z-index:70;
     right:25px;
     bottom:18px;
-    z-index:40;
-    color:#444;
+    color:#3d3d3d;
     font-size:10px;
     letter-spacing:3px;
 }
 
-#cursorDot{
+#cursorGhost{
     position:absolute;
+    z-index:600;
     width:5px;
     height:5px;
     border-radius:50%;
     background:#aaa;
-    pointer-events:none;
     opacity:0;
-    z-index:250;
-    box-shadow:0 0 10px rgba(255,255,255,.5);
-}
-
-#objects,
-#words{
-    position:absolute;
-    inset:0;
     pointer-events:none;
+    box-shadow:0 0 14px rgba(255,255,255,.6);
 }
 
-#objects{
-    z-index:20;
-}
-
-#words{
-    z-index:120;
-}
-
-.floating{
+#redPoint{
     position:absolute;
-    opacity:0;
-    white-space:nowrap;
-    color:#777;
-    font-size:11px;
-    letter-spacing:4px;
-}
-
-.floating.big{
-    font-size:clamp(35px,7vw,100px);
-    font-weight:900;
-    color:#ddd;
-    letter-spacing:8px;
-}
-
-#warning{
-    position:absolute;
-    left:50%;
-    top:50%;
-    transform:translate(-50%,-50%);
-    z-index:300;
-    pointer-events:none;
-    opacity:0;
-    font-size:clamp(38px,9vw,125px);
-    font-weight:900;
-    letter-spacing:8px;
-    color:white;
-    text-shadow:
-        5px 0 #900,
-        -4px 0 #0aa;
-}
-
-#redDot{
-    position:absolute;
-    z-index:250;
+    z-index:600;
     width:6px;
     height:6px;
     background:#f00;
-    box-shadow:0 0 20px #f00;
     opacity:0;
+    box-shadow:
+        0 0 5px #f00,
+        0 0 20px #f00;
 }
 
-.red #app{
+#giant{
+    position:absolute;
+    z-index:400;
+    left:50%;
+    top:50%;
+    width:95vw;
+    transform:translate(-50%,-50%);
+    text-align:center;
+    opacity:0;
+    color:#fff;
+    font-size:
+        clamp(
+            40px,
+            10vw,
+            145px
+        );
+    font-weight:900;
+    line-height:.9;
+    letter-spacing:7px;
+    pointer-events:none;
+    text-shadow:
+        5px 0 #800,
+        -4px 0 #099;
+}
+
+#entities{
+    position:absolute;
+    inset:0;
+    z-index:20;
+    pointer-events:none;
+}
+
+.entity{
+    position:absolute;
+    opacity:0;
+    color:#777;
+    white-space:nowrap;
+    font-size:10px;
+    letter-spacing:4px;
+}
+
+.entity.big{
+    color:#ddd;
+    font-size:
+        clamp(
+            35px,
+            7vw,
+            105px
+        );
+    font-weight:900;
+    letter-spacing:7px;
+}
+
+.entity.red{
+    color:#b00000;
+}
+
+.entity.white{
+    color:#eee;
+}
+
+.entity.blur{
+    filter:blur(5px);
+}
+
+.entity.fade{
+    animation:
+        entityFade 1.6s ease forwards;
+}
+
+.entity.rise{
+    animation:
+        entityRise 1.5s ease forwards;
+}
+
+.entity.fall{
+    animation:
+        entityFall 1.3s ease forwards;
+}
+
+.entity.cross{
+    animation:
+        entityCross 1.8s linear forwards;
+}
+
+.entity.spin{
+    animation:
+        entitySpin 1.5s ease forwards;
+}
+
+body.red #app{
     background:
-        radial-gradient(circle at 50% 48%,#280000 0%,#090000 48%,#010000 100%);
+        radial-gradient(
+            ellipse at center,
+            #270000 0%,
+            #0d0000 45%,
+            #010000 100%
+        );
 }
 
-.dark #main{
-    color:#222;
+body.red #redAtmosphere{
+    opacity:1;
 }
 
-.glitch{
-    animation:glitch .1s steps(2) infinite;
+body.dark #main{
+    color:#151515;
+}
+
+.glitchMain{
+    animation:
+        glitchMain .095s steps(2) infinite;
 }
 
 .shake{
-    animation:shake .08s infinite;
+    animation:
+        shake .075s infinite;
 }
 
 .hardShake{
-    animation:hardShake .055s infinite;
+    animation:
+        hardShake .045s infinite;
 }
 
 .flicker{
-    animation:flicker .13s steps(2) infinite;
+    animation:
+        flicker .12s steps(2) infinite;
+}
+
+.invisible{
+    opacity:0 !important;
+}
+
+.noTransition{
+    transition:none !important;
 }
 
 @keyframes grain{
-    0%{transform:translate(0,0)}
-    25%{transform:translate(3%,-2%)}
-    50%{transform:translate(-3%,3%)}
-    75%{transform:translate(2%,4%)}
-    100%{transform:translate(0,0)}
+    0%{
+        transform:translate(0,0);
+    }
+    25%{
+        transform:translate(3%,-2%);
+    }
+    50%{
+        transform:translate(-2%,3%);
+    }
+    75%{
+        transform:translate(2%,2%);
+    }
+    100%{
+        transform:translate(0,0);
+    }
 }
 
-@keyframes glitch{
-    0%{transform:translate(-50%,-50%)}
-    20%{transform:translate(calc(-50% + 10px),-50%) skew(5deg)}
-    40%{transform:translate(calc(-50% - 8px),calc(-50% + 2px)) skew(-5deg)}
-    60%{transform:translate(-50%,calc(-50% - 5px)) skew(2deg)}
-    80%{transform:translate(calc(-50% + 4px),-50%)}
-    100%{transform:translate(-50%,-50%)}
+@keyframes glitchMain{
+    0%{
+        transform:translate(0,0);
+        text-shadow:none;
+    }
+    20%{
+        transform:translate(7px,-2px);
+        text-shadow:
+            -5px 0 #a00,
+            5px 0 #099;
+    }
+    40%{
+        transform:translate(-8px,2px);
+        text-shadow:
+            5px 0 #a00,
+            -5px 0 #099;
+    }
+    60%{
+        transform:translate(4px,3px);
+    }
+    80%{
+        transform:translate(-3px,-3px);
+    }
+    100%{
+        transform:translate(0,0);
+    }
 }
 
 @keyframes shake{
-    0%{transform:translate(-50%,-50%)}
-    25%{transform:translate(calc(-50% + 4px),calc(-50% - 3px))}
-    50%{transform:translate(calc(-50% - 4px),calc(-50% + 2px))}
-    75%{transform:translate(calc(-50% + 3px),calc(-50% + 4px))}
-    100%{transform:translate(-50%,-50%)}
+    0%{
+        transform:translate(-50%,-50%);
+    }
+    25%{
+        transform:
+            translate(
+                calc(-50% + 5px),
+                calc(-50% - 3px)
+            );
+    }
+    50%{
+        transform:
+            translate(
+                calc(-50% - 4px),
+                calc(-50% + 4px)
+            );
+    }
+    75%{
+        transform:
+            translate(
+                calc(-50% + 3px),
+                calc(-50% + 2px)
+            );
+    }
+    100%{
+        transform:translate(-50%,-50%);
+    }
 }
 
 @keyframes hardShake{
-    0%{transform:translate(-50%,-50%)}
-    20%{transform:translate(calc(-50% + 17px),calc(-50% - 9px))}
-    40%{transform:translate(calc(-50% - 15px),calc(-50% + 12px))}
-    60%{transform:translate(calc(-50% + 11px),calc(-50% + 15px))}
-    80%{transform:translate(calc(-50% - 8px),calc(-50% - 7px))}
-    100%{transform:translate(-50%,-50%)}
+    0%{
+        transform:translate(-50%,-50%);
+    }
+    20%{
+        transform:
+            translate(
+                calc(-50% + 19px),
+                calc(-50% - 11px)
+            )
+            rotate(.5deg);
+    }
+    40%{
+        transform:
+            translate(
+                calc(-50% - 17px),
+                calc(-50% + 12px)
+            )
+            rotate(-.7deg);
+    }
+    60%{
+        transform:
+            translate(
+                calc(-50% + 13px),
+                calc(-50% + 16px)
+            );
+    }
+    80%{
+        transform:
+            translate(
+                calc(-50% - 10px),
+                calc(-50% - 8px)
+            );
+    }
+    100%{
+        transform:translate(-50%,-50%);
+    }
 }
 
 @keyframes flicker{
-    0%,100%{opacity:1}
-    12%{opacity:.15}
-    24%{opacity:.9}
-    41%{opacity:.03}
-    65%{opacity:.8}
-    78%{opacity:.1}
+    0%,100%{
+        opacity:1;
+    }
+    12%{
+        opacity:.08;
+    }
+    24%{
+        opacity:.9;
+    }
+    40%{
+        opacity:.02;
+    }
+    57%{
+        opacity:.75;
+    }
+    71%{
+        opacity:.1;
+    }
+    83%{
+        opacity:.9;
+    }
 }
 
-@keyframes floatAway{
+@keyframes entityFade{
     0%{
         opacity:0;
-        transform:translateY(30px) scale(.7);
+        transform:scale(.7);
     }
-    15%{opacity:1}
-    80%{opacity:.7}
+    15%{
+        opacity:1;
+    }
+    75%{
+        opacity:.7;
+    }
     100%{
         opacity:0;
-        transform:translateY(-150px) scale(1.3) rotate(4deg);
+        transform:scale(1.2);
     }
 }
 
-@keyframes fall{
+@keyframes entityRise{
     0%{
         opacity:0;
-        transform:translateY(-100px) rotate(0);
+        transform:
+            translateY(70px)
+            scale(.7);
     }
-    20%{opacity:1}
+    15%{
+        opacity:1;
+    }
     100%{
         opacity:0;
-        transform:translateY(160px) rotate(30deg);
+        transform:
+            translateY(-150px)
+            scale(1.2);
+    }
+}
+
+@keyframes entityFall{
+    0%{
+        opacity:0;
+        transform:
+            translateY(-120px)
+            rotate(0);
+    }
+    15%{
+        opacity:1;
+    }
+    100%{
+        opacity:0;
+        transform:
+            translateY(170px)
+            rotate(30deg);
+    }
+}
+
+@keyframes entityCross{
+    0%{
+        opacity:0;
+        transform:translateX(-100vw);
+    }
+    15%{
+        opacity:1;
+    }
+    85%{
+        opacity:.5;
+    }
+    100%{
+        opacity:0;
+        transform:translateX(100vw);
+    }
+}
+
+@keyframes entitySpin{
+    0%{
+        opacity:0;
+        transform:
+            scale(.4)
+            rotate(-90deg);
+    }
+    20%{
+        opacity:1;
+    }
+    100%{
+        opacity:0;
+        transform:
+            scale(1.5)
+            rotate(90deg);
     }
 }
 </style>
@@ -403,23 +701,30 @@ body{
 
 <div id="app">
 
+    <div id="redAtmosphere"></div>
+
+    <div id="world"></div>
+
+    <div id="entities"></div>
+
     <div id="grain"></div>
-    <div id="scan"></div>
+    <div id="scanlines"></div>
     <div id="vignette"></div>
 
     <div id="flash"></div>
     <div id="redFlash"></div>
+    <div id="blackout"></div>
 
-    <div id="objects"></div>
-    <div id="words"></div>
+    <div id="redPoint"></div>
+    <div id="cursorGhost"></div>
 
-    <div id="warning"></div>
-    <div id="redDot"></div>
-    <div id="cursorDot"></div>
+    <div id="giant"></div>
 
-    <div id="content">
+    <main id="content">
 
-        <div id="chapter">MIRROR</div>
+        <div id="chapter">
+            MIRROR
+        </div>
 
         <div id="main">
             Nie będę Ci niczego tłumaczyć.
@@ -438,9 +743,9 @@ body{
             <input
                 id="answer"
                 type="text"
+                maxlength="100"
                 autocomplete="off"
                 spellcheck="false"
-                maxlength="100"
                 placeholder="jedno słowo"
             >
 
@@ -450,614 +755,1393 @@ body{
 
         </div>
 
+    </main>
+
+    <div id="progress">
+        <div id="progressFill"></div>
     </div>
 
-    <div id="bar">
-        <div id="barFill"></div>
+    <div id="counter">
+        00 / 00
     </div>
-
-    <div id="count">00 / 00</div>
 
 </div>
 
 <script>
+"use strict";
 
-/* ==========================================================
-   MIRROR — VERSION "THE DESCENT"
-
-   Całość działa lokalnie.
-   Audio generowane przez Web Audio API.
-   Brak API / kamery / mikrofonu / geolokalizacji.
-========================================================== */
+/* =========================================================
+   DOM
+========================================================= */
 
 const $ = id => document.getElementById(id);
 
-const app = $("app");
-const content = $("content");
-const chapter = $("chapter");
-const main = $("main");
-const sub = $("sub");
-const start = $("start");
-const input = $("input");
-const answer = $("answer");
-const send = $("send");
-const barFill = $("barFill");
-const count = $("count");
-const flash = $("flash");
-const redFlash = $("redFlash");
-const objects = $("objects");
-const words = $("words");
-const warning = $("warning");
-const redDot = $("redDot");
-const cursorDot = $("cursorDot");
+const app          = $("app");
+const chapter      = $("chapter");
+const mainText     = $("main");
+const subText      = $("sub");
+const startButton  = $("start");
+const inputBox     = $("input");
+const answerInput  = $("answer");
+const sendButton   = $("send");
+const progressFill = $("progressFill");
+const counter      = $("counter");
+const flash        = $("flash");
+const redFlash     = $("redFlash");
+const blackout     = $("blackout");
+const giant        = $("giant");
+const entities     = $("entities");
+const redPoint     = $("redPoint");
+const cursorGhost  = $("cursorGhost");
 
-let running = false;
-let locked = false;
-let qIndex = -1;
+/* =========================================================
+   STATE
+========================================================= */
 
-const memory = {
+const state = {
 
-    answers: [],
+    running:false,
 
-    /* rzeczy, które użytkownik sam wybrał */
-    fear: "",
-    person: "",
-    desire: "",
-    loss: "",
-    need: "",
-    morning: "",
-    happiness: "",
-    alone: "",
+    locked:false,
 
-    /* odpowiedzi pomocnicze */
-    emotionalWords: [],
-    strongWords: [],
+    questionIndex:-1,
 
-    /* czy zmienił odpowiedź */
-    changed: false,
+    sceneToken:0,
 
-    /* czas odpowiedzi */
-    times: [],
+    destroyed:false,
 
-    lastQuestionStart: 0
+    audioStarted:false,
+
+    audioSuspended:false,
+
+    tension:0,
+
+    typing:0,
+
+    answerStart:0,
+
+    lastAnswer:"",
+
+    answers:[],
+
+    memory:{
+
+        morning:"",
+        mood:"",
+        person:"",
+        desire:"",
+        fear:"",
+        loss:"",
+        alone:"",
+        object:"",
+        sound:"",
+        trust:"",
+        need:"",
+        change:"",
+        happy:"",
+        honest:"",
+        truth:"",
+        finalChoice:""
+
+    },
+
+    flags:{
+
+        repeatedFear:false,
+        repeatedPerson:false,
+        repeatedDesire:false,
+        lied:false,
+        aloneYes:false,
+        changedAnswer:false
+
+    },
+
+    history:[],
+
+    timers:[],
+
+    ambience:null,
+
+    final:false
+
 };
 
 
-/* ==========================================================
-   AUDIO
-========================================================== */
+/* =========================================================
+   QUESTION DATABASE
+========================================================= */
+
+const questions = [
+
+    {
+        id:"morning",
+        chapter:"POCZĄTEK",
+        text:"Co zrobiłeś dziś rano?",
+        placeholder:"jedno słowo"
+    },
+
+    {
+        id:"mood",
+        chapter:"POCZĄTEK",
+        text:"Jak się teraz czujesz?",
+        placeholder:"jedno słowo"
+    },
+
+    {
+        id:"person",
+        chapter:"LUDZIE",
+        text:"Kto jest dla Ciebie ważny?",
+        placeholder:"jedno słowo"
+    },
+
+    {
+        id:"desire",
+        chapter:"POTRZEBA",
+        text:"Czego teraz chcesz?",
+        placeholder:"jedno słowo"
+    },
+
+    {
+        id:"fear",
+        chapter:"PĘKNIĘCIE",
+        text:"Czego najbardziej się boisz?",
+        placeholder:"jedno słowo"
+    },
+
+    {
+        id:"loss",
+        chapter:"PĘKNIĘCIE",
+        text:"Czego nie chcesz stracić?",
+        placeholder:"jedno słowo"
+    },
+
+    {
+        id:"alone",
+        chapter:"ODLEGŁOŚĆ",
+        text:"Czy jesteś teraz sam?",
+        placeholder:"tak / nie"
+    },
+
+    {
+        id:"object",
+        chapter:"TERAZ",
+        text:"Czego dotykasz?",
+        placeholder:"jedno słowo"
+    },
+
+    {
+        id:"sound",
+        chapter:"TERAZ",
+        text:"Co słyszysz?",
+        placeholder:"jedno słowo"
+    },
+
+    {
+        id:"trust",
+        chapter:"ZBLIŻENIE",
+        text:"Komu ufasz?",
+        placeholder:"jedno słowo"
+    },
+
+    {
+        id:"need",
+        chapter:"ZBLIŻENIE",
+        text:"Czego Ci brakuje?",
+        placeholder:"jedno słowo"
+    },
+
+    {
+        id:"change",
+        chapter:"ZBLIŻENIE",
+        text:"Co chciałbyś zmienić?",
+        placeholder:"jedno słowo"
+    },
+
+    {
+        id:"happy",
+        chapter:"SPRAWDZENIE",
+        text:"Jesteś szczęśliwy?",
+        placeholder:"tak / nie / czasami"
+    },
+
+    {
+        id:"honest",
+        chapter:"SPRAWDZENIE",
+        text:"Która odpowiedź była najtrudniejsza?",
+        placeholder:"numer albo słowo"
+    },
+
+    {
+        id:"truth",
+        chapter:"SPRAWDZENIE",
+        text:"Skłamałeś choć raz?",
+        placeholder:"tak / nie"
+    },
+
+    {
+        id:"finalChoice",
+        chapter:"OSTATNIE",
+        text:"Co zabrałbyś ze sobą, gdyby wszystko inne zniknęło?",
+        placeholder:"jedno słowo"
+    }
+
+];
+
+
+/* =========================================================
+   AUDIO ENGINE
+========================================================= */
 
 let AC = null;
+
 let master = null;
 
-let musicGain = null;
-let musicOsc1 = null;
-let musicOsc2 = null;
-let musicLfo = null;
+let ambienceGain = null;
+
+let droneA = null;
+
+let droneB = null;
+
+let droneFilter = null;
+
+let droneLFO = null;
+
+let droneLFOGain = null;
 
 let audioReady = false;
 
+
+/* =========================================================
+   AUDIO INIT
+========================================================= */
+
 function initAudio(){
 
-    if(audioReady) return;
+    if(audioReady)
+        return true;
 
     try{
 
-        AC = new (window.AudioContext || window.webkitAudioContext)();
+        const Ctx =
+            window.AudioContext ||
+            window.webkitAudioContext;
+
+        if(!Ctx)
+            return false;
+
+        AC = new Ctx();
 
         master = AC.createGain();
-        master.gain.value = .32;
 
-        master.connect(AC.destination);
+        master.gain.value = .30;
 
-        audioReady = true;
+        master.connect(
+            AC.destination
+        );
 
-        createMusic();
+        createAmbience();
 
-    }catch(e){
+        audioReady=true;
 
-        console.log("Audio unavailable");
+        return true;
+
+    }catch(error){
+
+        console.warn(
+            "Audio init failed:",
+            error
+        );
+
+        return false;
+    }
+}
+
+
+async function resumeAudio(){
+
+    if(!AC)
+        return;
+
+    try{
+
+        if(
+            AC.state === "suspended"
+        ){
+            await AC.resume();
+        }
+
+        state.audioSuspended=false;
+
+    }catch(error){
+
+        state.audioSuspended=true;
 
     }
 }
 
-function t(){
-    return AC ? AC.currentTime : 0;
+
+/* =========================================================
+   SAFE AUDIO TIME
+========================================================= */
+
+function audioTime(){
+
+    if(!AC)
+        return 0;
+
+    return AC.currentTime;
 }
 
-function tone(
+
+/* =========================================================
+   MASTER
+========================================================= */
+
+function masterVolume(value,duration=.25){
+
+    if(!master || !AC)
+        return;
+
+    const now=audioTime();
+
+    master.gain.cancelScheduledValues(now);
+
+    master.gain.setValueAtTime(
+        Math.max(.0001,master.gain.value),
+        now
+    );
+
+    master.gain.linearRampToValueAtTime(
+        Math.max(.0001,value),
+        now+duration
+    );
+}
+
+
+/* =========================================================
+   AMBIENCE
+========================================================= */
+
+function createAmbience(){
+
+    if(!AC)
+        return;
+
+    ambienceGain=AC.createGain();
+
+    ambienceGain.gain.value=.0001;
+
+    ambienceGain.connect(master);
+
+
+    droneA=AC.createOscillator();
+
+    droneB=AC.createOscillator();
+
+    droneFilter=AC.createBiquadFilter();
+
+    droneLFO=AC.createOscillator();
+
+    droneLFOGain=AC.createGain();
+
+
+    droneA.type="sine";
+
+    droneB.type="triangle";
+
+    droneA.frequency.value=43;
+
+    droneB.frequency.value=61;
+
+    droneFilter.type="lowpass";
+
+    droneFilter.frequency.value=500;
+
+    droneLFO.frequency.value=.06;
+
+    droneLFOGain.gain.value=120;
+
+
+    droneA.connect(droneFilter);
+
+    droneB.connect(droneFilter);
+
+    droneFilter.connect(ambienceGain);
+
+    droneLFO.connect(droneLFOGain);
+
+    droneLFOGain.connect(
+        droneFilter.frequency
+    );
+
+
+    droneA.start();
+
+    droneB.start();
+
+    droneLFO.start();
+}
+
+
+/* =========================================================
+   AMBIENCE LEVEL
+========================================================= */
+
+function ambience(level=.02){
+
+    if(!ambienceGain || !AC)
+        return;
+
+    const now=audioTime();
+
+    ambienceGain.gain.cancelScheduledValues(now);
+
+    ambienceGain.gain.linearRampToValueAtTime(
+        Math.max(.0001,level),
+        now+.8
+    );
+}
+
+
+function silenceAmbience(){
+
+    ambience(.0001);
+}
+
+
+/* =========================================================
+   TONE
+========================================================= */
+
+function playTone(
     frequency,
-    duration,
-    volume=.05,
+    duration=.2,
+    volume=.04,
     type="sine",
     delay=0
 ){
 
-    if(!AC) return;
+    if(!AC || !master)
+        return;
 
-    const osc = AC.createOscillator();
-    const gain = AC.createGain();
+    try{
 
-    const startTime = t()+delay;
+        const osc=
+            AC.createOscillator();
 
-    osc.type = type;
+        const gain=
+            AC.createGain();
 
-    osc.frequency.setValueAtTime(
-        frequency,
-        startTime
-    );
+        const start=
+            audioTime()+delay;
 
-    gain.gain.setValueAtTime(
-        .0001,
-        startTime
-    );
+        osc.type=type;
 
-    gain.gain.exponentialRampToValueAtTime(
-        Math.max(.0002,volume),
-        startTime+.015
-    );
+        osc.frequency.setValueAtTime(
+            Math.max(20,frequency),
+            start
+        );
 
-    gain.gain.exponentialRampToValueAtTime(
-        .0001,
-        startTime+duration
-    );
+        gain.gain.setValueAtTime(
+            .0001,
+            start
+        );
 
-    osc.connect(gain);
-    gain.connect(master);
+        gain.gain.exponentialRampToValueAtTime(
+            Math.max(.0002,volume),
+            start+.015
+        );
 
-    osc.start(startTime);
-    osc.stop(startTime+duration+.05);
+        gain.gain.exponentialRampToValueAtTime(
+            .0001,
+            start+duration
+        );
+
+        osc.connect(gain);
+
+        gain.connect(master);
+
+        osc.start(start);
+
+        osc.stop(
+            start+duration+.08
+        );
+
+    }catch(error){}
+
 }
 
-function sweep(
+
+/* =========================================================
+   SWEEP
+========================================================= */
+
+function playSweep(
     from,
     to,
     duration=.8,
     volume=.05,
-    type="sine"
+    type="sawtooth"
 ){
 
-    if(!AC) return;
+    if(!AC || !master)
+        return;
 
-    const osc = AC.createOscillator();
-    const gain = AC.createGain();
+    try{
 
-    const startTime=t();
+        const osc=
+            AC.createOscillator();
 
-    osc.type=type;
+        const gain=
+            AC.createGain();
 
-    osc.frequency.setValueAtTime(
-        from,
-        startTime
-    );
+        const start=
+            audioTime();
 
-    osc.frequency.exponentialRampToValueAtTime(
-        Math.max(20,to),
-        startTime+duration
-    );
+        osc.type=type;
 
-    gain.gain.setValueAtTime(.0001,startTime);
+        osc.frequency.setValueAtTime(
+            Math.max(20,from),
+            start
+        );
 
-    gain.gain.exponentialRampToValueAtTime(
-        volume,
-        startTime+.04
-    );
+        osc.frequency.exponentialRampToValueAtTime(
+            Math.max(20,to),
+            start+duration
+        );
 
-    gain.gain.exponentialRampToValueAtTime(
-        .0001,
-        startTime+duration
-    );
+        gain.gain.setValueAtTime(
+            .0001,
+            start
+        );
 
-    osc.connect(gain);
-    gain.connect(master);
+        gain.gain.exponentialRampToValueAtTime(
+            volume,
+            start+.03
+        );
 
-    osc.start(startTime);
-    osc.stop(startTime+duration+.05);
+        gain.gain.exponentialRampToValueAtTime(
+            .0001,
+            start+duration
+        );
+
+        osc.connect(gain);
+
+        gain.connect(master);
+
+        osc.start(start);
+
+        osc.stop(
+            start+duration+.1
+        );
+
+    }catch(error){}
 }
 
-function noise(
+
+/* =========================================================
+   BASS
+========================================================= */
+
+function playBass(
+    frequency=35,
+    duration=.7,
+    volume=.15
+){
+
+    playTone(
+        frequency,
+        duration,
+        volume,
+        "sine"
+    );
+}
+
+
+/* =========================================================
+   NOISE
+========================================================= */
+
+function playNoise(
     duration=.25,
-    volume=.06,
-    frequency=1000,
+    volume=.05,
+    filterFrequency=1000,
     delay=0
 ){
 
-    if(!AC) return;
+    if(!AC || !master)
+        return;
 
-    const buffer=AC.createBuffer(
-        1,
-        Math.floor(AC.sampleRate*duration),
-        AC.sampleRate
-    );
+    try{
 
-    const data=buffer.getChannelData(0);
+        const buffer=
+            AC.createBuffer(
+                1,
+                Math.floor(
+                    AC.sampleRate*duration
+                ),
+                AC.sampleRate
+            );
 
-    for(let i=0;i<data.length;i++){
-        data[i]=Math.random()*2-1;
-    }
+        const data=
+            buffer.getChannelData(0);
 
-    const source=AC.createBufferSource();
-    const filter=AC.createBiquadFilter();
-    const gain=AC.createGain();
+        for(
+            let i=0;
+            i<data.length;
+            i++
+        ){
 
-    source.buffer=buffer;
+            data[i]=
+                Math.random()*2-1;
+        }
 
-    filter.type="bandpass";
-    filter.frequency.value=frequency;
-    filter.Q.value=1.5;
 
-    const startTime=t()+delay;
+        const source=
+            AC.createBufferSource();
 
-    gain.gain.setValueAtTime(.0001,startTime);
+        const filter=
+            AC.createBiquadFilter();
 
-    gain.gain.exponentialRampToValueAtTime(
-        volume,
-        startTime+.015
-    );
+        const gain=
+            AC.createGain();
 
-    gain.gain.exponentialRampToValueAtTime(
-        .0001,
-        startTime+duration
-    );
 
-    source.connect(filter);
-    filter.connect(gain);
-    gain.connect(master);
+        source.buffer=buffer;
 
-    source.start(startTime);
+        filter.type="bandpass";
+
+        filter.frequency.value=
+            filterFrequency;
+
+        filter.Q.value=1.2;
+
+
+        const start=
+            audioTime()+delay;
+
+
+        gain.gain.setValueAtTime(
+            .0001,
+            start
+        );
+
+        gain.gain.exponentialRampToValueAtTime(
+            volume,
+            start+.015
+        );
+
+        gain.gain.exponentialRampToValueAtTime(
+            .0001,
+            start+duration
+        );
+
+
+        source.connect(filter);
+
+        filter.connect(gain);
+
+        gain.connect(master);
+
+        source.start(start);
+
+    }catch(error){}
 }
 
-function bass(
-    frequency=40,
-    duration=.8,
-    volume=.18
+
+/* =========================================================
+   IMPACT
+========================================================= */
+
+function impact(level=1){
+
+    playBass(
+        27,
+        .9,
+        .26*level
+    );
+
+    playNoise(
+        .42,
+        .19*level,
+        130
+    );
+
+    playNoise(
+        .16,
+        .10*level,
+        900,
+        .07
+    );
+
+    playTone(
+        55,
+        .6,
+        .11*level,
+        "sawtooth"
+    );
+}
+
+
+/* =========================================================
+   HEARTBEAT
+========================================================= */
+
+function heartbeat(
+    strength=1
 ){
 
-    if(!AC) return;
-
-    const osc=AC.createOscillator();
-    const gain=AC.createGain();
-
-    const startTime=t();
-
-    osc.type="sine";
-
-    osc.frequency.setValueAtTime(
-        frequency,
-        startTime
+    playBass(
+        52,
+        .12,
+        .13*strength
     );
 
-    osc.frequency.exponentialRampToValueAtTime(
-        Math.max(20,frequency*.6),
-        startTime+duration
-    );
-
-    gain.gain.setValueAtTime(.0001,startTime);
-
-    gain.gain.exponentialRampToValueAtTime(
-        volume,
-        startTime+.025
-    );
-
-    gain.gain.exponentialRampToValueAtTime(
-        .0001,
-        startTime+duration
-    );
-
-    osc.connect(gain);
-    gain.connect(master);
-
-    osc.start(startTime);
-    osc.stop(startTime+duration+.1);
-}
-
-
-/* ---------- MUSIC ---------- */
-
-function createMusic(){
-
-    if(!AC) return;
-
-    musicGain=AC.createGain();
-    musicGain.gain.value=.0001;
-
-    musicGain.connect(master);
-
-    musicOsc1=AC.createOscillator();
-    musicOsc2=AC.createOscillator();
-
-    musicOsc1.type="sine";
-    musicOsc2.type="triangle";
-
-    musicOsc1.frequency.value=48;
-    musicOsc2.frequency.value=73;
-
-    musicOsc1.connect(musicGain);
-    musicOsc2.connect(musicGain);
-
-    musicOsc1.start();
-    musicOsc2.start();
-
-    /* bardzo wolne pulsowanie */
-
-    musicLfo=AC.createOscillator();
-
-    const lfoGain=AC.createGain();
-
-    musicLfo.frequency.value=.075;
-    lfoGain.gain.value=.012;
-
-    musicLfo.connect(lfoGain);
-    lfoGain.connect(musicGain.gain);
-
-    musicLfo.start();
-}
-
-function music(level=.025){
-
-    if(!musicGain) return;
-
-    musicGain.gain.cancelScheduledValues(t());
-
-    musicGain.gain.linearRampToValueAtTime(
-        level,
-        t()+1
+    setTimeout(
+        ()=>{
+            playBass(
+                43,
+                .10,
+                .09*strength
+            );
+        },
+        150
     );
 }
 
-function musicStop(){
 
-    if(!musicGain) return;
+function doubleHeartbeat(
+    strength=1
+){
 
-    musicGain.gain.cancelScheduledValues(t());
+    heartbeat(strength);
 
-    musicGain.gain.linearRampToValueAtTime(
-        .0001,
-        t()+.12
+    setTimeout(
+        ()=>{
+            heartbeat(strength);
+        },
+        350
     );
 }
 
-function musicDrop(){
 
-    musicStop();
+/* =========================================================
+   METAL
+========================================================= */
 
-    bass(32,.6,.15);
+function metal(){
+
+    playTone(
+        880,
+        .32,
+        .08,
+        "square"
+    );
+
+    playTone(
+        1340,
+        .24,
+        .05,
+        "square",
+        .04
+    );
+
+    playTone(
+        410,
+        .45,
+        .055,
+        "triangle",
+        .09
+    );
 }
 
-function musicRestore(level=.035){
 
-    music(level);
-}
+/* =========================================================
+   DIGITAL
+========================================================= */
 
+function digitalBurst(){
 
-/* ---------- SOUND EVENTS ---------- */
+    for(
+        let i=0;
+        i<12;
+        i++
+    ){
 
-function click(){
-
-    tone(1600,.025,.045,"square");
-    tone(800,.045,.025,"square",.025);
-}
-
-function softClick(){
-
-    tone(700,.05,.025,"triangle");
-}
-
-function heartbeat(){
-
-    bass(52,.12,.14);
-
-    setTimeout(()=>{
-        bass(43,.11,.10);
-    },150);
-}
-
-function heartbeatDouble(){
-
-    heartbeat();
-
-    setTimeout(()=>{
-        heartbeat();
-    },330);
-}
-
-function metalHit(){
-
-    tone(880,.35,.09,"square");
-    tone(1320,.24,.055,"square",.035);
-    tone(420,.45,.06,"triangle",.1);
-}
-
-function needle(){
-
-    tone(3300,.14,.045,"sine");
-    tone(4100,.10,.03,"sine",.16);
-}
-
-function digitalNoise(){
-
-    for(let i=0;i<9;i++){
-
-        tone(
-            120+Math.random()*2000,
-            .025+Math.random()*.05,
-            .018,
-            Math.random()>.5?"square":"sawtooth",
-            i*.045
+        playTone(
+            120+
+            Math.random()*2600,
+            .025+
+            Math.random()*.05,
+            .012+
+            Math.random()*.018,
+            Math.random()>.5
+                ?"square"
+                :"sawtooth",
+            i*.035
         );
     }
 }
 
-function whisperSound(){
 
-    noise(.7,.035,700);
-    tone(110,.8,.025,"triangle");
-}
+/* =========================================================
+   HIGH NEEDLE
+========================================================= */
 
-function heavyImpact(){
+function needle(){
 
-    bass(28,.85,.34);
-    noise(.45,.22,150);
-    noise(.18,.12,700,.08);
-    tone(60,.65,.12,"sawtooth");
-}
-
-function risingTension(){
-
-    sweep(50,800,2.2,.055,"sawtooth");
-
-    setTimeout(()=>{
-        heartbeat();
-    },700);
-
-    setTimeout(()=>{
-        heartbeat();
-    },1100);
-
-    setTimeout(()=>{
-        heartbeatDouble();
-    },1500);
-}
-
-
-/* ==========================================================
-   VISUAL ENGINE
-========================================================== */
-
-function wait(ms){
-    return new Promise(resolve=>setTimeout(resolve,ms));
-}
-
-function flashScreen(color="white",duration=70){
-
-    const el=color==="red"?redFlash:flash;
-
-    el.style.transition="none";
-    el.style.opacity="1";
-
-    setTimeout(()=>{
-
-        el.style.transition=
-            `opacity ${duration/1000}s ease`;
-
-        el.style.opacity="0";
-
-    },20);
-}
-
-function shake(ms=300,strong=false){
-
-    content.classList.remove("shake","hardShake");
-
-    void content.offsetWidth;
-
-    content.classList.add(
-        strong?"hardShake":"shake"
+    playTone(
+        3200,
+        .12,
+        .045,
+        "sine"
     );
 
-    setTimeout(()=>{
-        content.classList.remove("shake","hardShake");
-    },ms);
+    playTone(
+        4400,
+        .08,
+        .025,
+        "sine",
+        .13
+    );
 }
 
-function glitch(ms=400){
 
-    content.classList.add("glitch");
+/* =========================================================
+   WHISPER
+========================================================= */
 
-    setTimeout(()=>{
-        content.classList.remove("glitch");
-    },ms);
+function whisper(){
+
+    playNoise(
+        .8,
+        .035,
+        700
+    );
+
+    playTone(
+        105,
+        .8,
+        .022,
+        "triangle"
+    );
 }
 
-function flicker(ms=400){
 
-    main.classList.add("flicker");
+/* =========================================================
+   TENSION
+========================================================= */
 
-    setTimeout(()=>{
-        main.classList.remove("flicker");
-    },ms);
-}
-
-function redMode(on){
-
-    document.body.classList.toggle("red",on);
-}
-
-function blackout(ms=600){
-
-    main.style.opacity="0";
-    sub.style.opacity="0";
-    chapter.style.opacity="0";
-
-    setTimeout(()=>{
-
-        main.style.opacity="1";
-        sub.style.opacity="1";
-        chapter.style.opacity="1";
-
-    },ms);
-}
-
-function giant(text,color="#fff",duration=800){
-
-    warning.textContent=text;
-    warning.style.color=color;
-    warning.style.opacity="1";
-
-    glitch(450);
-
-    setTimeout(()=>{
-
-        warning.style.transition="opacity .2s";
-        warning.style.opacity="0";
-
-    },duration);
-}
-
-function dot(){
-
-    redDot.style.left=Math.random()*95+"%";
-    redDot.style.top=Math.random()*90+"%";
-
-    redDot.style.opacity="1";
-
-    setTimeout(()=>{
-        redDot.style.opacity="0";
-    },450);
-}
-
-function particle(
-    char="·",
-    big=false,
-    falling=false
+function tensionRise(
+    duration=2.5
 ){
 
-    const el=document.createElement("div");
+    playSweep(
+        42,
+        950,
+        duration,
+        .055,
+        "sawtooth"
+    );
 
-    el.className="floating"+(big?" big":"");
+    setTimeout(
+        ()=>heartbeat(.7),
+        650
+    );
 
-    el.textContent=char;
+    setTimeout(
+        ()=>heartbeat(.75),
+        1050
+    );
 
-    el.style.left=(5+Math.random()*90)+"%";
-    el.style.top=(10+Math.random()*80)+"%";
-
-    words.appendChild(el);
-
-    requestAnimationFrame(()=>{
-
-        el.style.animation=
-            `${falling?"fall":"floatAway"} ${
-                .9+Math.random()*1.5
-            }s ease forwards`;
-
-    });
-
-    setTimeout(()=>{
-        el.remove();
-    },2600);
+    setTimeout(
+        ()=>doubleHeartbeat(.85),
+        1450
+    );
 }
 
-function particleBurst(amount=20){
+
+/* =========================================================
+   AUDIO SCENE HELPERS
+========================================================= */
+
+function softScene(){
+
+    ambience(.018);
+
+    playTone(
+        320,
+        .4,
+        .018,
+        "triangle"
+    );
+}
+
+
+function darkScene(){
+
+    ambience(.035);
+
+    playBass(
+        40,
+        .8,
+        .09
+    );
+}
+
+
+function dangerScene(){
+
+    ambience(.055);
+
+    tensionRise(2.1);
+}
+
+
+function silenceScene(){
+
+    silenceAmbience();
+
+    masterVolume(
+        .18,
+        .12
+    );
+}
+
+
+function restoreScene(){
+
+    masterVolume(
+        .30,
+        .5
+    );
+
+    ambience(
+        Math.max(
+            .018,
+            .015+
+            state.tension*.01
+        )
+    );
+}
+
+
+/* =========================================================
+   VISUAL FUNCTIONS
+========================================================= */
+
+function wait(ms){
+
+    return new Promise(
+        resolve=>{
+            setTimeout(
+                resolve,
+                ms
+            );
+        }
+    );
+}
+
+
+/* =========================================================
+   SAFE DELAY
+========================================================= */
+
+function delayScene(ms){
+
+    return wait(ms);
+}
+
+
+/* =========================================================
+   TEXT
+========================================================= */
+
+function clearText(){
+
+    mainText.style.opacity="0";
+
+    subText.style.opacity="0";
+
+    chapter.style.opacity="0";
+
+    inputBox.style.opacity="0";
+
+    inputBox.style.pointerEvents="none";
+
+    answerInput.value="";
+
+}
+
+
+function setText(
+    title,
+    subtitle="",
+    label=""
+){
+
+    mainText.classList.remove(
+        "glitchMain",
+        "flicker"
+    );
+
+    mainText.textContent=title;
+
+    subText.textContent=subtitle;
+
+    chapter.textContent=label;
+
+    mainText.style.opacity="1";
+
+    subText.style.opacity=
+        subtitle ? "1" : "0";
+
+    chapter.style.opacity=
+        label ? "1" : "0";
+}
+
+
+/* =========================================================
+   INPUT
+========================================================= */
+
+function showInput(
+    placeholder="jedno słowo"
+){
+
+    answerInput.placeholder=
+        placeholder;
+
+    inputBox.style.opacity="1";
+
+    inputBox.style.transform=
+        "translateY(0)";
+
+    inputBox.style.pointerEvents=
+        "auto";
+
+    answerInput.focus();
+}
+
+
+function hideInput(){
+
+    inputBox.style.opacity="0";
+
+    inputBox.style.transform=
+        "translateY(15px)";
+
+    inputBox.style.pointerEvents=
+        "none";
+}
+
+
+/* =========================================================
+   PROGRESS
+========================================================= */
+
+function updateProgress(){
+
+    const total=
+        questions.length;
+
+    const current=
+        Math.max(
+            0,
+            state.questionIndex+1
+        );
+
+    progressFill.style.width=
+        (
+            current/
+            total*
+            100
+        )+"%";
+
+    counter.textContent=
+        String(current)
+            .padStart(2,"0")
+        +" / "
+        +
+        String(total)
+            .padStart(2,"0");
+}
+
+
+/* =========================================================
+   SCREEN EFFECTS
+========================================================= */
+
+function whiteFlash(
+    duration=50
+){
+
+    flash.style.transition="none";
+
+    flash.style.opacity="1";
+
+    setTimeout(
+        ()=>{
+            flash.style.transition=
+                "opacity .15s ease";
+
+            flash.style.opacity="0";
+        },
+        duration
+    );
+}
+
+
+function redFlashEffect(
+    duration=70
+){
+
+    redFlash.style.transition="none";
+
+    redFlash.style.opacity="1";
+
+    setTimeout(
+        ()=>{
+            redFlash.style.transition=
+                "opacity .25s ease";
+
+            redFlash.style.opacity="0";
+        },
+        duration
+    );
+}
+
+
+function blackoutScreen(
+    duration=500
+){
+
+    blackout.style.transition="none";
+
+    blackout.style.opacity="1";
+
+    setTimeout(
+        ()=>{
+            blackout.style.transition=
+                "opacity .35s ease";
+
+            blackout.style.opacity="0";
+        },
+        duration
+    );
+}
+
+
+function shakeScreen(
+    duration=350,
+    hard=false
+){
+
+    app.classList.remove(
+        "shake",
+        "hardShake"
+    );
+
+    void app.offsetWidth;
+
+    app.classList.add(
+        hard
+            ?"hardShake"
+            :"shake"
+    );
+
+    setTimeout(
+        ()=>{
+            app.classList.remove(
+                "shake",
+                "hardShake"
+            );
+        },
+        duration
+    );
+}
+
+
+function glitchScreen(
+    duration=400
+){
+
+    mainText.classList.add(
+        "glitchMain"
+    );
+
+    setTimeout(
+        ()=>{
+            mainText.classList.remove(
+                "glitchMain"
+            );
+        },
+        duration
+    );
+}
+
+
+function flickerScreen(
+    duration=400
+){
+
+    mainText.classList.add(
+        "flicker"
+    );
+
+    setTimeout(
+        ()=>{
+            mainText.classList.remove(
+                "flicker"
+            );
+        },
+        duration
+    );
+}
+
+
+/* =========================================================
+   RED MODE
+========================================================= */
+
+function redMode(
+    enabled=true
+){
+
+    document.body.classList.toggle(
+        "red",
+        enabled
+    );
+}
+
+
+/* =========================================================
+   DARK MODE
+========================================================= */
+
+function darkMode(
+    enabled=true
+){
+
+    document.body.classList.toggle(
+        "dark",
+        enabled
+    );
+}
+
+
+/* =========================================================
+   GIANT MESSAGE
+========================================================= */
+
+async function giantMessage(
+    message,
+    color="#fff",
+    duration=600
+){
+
+    giant.textContent=
+        message;
+
+    giant.style.color=
+        color;
+
+    giant.style.opacity="1";
+
+    glitchScreen(
+        Math.min(
+            duration,
+            500
+        )
+    );
+
+    await wait(duration);
+
+    giant.style.transition=
+        "opacity .18s ease";
+
+    giant.style.opacity="0";
+
+    await wait(200);
+}
+
+
+/* =========================================================
+   PARTICLES
+========================================================= */
+
+function spawnEntity(
+    text,
+    options={}
+){
+
+    const el=
+        document.createElement(
+            "div"
+        );
+
+    el.className=
+        "entity";
+
+    if(options.big)
+        el.classList.add("big");
+
+    if(options.red)
+        el.classList.add("red");
+
+    if(options.white)
+        el.classList.add("white");
+
+    if(options.blur)
+        el.classList.add("blur");
+
+    el.textContent=
+        text;
+
+    el.style.left=
+        (
+            options.x ??
+            (5+Math.random()*90)
+        )+"%";
+
+    el.style.top=
+        (
+            options.y ??
+            (5+Math.random()*85)
+        )+"%";
+
+    entities.appendChild(el);
+
+    requestAnimationFrame(
+        ()=>{
+            el.style.opacity="1";
+
+            el.classList.add(
+                options.animation ||
+                "fade"
+            );
+        }
+    );
+
+    setTimeout(
+        ()=>{
+            el.remove();
+        },
+        options.life ||
+        2200
+    );
+
+    return el;
+}
+
+
+/* =========================================================
+   BURST
+========================================================= */
+
+function entityBurst(
+    amount=20
+){
 
     const chars=[
         "·",
@@ -1068,924 +2152,1181 @@ function particleBurst(amount=20){
         "1",
         "?",
         "!",
-        "□"
+        "□",
+        "X"
     ];
 
-    for(let i=0;i<amount;i++){
+    for(
+        let i=0;
+        i<amount;
+        i++
+    ){
 
-        setTimeout(()=>{
+        setTimeout(
+            ()=>{
+                spawnEntity(
+                    chars[
+                        Math.floor(
+                            Math.random()*
+                            chars.length
+                        )
+                    ],
+                    {
+                        animation:
+                            Math.random()<.25
+                                ?"fall"
+                                :
+                            Math.random()<.5
+                                ?"rise"
+                                :"fade",
 
-            particle(
-                chars[Math.floor(Math.random()*chars.length)],
-                Math.random()<.08,
-                Math.random()<.15
-            );
-
-        },i*15);
+                        life:
+                            900+
+                            Math.random()*1300
+                    }
+                );
+            },
+            i*18
+        );
     }
 }
 
-function ownWord(text){
 
-    if(!text) return;
+/* =========================================================
+   USER WORD
+========================================================= */
 
-    const el=document.createElement("div");
-
-    el.className="floating";
-
-    el.textContent=text.toUpperCase();
-
-    el.style.left=(20+Math.random()*60)+"%";
-    el.style.top=(30+Math.random()*40)+"%";
-
-    el.style.color="#aaa";
-
-    words.appendChild(el);
-
-    requestAnimationFrame(()=>{
-
-        el.style.animation=
-            "floatAway 1.5s ease forwards";
-
-    });
-
-    setTimeout(()=>{
-        el.remove();
-    },1700);
-}
-
-function moveDot(){
-
-    cursorDot.style.left=
-        (window.innerWidth/2+(Math.random()*130-65))
-        +"px";
-
-    cursorDot.style.top=
-        (window.innerHeight/2+150+(Math.random()*30-15))
-        +"px";
-
-    cursorDot.style.opacity="1";
-
-    setTimeout(()=>{
-        cursorDot.style.opacity="0";
-    },160);
-}
-
-
-/* ==========================================================
-   UI
-========================================================== */
-
-function clearUI(){
-
-    main.textContent="";
-    sub.textContent="";
-    chapter.textContent="";
-
-    input.style.opacity="0";
-    input.style.pointerEvents="none";
-
-    answer.value="";
-}
-
-function text(
-    title,
-    description="",
-    label=""
+function showOwnWord(
+    value,
+    options={}
 ){
 
-    clearUI();
+    if(!value)
+        return;
 
-    chapter.textContent=label;
-    main.textContent=title;
-    sub.textContent=description;
+    spawnEntity(
+        value.toUpperCase(),
+        {
+            big:
+                options.big ||
+                false,
 
-    main.style.opacity="1";
-    sub.style.opacity="1";
+            red:
+                options.red ||
+                false,
+
+            white:true,
+
+            x:
+                20+
+                Math.random()*60,
+
+            y:
+                25+
+                Math.random()*45,
+
+            animation:
+                options.animation ||
+                "rise",
+
+            life:
+                options.life ||
+                1700
+        }
+    );
 }
 
-function inputOn(){
 
-    input.style.opacity="1";
-    input.style.transform="translateY(0)";
-    input.style.pointerEvents="auto";
+/* =========================================================
+   RED POINT
+========================================================= */
 
-    answer.focus();
+function showRedPoint(){
+
+    redPoint.style.left=
+        (8+Math.random()*84)+"%";
+
+    redPoint.style.top=
+        (8+Math.random()*80)+"%";
+
+    redPoint.style.opacity="1";
+
+    setTimeout(
+        ()=>{
+            redPoint.style.opacity="0";
+        },
+        500
+    );
 }
 
-function progress(){
 
-    const total=questions.length;
+/* =========================================================
+   CURSOR GHOST
+========================================================= */
 
-    barFill.style.width=
-        (((qIndex+1)/total)*100)+"%";
+function ghostCursor(){
 
-    count.textContent=
-        String(Math.max(0,qIndex+1)).padStart(2,"0")
-        +" / "
-        +String(total).padStart(2,"0");
+    cursorGhost.style.left=
+        (
+            20+
+            Math.random()*60
+        )+"%";
+
+    cursorGhost.style.top=
+        (
+            20+
+            Math.random()*60
+        )+"%";
+
+    cursorGhost.style.opacity="1";
+
+    setTimeout(
+        ()=>{
+            cursorGhost.style.opacity="0";
+        },
+        180
+    );
 }
 
 
-/* ==========================================================
-   PYTANIA — JEDNA ŚCIEŻKA
-========================================================== */
+/* =========================================================
+   MEMORY
+========================================================= */
 
-const questions=[
+function normalize(
+    value
+){
 
-    {
-        id:"morning",
-        q:"Co zrobiłeś dziś rano?",
-        hint:"jedno słowo",
-        chapter:"POCZĄTEK"
-    },
-
-    {
-        id:"mood",
-        q:"Jak się teraz czujesz?",
-        hint:"jedno słowo",
-        chapter:"POCZĄTEK"
-    },
-
-    {
-        id:"person",
-        q:"Kto jest dla Ciebie ważny?",
-        hint:"jedno słowo",
-        chapter:"LUDZIE"
-    },
-
-    {
-        id:"desire",
-        q:"Czego teraz chcesz?",
-        hint:"jedno słowo",
-        chapter:"POTRZEBA"
-    },
-
-    {
-        id:"fear",
-        q:"Czego najbardziej się boisz?",
-        hint:"jedno słowo",
-        chapter:"PĘKNIĘCIE"
-    },
-
-    {
-        id:"loss",
-        q:"Czego nie chcesz stracić?",
-        hint:"jedno słowo",
-        chapter:"PĘKNIĘCIE"
-    },
-
-    {
-        id:"alone",
-        q:"Jesteś teraz sam?",
-        hint:"tak / nie",
-        chapter:"ODLEGŁOŚĆ"
-    },
-
-    {
-        id:"object",
-        q:"Czego dotykasz?",
-        hint:"jedno słowo",
-        chapter:"TERAZ"
-    },
-
-    {
-        id:"sound",
-        q:"Co słyszysz?",
-        hint:"jedno słowo",
-        chapter:"TERAZ"
-    },
-
-    {
-        id:"trust",
-        q:"Komu ufasz?",
-        hint:"jedno słowo",
-        chapter:"ZBLIŻENIE"
-    },
-
-    {
-        id:"need",
-        q:"Czego Ci brakuje?",
-        hint:"jedno słowo",
-        chapter:"ZBLIŻENIE"
-    },
-
-    {
-        id:"change",
-        q:"Co chciałbyś zmienić?",
-        hint:"jedno słowo",
-        chapter:"ZBLIŻENIE"
-    },
-
-    {
-        id:"happy",
-        q:"Szczęśliwy?",
-        hint:"tak / nie / czasami",
-        chapter:"SPRAWDZENIE"
-    },
-
-    {
-        id:"honest",
-        q:"Która odpowiedź była najtrudniejsza?",
-        hint:"numer albo słowo",
-        chapter:"SPRAWDZENIE"
-    },
-
-    {
-        id:"truth",
-        q:"Skłamałeś choć raz?",
-        hint:"tak / nie",
-        chapter:"SPRAWDZENIE"
-    },
-
-    {
-        id:"finalChoice",
-        q:"Gdybyś mógł zabrać jedną rzecz ze sobą — co?",
-        hint:"jedno słowo",
-        chapter:"OSTATNIE"
-    }
-
-];
-
-
-/* ==========================================================
-   PAMIĘĆ
-========================================================== */
-
-function clean(v){
-
-    return v
+    return value
         .trim()
-        .replace(/\s+/g," ")
-        .slice(0,100);
+        .replace(
+            /\s+/g,
+            " "
+        )
+        .slice(
+            0,
+            100
+        );
 }
 
-function remember(q,value){
 
-    const v=clean(value);
+function saveAnswer(
+    question,
+    value
+){
 
-    memory.answers.push(v);
+    const v=
+        normalize(value);
 
-    if(q.id==="morning")
-        memory.morning=v;
+    state.answers.push(v);
 
-    if(q.id==="person")
-        memory.person=v;
+    state.history.push({
+        id:question.id,
+        value:v,
+        time:
+            Date.now()
+    });
 
-    if(q.id==="desire")
-        memory.desire=v;
+    state.memory[
+        question.id
+    ]=v;
 
-    if(q.id==="fear")
-        memory.fear=v;
-
-    if(q.id==="loss")
-        memory.loss=v;
-
-    if(q.id==="alone")
-        memory.alone=v;
-
-    if(q.id==="need")
-        memory.need=v;
-
-    if(q.id==="happy")
-        memory.happiness=v;
-
-    if(q.id==="change")
-        memory.strongWords.push(v);
-
-    if(q.id==="finalChoice")
-        memory.strongWords.push(v);
 
     if(
-        q.id==="mood" ||
-        q.id==="fear" ||
-        q.id==="need"
+        state.answers.length>1 &&
+        state.answers[
+            state.answers.length-2
+        ].toLowerCase()===
+        v.toLowerCase()
     ){
-        memory.emotionalWords.push(v);
+
+        state.flags.changedAnswer=true;
+    }
+
+
+    const low=v.toLowerCase();
+
+
+    if(
+        question.id==="fear" &&
+        state.memory.loss &&
+        low===
+        state.memory.loss.toLowerCase()
+    ){
+
+        state.flags.repeatedFear=true;
+    }
+
+
+    if(
+        question.id==="person" &&
+        state.memory.trust &&
+        low===
+        state.memory.trust.toLowerCase()
+    ){
+
+        state.flags.repeatedPerson=true;
+    }
+
+
+    if(
+        question.id==="desire" &&
+        state.memory.need &&
+        low===
+        state.memory.need.toLowerCase()
+    ){
+
+        state.flags.repeatedDesire=true;
+    }
+
+
+    if(
+        question.id==="alone" &&
+        (
+            low==="tak" ||
+            low==="yes"
+        )
+    ){
+
+        state.flags.aloneYes=true;
+    }
+
+
+    if(
+        question.id==="truth" &&
+        (
+            low==="tak" ||
+            low==="yes"
+        )
+    ){
+
+        state.flags.lied=true;
     }
 }
 
-function valid(v){
 
-    if(!v) return false;
+/* =========================================================
+   VALIDATION
+========================================================= */
 
-    const x=v.toLowerCase();
+function validAnswer(
+    value,
+    question
+){
 
-    const allowed=[
-        "tak",
-        "nie",
-        "nie wiem",
-        "czasami",
-        "czasem",
-        "nigdy"
-    ];
+    const v=
+        normalize(value);
 
-    if(allowed.includes(x))
-        return true;
+    if(!v)
+        return false;
+
+    const low=
+        v.toLowerCase();
+
+
+    if(
+        question.id==="alone" ||
+        question.id==="truth"
+    ){
+
+        return [
+            "tak",
+            "nie",
+            "yes",
+            "no",
+            "nie wiem"
+        ].includes(low);
+    }
+
+
+    if(
+        question.id==="happy"
+    ){
+
+        return [
+            "tak",
+            "nie",
+            "czasami",
+            "czasem",
+            "yes",
+            "no"
+        ].includes(low);
+    }
+
 
     if(v.length<2)
         return false;
 
-    if(/^(.)\1{5,}$/i.test(v))
+
+    if(
+        /^(.)\1{5,}$/i.test(v)
+    )
         return false;
 
-    if(/^[0-9]+$/.test(v))
+
+    if(
+        /^[0-9]+$/.test(v)
+    )
         return false;
+
 
     return true;
 }
 
 
-/* ==========================================================
-   AUDIO + QUESTION INTRO
-========================================================== */
+/* =========================================================
+   QUESTION AUDIO
+========================================================= */
 
-async function questionAudio(q){
+async function questionAudio(
+    question
+){
 
-    musicRestore(
-        q.chapter==="PĘKNIĘCIE" ? .045 :
-        q.chapter==="ZBLIŻENIE" ? .055 :
-        .028
-    );
-
-    switch(q.id){
+    switch(question.id){
 
         case"morning":
-            softClick();
+
+            softScene();
+
+            playTone(
+                280,
+                .35,
+                .018,
+                "triangle"
+            );
+
             break;
+
 
         case"mood":
-            tone(250,.4,.025,"triangle");
+
+            ambience(.022);
+
+            playTone(
+                240,
+                .5,
+                .025,
+                "triangle"
+            );
+
             break;
+
 
         case"person":
-            tone(280,.5,.025,"sine");
+
+            ambience(.025);
+
+            playTone(
+                220,
+                .55,
+                .025,
+                "sine"
+            );
+
             await wait(250);
-            tone(420,.45,.025,"sine");
+
+            playTone(
+                360,
+                .45,
+                .022,
+                "sine"
+            );
+
             break;
+
 
         case"desire":
-            sweep(80,450,.8,.04);
+
+            ambience(.032);
+
+            playSweep(
+                80,
+                430,
+                .8,
+                .035
+            );
+
             break;
+
 
         case"fear":
-            risingTension();
+
+            dangerScene();
+
             break;
 
+
         case"loss":
-            bass(39,.9,.13);
-            sweep(180,55,1,.035);
+
+            darkScene();
+
+            playBass(
+                38,
+                1,
+                .13
+            );
+
+            playSweep(
+                170,
+                50,
+                1,
+                .035
+            );
+
             break;
+
 
         case"alone":
 
-            musicDrop();
+            silenceScene();
 
             await wait(350);
 
-            heartbeat();
+            heartbeat(.8);
 
             await wait(450);
 
-            heartbeat();
+            heartbeat(.9);
 
             break;
+
 
         case"object":
-            metalHit();
+
+            darkScene();
+
+            metal();
+
             break;
+
 
         case"sound":
-            tone(700,.15,.03,"sine");
+
+            ambience(.035);
+
+            playTone(
+                700,
+                .16,
+                .03,
+                "sine"
+            );
+
             await wait(400);
+
             needle();
+
             break;
+
 
         case"trust":
-            tone(180,.7,.025,"sine");
+
+            ambience(.035);
+
+            playTone(
+                180,
+                .7,
+                .025,
+                "sine"
+            );
+
             break;
+
 
         case"need":
-            bass(44,.9,.12);
+
+            darkScene();
+
+            playBass(
+                42,
+                .9,
+                .12
+            );
+
             break;
+
 
         case"change":
-            sweep(70,600,1.1,.05,"sawtooth");
+
+            dangerScene();
+
             break;
 
+
         case"happy":
-            tone(500,.2,.03,"sine");
-            tone(700,.2,.025,"sine",.2);
+
+            ambience(.018);
+
+            playTone(
+                500,
+                .2,
+                .025,
+                "sine"
+            );
+
+            playTone(
+                680,
+                .2,
+                .02,
+                "sine",
+                .22
+            );
+
             break;
+
 
         case"honest":
 
-            musicDrop();
+            silenceScene();
 
             await wait(450);
 
-            tone(1000,.07,.04,"square");
+            playTone(
+                1000,
+                .06,
+                .035,
+                "square"
+            );
 
-            await wait(300);
+            await wait(350);
 
-            tone(1000,.07,.04,"square");
+            playTone(
+                1000,
+                .06,
+                .035,
+                "square"
+            );
 
             break;
+
 
         case"truth":
 
-            musicDrop();
+            silenceScene();
 
-            await wait(700);
+            await wait(600);
 
-            heartbeatDouble();
+            doubleHeartbeat();
 
             break;
 
+
         case"finalChoice":
 
-            musicRestore(.065);
+            ambience(.06);
 
-            risingTension();
+            tensionRise(2.4);
 
             break;
     }
 }
 
 
-/* ==========================================================
-   QUESTION
-========================================================== */
+/* =========================================================
+   QUESTION PRESENTATION
+========================================================= */
 
 async function showQuestion(){
 
-    if(!running) return;
+    if(!state.running)
+        return;
 
-    locked=true;
+    const question=
+        questions[
+            state.questionIndex
+        ];
 
-    const q=questions[qIndex];
+    if(!question)
+        return;
 
-    progress();
 
-    clearUI();
+    state.locked=true;
 
-    chapter.textContent=q.chapter;
-    main.textContent=q.q;
-    sub.textContent=q.hint;
+    state.sceneToken++;
 
-    main.style.opacity="0";
+    const token=
+        state.sceneToken;
 
-    await wait(
-        q.id==="alone" ||
-        q.id==="truth"
-            ? 450
-            : 160
+
+    updateProgress();
+
+    hideInput();
+
+    mainText.style.opacity="0";
+
+    subText.style.opacity="0";
+
+    chapter.style.opacity="0";
+
+
+    chapter.textContent=
+        question.chapter;
+
+    mainText.textContent=
+        question.text;
+
+    subText.textContent=
+        question.placeholder;
+
+
+    const delay=
+        question.id==="alone" ||
+        question.id==="truth"
+            ?450
+            :170;
+
+
+    await wait(delay);
+
+
+    if(
+        token!==state.sceneToken ||
+        !state.running
+    )
+        return;
+
+
+    mainText.style.opacity="1";
+
+    chapter.style.opacity="1";
+
+    subText.style.opacity="1";
+
+
+    await questionAudio(
+        question
     );
 
-    main.style.opacity="1";
 
-    await questionAudio(q);
+    await wait(260);
 
-    await wait(300);
 
-    inputOn();
+    if(
+        token!==state.sceneToken ||
+        !state.running
+    )
+        return;
 
-    memory.lastQuestionStart=performance.now();
 
-    locked=false;
+    showInput(
+        question.placeholder
+    );
+
+
+    state.answerStart=
+        performance.now();
+
+    state.locked=false;
 }
 
 
-/* ==========================================================
-   ODPOWIEDŹ — REAKCJE
-========================================================== */
+/* =========================================================
+   QUESTION REACTION
+========================================================= */
 
-async function reaction(q,value){
+async function reaction(
+    question,
+    value
+){
 
-    const v=value.toLowerCase();
+    const low=
+        value.toLowerCase();
 
-    switch(q.id){
+
+    switch(question.id){
+
+        /* -------------------------------------------------
+           MORNING
+        ------------------------------------------------- */
 
         case"morning":
 
-            ownWord(value);
+            showOwnWord(
+                value
+            );
 
-            await wait(300);
+            playTone(
+                110,
+                .35,
+                .02,
+                "triangle"
+            );
 
-            if(value.length>8){
-                text(
-                    "Długa odpowiedź.",
-                    "A prosiłem o jedno słowo.",
-                    "MIRROR"
-                );
-
-                glitch(250);
-
-                await wait(700);
-            }
+            await wait(420);
 
             break;
 
+
+        /* -------------------------------------------------
+           MOOD
+        ------------------------------------------------- */
 
         case"mood":
 
             if(
-                v.includes("dobr") ||
-                v.includes("szczę")
+                low.includes("dobr") ||
+                low.includes("szczę")
             ){
 
-                tone(600,.35,.025);
-
-                await wait(500);
-
-                ownWord(value);
-
-            }else{
-
-                bass(48,.5,.09);
+                playTone(
+                    650,
+                    .3,
+                    .022,
+                    "sine"
+                );
 
                 await wait(400);
 
-                flicker(250);
+                playTone(
+                    480,
+                    .4,
+                    .018,
+                    "triangle"
+                );
+
+            }else{
+
+                playBass(
+                    48,
+                    .5,
+                    .09
+                );
+
+                flickerScreen(
+                    220
+                );
+
+                await wait(450);
             }
 
             break;
 
 
+        /* -------------------------------------------------
+           PERSON
+        ------------------------------------------------- */
+
         case"person":
 
-            music(.04);
-
-            await wait(400);
-
-            ownWord(value);
-
-            await wait(600);
-
-            text(
-                "Dobrze.",
-                "Zapamiętaj tę odpowiedź.",
-                "LUDZIE"
+            showOwnWord(
+                value,
+                {
+                    big:true
+                }
             );
-
-            await wait(800);
-
-            break;
-
-
-        case"desire":
-
-            sweep(100,600,.8,.05);
-
-            particleBurst(15);
-
-            await wait(600);
-
-            text(
-                "To jest ciekawe.",
-                value.toUpperCase(),
-                "POTRZEBA"
-            );
-
-            await wait(900);
-
-            break;
-
-
-        case"fear":
-
-            redMode(true);
-
-            heartbeatDouble();
-
-            await wait(350);
-
-            particleBurst(25);
-
-            await wait(350);
-
-            ownWord(value);
 
             await wait(500);
 
-            /* nie mówimy "boisz się..." */
-
-            text(
-                "Nie rozwijaj tego.",
-                "Idziemy dalej.",
-                "MIRROR"
+            setText(
+                "Zapamiętaj tę odpowiedź.",
+                "",
+                "LUDZIE"
             );
 
-            await wait(900);
+            playTone(
+                140,
+                .6,
+                .035,
+                "sine"
+            );
+
+            await wait(700);
+
+            break;
+
+
+        /* -------------------------------------------------
+           DESIRE
+        ------------------------------------------------- */
+
+        case"desire":
+
+            entityBurst(12);
+
+            showOwnWord(
+                value,
+                {
+                    big:true,
+                    animation:"spin"
+                }
+            );
+
+            playSweep(
+                90,
+                700,
+                .8,
+                .045
+            );
+
+            await wait(650);
+
+            break;
+
+
+        /* -------------------------------------------------
+           FEAR
+        ------------------------------------------------- */
+
+        case"fear":
+
+            state.tension+=2;
+
+            redMode(true);
+
+            heartbeat(1.2);
+
+            await wait(220);
+
+            entityBurst(22);
+
+            showOwnWord(
+                value,
+                {
+                    big:true,
+                    red:true
+                }
+            );
+
+            await wait(500);
+
+            setText(
+                "Dobrze.",
+                "Nie rozwijaj tego.",
+                "PĘKNIĘCIE"
+            );
+
+            await wait(700);
 
             redMode(false);
 
             break;
 
 
+        /* -------------------------------------------------
+           LOSS
+        ------------------------------------------------- */
+
         case"loss":
 
-            bass(36,1.1,.19);
+            state.tension+=1;
 
-            await wait(400);
-
-            if(
-                memory.fear &&
-                value.toLowerCase()===memory.fear.toLowerCase()
-            ){
-
-                giant(
-                    "ZNOWU",
-                    "#fff",
-                    600
-                );
-
-                heavyImpact();
-
-                await wait(750);
-
-            }else{
-
-                ownWord(value);
-
-                await wait(650);
-            }
-
-            break;
-
-
-        case"alone":
-
-            /* KLUCZOWA SCENA */
-
-            musicDrop();
-
-            await wait(650);
-
-            blackout(450);
-
-            await wait(500);
-
-            restoreAudio();
-
-            if(v==="tak"){
-
-                text(
-                    "Dobrze.",
-                    "",
-                    ""
-                );
-
-                await wait(500);
-
-                text(
-                    "Nie ruszaj się.",
-                    "",
-                    ""
-                );
-
-                heartbeat();
-
-                await wait(700);
-
-                text(
-                    "To tylko część gry.",
-                    "",
-                    ""
-                );
-
-                await wait(550);
-
-                /* nagłe odwrócenie */
-
-                flashScreen("white",50);
-                heavyImpact();
-                shake(500,true);
-
-                giant(
-                    "NIE.",
-                    "#fff",
-                    500
-                );
-
-                await wait(800);
-
-            }else{
-
-                text(
-                    "Dobrze.",
-                    "Nie będziemy tego sprawdzać.",
-                    ""
-                );
-
-                await wait(700);
-
-                whisperSound();
-
-                await wait(700);
-
-                text(
-                    "Kontynuuj.",
-                    "",
-                    "MIRROR"
-                );
-            }
-
-            musicRestore(.035);
-
-            break;
-
-
-        case"object":
-
-            metalHit();
+            playBass(
+                34,
+                1.1,
+                .18
+            );
 
             await wait(300);
 
-            ownWord(value);
-
-            await wait(400);
-
             if(
-                memory.alone==="tak"
+                state.flags.repeatedFear
             ){
 
-                musicDrop();
-
-                await wait(500);
-
-                text(
-                    "Dziwne.",
-                    "Nagle zaczynam zwracać uwagę na to, co jest obok Ciebie.",
-                    "TERAZ"
-                );
-
-                await wait(950);
-
-                musicRestore(.04);
-            }
-
-            break;
-
-
-        case"sound":
-
-            tone(900,.2,.03);
-
-            await wait(400);
-
-            text(
-                "Słyszysz coś.",
-                "To wystarczy.",
-                "TERAZ"
-            );
-
-            await wait(650);
-
-            /* pauza muzyki */
-
-            musicDrop();
-
-            await wait(850);
-
-            /* nagły dźwięk */
-
-            metalHit();
-            flashScreen("white",45);
-
-            await wait(250);
-
-            text(
-                "Dobrze.",
-                "",
-                ""
-            );
-
-            await wait(600);
-
-            musicRestore(.045);
-
-            break;
-
-
-        case"trust":
-
-            await wait(350);
-
-            if(
-                memory.person &&
-                v===memory.person.toLowerCase()
-            ){
-
-                bass(40,.8,.14);
-
-                await wait(400);
-
-                text(
-                    "Ta sama osoba.",
-                    "",
-                    "ZBLIŻENIE"
-                );
-
-                await wait(900);
-
-            }else{
-
-                ownWord(value);
-
-                await wait(500);
-            }
-
-            break;
-
-
-        case"need":
-
-            bass(42,.7,.13);
-
-            await wait(500);
-
-            if(
-                memory.desire &&
-                v===memory.desire.toLowerCase()
-            ){
-
-                giant(
+                await giantMessage(
                     "WRÓCIŁO.",
                     "#fff",
                     650
                 );
 
-                heavyImpact();
+                impact(1.1);
 
-                await wait(800);
+                shakeScreen(
+                    450,
+                    true
+                );
 
             }else{
 
-                ownWord(value);
+                showOwnWord(
+                    value
+                );
+            }
+
+            await wait(600);
+
+            break;
+
+
+        /* -------------------------------------------------
+           ALONE
+        ------------------------------------------------- */
+
+        case"alone":
+
+            await sceneAlone(
+                low
+            );
+
+            break;
+
+
+        /* -------------------------------------------------
+           OBJECT
+        ------------------------------------------------- */
+
+        case"object":
+
+            metal();
+
+            showOwnWord(
+                value
+            );
+
+            await wait(450);
+
+
+            if(
+                state.flags.aloneYes
+            ){
+
+                silenceScene();
+
+                await wait(550);
+
+                setText(
+                    "Dobrze.",
+                    "Zaczynasz zwracać uwagę na rzeczy obok siebie.",
+                    "TERAZ"
+                );
+
+                await wait(900);
+
+                restoreScene();
             }
 
             break;
 
 
-        case"change":
+        /* -------------------------------------------------
+           SOUND
+        ------------------------------------------------- */
 
-            sweep(70,850,1,.06,"sawtooth");
+        case"sound":
 
-            particleBurst(25);
+            playTone(
+                900,
+                .18,
+                .03,
+                "sine"
+            );
+
+            await wait(350);
+
+            silenceScene();
+
+            setText(
+                "Nie ruszaj się.",
+                "",
+                "TERAZ"
+            );
+
+            await wait(750);
+
+            /* fałszywy jumpscare */
+
+            playTone(
+                1700,
+                .07,
+                .025,
+                "square"
+            );
 
             await wait(600);
 
+            /* prawdziwy dźwięk */
+
+            metal();
+
+            whiteFlash(40);
+
+            shakeScreen(
+                260
+            );
+
+            await wait(450);
+
+            setText(
+                "Dobrze.",
+                "",
+                ""
+            );
+
+            restoreScene();
+
+            await wait(500);
+
+            break;
+
+
+        /* -------------------------------------------------
+           TRUST
+        ------------------------------------------------- */
+
+        case"trust":
+
             if(
-                memory.fear &&
-                v===memory.fear.toLowerCase()
+                state.memory.person &&
+                low===
+                state.memory.person.toLowerCase()
+            ){
+
+                state.flags.repeatedPerson=true;
+
+                playBass(
+                    40,
+                    .75,
+                    .12
+                );
+
+                await wait(300);
+
+                await giantMessage(
+                    "TA SAMA.",
+                    "#fff",
+                    650
+                );
+
+                impact(.7);
+
+            }else{
+
+                showOwnWord(
+                    value
+                );
+
+                await wait(450);
+            }
+
+            break;
+
+
+        /* -------------------------------------------------
+           NEED
+        ------------------------------------------------- */
+
+        case"need":
+
+            playBass(
+                42,
+                .8,
+                .13
+            );
+
+            await wait(350);
+
+            if(
+                state.memory.desire &&
+                low===
+                state.memory.desire.toLowerCase()
+            ){
+
+                state.flags.repeatedDesire=true;
+
+                await giantMessage(
+                    "WRÓCIŁO.",
+                    "#fff",
+                    650
+                );
+
+                impact(1);
+
+            }else{
+
+                showOwnWord(
+                    value
+                );
+            }
+
+            await wait(550);
+
+            break;
+
+
+        /* -------------------------------------------------
+           CHANGE
+        ------------------------------------------------- */
+
+        case"change":
+
+            state.tension+=1;
+
+            entityBurst(25);
+
+            playSweep(
+                65,
+                850,
+                1.1,
+                .06,
+                "sawtooth"
+            );
+
+            await wait(450);
+
+
+            if(
+                state.memory.fear &&
+                low===
+                state.memory.fear.toLowerCase()
             ){
 
                 redMode(true);
 
-                giant(
+                await giantMessage(
                     "TA SAMA RZECZ.",
                     "#fff",
                     750
                 );
 
-                heartbeatDouble();
-
-                await wait(900);
+                impact(1.15);
 
                 redMode(false);
 
             }else{
 
-                ownWord(value);
+                showOwnWord(
+                    value,
+                    {
+                        big:true
+                    }
+                );
             }
+
+            await wait(600);
 
             break;
 
 
+        /* -------------------------------------------------
+           HAPPY
+        ------------------------------------------------- */
+
         case"happy":
 
-            await wait(450);
+            await wait(350);
 
-            if(v==="tak"){
+            if(low==="tak"){
 
-                tone(650,.3,.03);
+                playTone(
+                    620,
+                    .3,
+                    .025,
+                    "sine"
+                );
 
-                await wait(500);
-
-                text(
+                setText(
                     "Dobrze.",
                     "Nie będę Ci tego odbierać.",
                     "SPRAWDZENIE"
                 );
 
-            }else if(v==="nie"){
+            }else if(low==="nie"){
 
-                bass(42,.8,.15);
+                playBass(
+                    42,
+                    .7,
+                    .13
+                );
 
-                await wait(500);
-
-                text(
+                setText(
                     "Rozumiem.",
                     "",
                     "SPRAWDZENIE"
@@ -1993,915 +3334,1563 @@ async function reaction(q,value){
 
             }else{
 
-                glitch(250);
+                glitchScreen(
+                    300
+                );
 
-                text(
+                setText(
                     "Czasami.",
-                    "Najbardziej niebezpieczna odpowiedź.",
+                    "Najbardziej uczciwa odpowiedź.",
                     "SPRAWDZENIE"
                 );
             }
 
-            await wait(950);
+            await wait(850);
 
             break;
 
+
+        /* -------------------------------------------------
+           HONEST
+        ------------------------------------------------- */
 
         case"honest":
 
-            /* NIE OSKARŻAMY */
+            silenceScene();
 
-            musicDrop();
+            await wait(500);
 
-            await wait(700);
-
-            text(
-                "Dobrze.",
+            setText(
                 "Nie sprawdzam.",
+                "",
                 "SPRAWDZENIE"
             );
 
-            await wait(750);
+            await wait(600);
 
-            musicRestore(.035);
+            playTone(
+                150,
+                .45,
+                .02,
+                "triangle"
+            );
+
+            restoreScene();
 
             break;
 
+
+        /* -------------------------------------------------
+           TRUTH
+        ------------------------------------------------- */
 
         case"truth":
 
-            musicDrop();
-
-            await wait(700);
-
-            if(v==="tak"){
-
-                heartbeatDouble();
-
-                await wait(300);
-
-                giant(
-                    "DOBRZE.",
-                    "#fff",
-                    650
-                );
-
-                await wait(750);
-
-                text(
-                    "Właśnie o to chodzi.",
-                    "Nie muszę wiedzieć kiedy.",
-                    "SPRAWDZENIE"
-                );
-
-            }else{
-
-                tone(180,.3,.04,"triangle");
-
-                await wait(500);
-
-                text(
-                    "Nie szkodzi.",
-                    "Nie będę Cię łapać na słowach.",
-                    "SPRAWDZENIE"
-                );
-            }
-
-            await wait(1000);
-
-            musicRestore(.045);
+            await sceneTruth(
+                low
+            );
 
             break;
 
 
+        /* -------------------------------------------------
+           FINAL
+        ------------------------------------------------- */
+
         case"finalChoice":
 
-            risingTension();
+            state.tension+=2;
 
-            await wait(500);
+            tensionRise(
+                2.2
+            );
 
-            particleBurst(35);
+            entityBurst(
+                32
+            );
 
-            await wait(500);
+            showOwnWord(
+                value,
+                {
+                    big:true
+                }
+            );
 
-            ownWord(value);
-
-            await wait(800);
+            await wait(900);
 
             break;
     }
 }
 
 
-/* ==========================================================
-   PRZERWANE MOMENTY
-========================================================== */
+/* =========================================================
+   ALONE SCENE
+   KLUCZOWA SCENA
+========================================================= */
 
-async function interruption(stage){
+async function sceneAlone(
+    answer
+){
 
-    if(stage==="one"){
+    state.tension+=2;
 
-        musicDrop();
+    hideInput();
 
-        await wait(550);
+    silenceScene();
 
-        text(
-            "Zauważyłeś?",
-            "",
-            ""
+    await wait(500);
+
+    blackoutScreen(
+        350
+    );
+
+    await wait(450);
+
+
+    /* pierwszy głos */
+
+    setText(
+        "Dobrze.",
+        "",
+        ""
+    );
+
+    await wait(450);
+
+
+    /* cisza */
+
+    setText(
+        "Nie ruszaj się.",
+        "",
+        ""
+    );
+
+    await wait(650);
+
+
+    heartbeat(
+        .75
+    );
+
+    await wait(480);
+
+
+    heartbeat(
+        .85
+    );
+
+    await wait(650);
+
+
+    if(
+        answer==="tak" ||
+        answer==="yes"
+    ){
+
+        state.flags.aloneYes=true;
+
+        setText(
+            "Dobrze.",
+            "W takim razie odpowiedź jest prosta.",
+            "ODLEGŁOŚĆ"
         );
 
         await wait(700);
 
-        text(
-            "Jeszcze nie.",
+
+        /* pozorna ulga */
+
+        restoreScene();
+
+        playTone(
+            420,
+            .35,
+            .018,
+            "triangle"
+        );
+
+        await wait(600);
+
+
+        setText(
+            "Możemy iść dalej.",
             "",
             ""
         );
 
-        await wait(500);
-
-        musicRestore(.03);
-    }
+        await wait(650);
 
 
-    if(stage==="two"){
+        /* absolutna cisza */
 
-        musicDrop();
+        silenceScene();
 
-        await wait(500);
+        await wait(900);
 
-        blackout(300);
 
-        await wait(450);
+        /* pierwszy fałszywy atak */
 
-        giant(
-            "STOP",
-            "#fff",
-            450
+        playTone(
+            1500,
+            .05,
+            .025,
+            "square"
         );
 
-        heavyImpact();
+        await wait(550);
+
+
+        setText(
+            "Nic.",
+            "",
+            ""
+        );
+
+        await wait(550);
+
+
+        /* drugi */
+
+        showRedPoint();
+
+        await wait(250);
+
+        metal();
+
+        whiteFlash(
+            35
+        );
+
+        shakeScreen(
+            300,
+            true
+        );
+
+        await wait(400);
+
+
+        /* tekst */
+
+        await giantMessage(
+            "TERAZ.",
+            "#fff",
+            500
+        );
+
+        impact(
+            1.2
+        );
 
         await wait(650);
 
-        text(
-            "Kontynuuj.",
+
+        /* ważne: nadal działamy */
+
+        restoreScene();
+
+        setText(
+            "Dobrze.",
             "",
             "MIRROR"
         );
 
         await wait(650);
 
-        musicRestore(.045);
-    }
+    }else{
+
+        state.flags.aloneYes=false;
+
+        setText(
+            "Dobrze.",
+            "Nie będziemy tego sprawdzać.",
+            "ODLEGŁOŚĆ"
+        );
+
+        await wait(750);
 
 
-    if(stage==="three"){
+        whisper();
 
-        /* spodziewany moment — użytkownik oczekuje jumpscare */
+        await wait(650);
 
-        risingTension();
 
-        await wait(700);
-
-        text(
-            "Zaraz coś się stanie.",
+        setText(
+            "Kontynuuj.",
             "",
             ""
         );
 
-        await wait(700);
+        restoreScene();
 
-        /* NIC */
+        await wait(600);
+    }
 
-        musicDrop();
 
-        await wait(1300);
+    /* dodatkowa scena po pytaniu */
 
-        softClick();
+    silenceScene();
 
-        await wait(500);
+    await wait(450);
 
-        text(
-            "Nic.",
-            "Właśnie tego oczekiwałeś.",
-            ""
+    setText(
+        "Jedno pytanie.",
+        "",
+        ""
+    );
+
+    await wait(550);
+
+    setText(
+        "Jedna odpowiedź.",
+        "",
+        ""
+    );
+
+    await wait(550);
+
+    restoreScene();
+}
+
+
+/* =========================================================
+   TRUTH SCENE
+========================================================= */
+
+async function sceneTruth(
+    answer
+){
+
+    silenceScene();
+
+    await wait(550);
+
+    setText(
+        "Nie musisz się bać.",
+        "",
+        "SPRAWDZENIE"
+    );
+
+    await wait(750);
+
+
+    if(
+        answer==="tak" ||
+        answer==="yes"
+    ){
+
+        state.flags.lied=true;
+
+        heartbeat(
+            1.1
         );
 
-        await wait(900);
+        await wait(250);
 
-        /* i dopiero wtedy */
+        heartbeat(
+            1.2
+        );
 
-        flashScreen("red",45);
+        await wait(450);
 
-        heavyImpact();
-
-        shake(500,true);
-
-        giant(
-            "TERAZ.",
-            "#fff",
-            500
+        setText(
+            "Dobrze.",
+            "Właśnie dlatego pytałem.",
+            ""
         );
 
         await wait(800);
 
-        musicRestore(.05);
+        /* NIE twierdzimy kiedy */
+
+        setText(
+            "Nie muszę wiedzieć kiedy.",
+            "",
+            "MIRROR"
+        );
+
+        await wait(750);
+
+    }else{
+
+        setText(
+            "Dobrze.",
+            "Nie będę Cię łapać na słowach.",
+            ""
+        );
+
+        await wait(850);
+
+    }
+
+
+    restoreScene();
+}
+
+
+/* =========================================================
+   RANDOM MICRO EVENTS
+========================================================= */
+
+function randomMicroEvent(){
+
+    if(
+        !state.running ||
+        state.locked ||
+        state.final
+    )
+        return;
+
+
+    const r=
+        Math.random();
+
+
+    if(
+        r<.12
+    ){
+
+        ghostCursor();
+
+        return;
+    }
+
+
+    if(
+        r<.20
+    ){
+
+        spawnEntity(
+            "·",
+            {
+                animation:"fade",
+                life:800
+            }
+        );
+
+        return;
+    }
+
+
+    if(
+        r<.27 &&
+        state.tension>=2
+    ){
+
+        digitalBurst();
+
+        flickerScreen(
+            100
+        );
+
+        return;
+    }
+
+
+    if(
+        r<.31 &&
+        state.tension>=3
+    ){
+
+        showRedPoint();
+
+        playTone(
+            90,
+            .18,
+            .035,
+            "square"
+        );
+
+        return;
+    }
+
+
+    if(
+        r<.34 &&
+        state.tension>=4
+    ){
+
+        spawnEntity(
+            "NIE",
+            {
+                big:true,
+                red:true,
+                animation:"cross",
+                life:1900
+            }
+        );
+
+        return;
     }
 }
 
 
-/* ==========================================================
-   SUBMIT
-========================================================== */
+/* =========================================================
+   MICRO EVENT LOOP
+========================================================= */
 
-async function submit(){
+setInterval(
+    randomMicroEvent,
+    900
+);
 
-    if(!running || locked)
-        return;
 
-    const value=clean(answer.value);
+/* =========================================================
+   TYPING EFFECTS
+========================================================= */
 
-    if(!valid(value)){
+answerInput.addEventListener(
+    "input",
+    ()=>{
 
-        answer.style.borderBottomColor="#900";
+        if(
+            !state.running
+        )
+            return;
 
-        tone(90,.18,.05,"square");
 
-        await wait(250);
+        state.typing++;
 
-        answer.style.borderBottomColor="#444";
 
-        answer.focus();
+        ghostCursor();
 
-        return;
+
+        if(
+            state.typing%6===0
+        ){
+
+            playTone(
+                1100+
+                Math.random()*500,
+                .025,
+                .008,
+                "square"
+            );
+        }
+
+
+        if(
+            state.typing===13
+        ){
+
+            spawnEntity(
+                "?",
+                {
+                    big:true,
+                    animation:"rise",
+                    life:1000
+                }
+            );
+        }
+
+
+        if(
+            state.typing===27
+        ){
+
+            needle();
+
+            flickerScreen(
+                120
+            );
+        }
+
+
+        if(
+            state.typing>35 &&
+            Math.random()<.05
+        ){
+
+            digitalBurst();
+        }
     }
+);
 
-    locked=true;
 
-    const q=questions[qIndex];
+/* =========================================================
+   SUBMIT
+========================================================= */
 
-    const elapsed=
-        performance.now()-memory.lastQuestionStart;
-
-    memory.times.push(elapsed);
+async function submitAnswer(){
 
     if(
-        memory.answers.length>0 &&
-        value.toLowerCase()===
-        memory.answers[memory.answers.length-1].toLowerCase()
+        !state.running ||
+        state.locked ||
+        state.final
+    )
+        return;
+
+
+    const question=
+        questions[
+            state.questionIndex
+        ];
+
+
+    if(!question)
+        return;
+
+
+    const value=
+        normalize(
+            answerInput.value
+        );
+
+
+    if(
+        !validAnswer(
+            value,
+            question
+        )
     ){
-        memory.changed=true;
+
+        answerInput.style.borderBottomColor=
+            "#900";
+
+        playTone(
+            85,
+            .16,
+            .045,
+            "square"
+        );
+
+        await wait(220);
+
+        answerInput.style.borderBottomColor=
+            "#414141";
+
+        answerInput.focus();
+
+        return;
     }
 
-    remember(q,value);
 
-    input.style.opacity="0";
-    input.style.pointerEvents="none";
+    state.locked=true;
 
-    click();
+    hideInput();
 
-    await wait(200);
 
-    await reaction(q,value);
+    const elapsed=
+        performance.now()-
+        state.answerStart;
 
-    /* ------------------------------------------------------
-       zaplanowane eskalacje
-    ------------------------------------------------------ */
 
-    if(qIndex===1){
-        await interruption("one");
-    }
+    state.lastAnswer=value;
 
-    if(qIndex===4){
-        await interruption("two");
-    }
+    saveAnswer(
+        question,
+        value
+    );
 
-    if(qIndex===8){
-        await interruption("three");
-    }
 
-    if(qIndex<questions.length-1){
+    playTone(
+        1600,
+        .025,
+        .035,
+        "square"
+    );
 
-        qIndex++;
 
-        await wait(350);
+    await wait(160);
 
-        locked=false;
+
+    await reaction(
+        question,
+        value
+    );
+
+
+    /* -----------------------------------------------------
+       BEZPIECZNE PRZEJŚCIE
+    ----------------------------------------------------- */
+
+    if(
+        state.questionIndex<
+        questions.length-1
+    ){
+
+        state.questionIndex++;
+
+        await wait(300);
+
+        state.locked=false;
 
         showQuestion();
 
     }else{
+
+        state.locked=true;
 
         await finale();
     }
 }
 
 
-/* ==========================================================
-   ENTER
-========================================================== */
+/* =========================================================
+   BUTTONS
+========================================================= */
 
-send.addEventListener(
+sendButton.addEventListener(
     "click",
-    submit
-);
-
-answer.addEventListener(
-    "keydown",
-    e=>{
-        if(e.key==="Enter"){
-            e.preventDefault();
-            submit();
-        }
-    }
-);
-
-
-/* ==========================================================
-   TYPING
-========================================================== */
-
-let typed=0;
-
-answer.addEventListener(
-    "input",
     ()=>{
-
-        if(!running)
-            return;
-
-        typed++;
-
-        moveDot();
-
-        if(typed%7===0){
-            softClick();
-        }
-
-        if(typed===14){
-
-            tone(
-                1400,
-                .04,
-                .018,
-                "square"
-            );
-
-            particle("?");
-        }
-
-        if(typed===28){
-
-            needle();
-
-            flicker(150);
-        }
-
+        submitAnswer();
     }
 );
 
 
-/* ==========================================================
-   START
-========================================================== */
+answerInput.addEventListener(
+    "keydown",
+    event=>{
 
-start.addEventListener(
+        if(
+            event.key==="Enter"
+        ){
+
+            event.preventDefault();
+
+            submitAnswer();
+        }
+    }
+);
+
+
+/* =========================================================
+   START
+========================================================= */
+
+startButton.addEventListener(
     "click",
     async()=>{
 
-        if(running)
+        if(state.running)
             return;
 
-        running=true;
+
+        state.running=true;
+
+        state.locked=true;
+
 
         initAudio();
 
-        try{
-            await AC.resume();
-        }catch(e){}
+        await resumeAudio();
 
-        start.style.display="none";
 
-        music(.018);
+        startButton.style.display=
+            "none";
 
-        click();
 
-        await wait(700);
+        ambience(
+            .012
+        );
 
-        text(
+
+        playTone(
+            180,
+            .5,
+            .025,
+            "triangle"
+        );
+
+
+        await wait(650);
+
+
+        setText(
             "Zaczynamy.",
-            "Nie szukaj tutaj poprawnej odpowiedzi.",
+            "Nie szukaj poprawnej odpowiedzi.",
             "MIRROR"
         );
 
-        await wait(1100);
 
-        text(
-            "Odpowiadaj szybko.",
-            "Najlepiej jednym słowem.",
+        await wait(900);
+
+
+        setText(
+            "Odpowiadaj pierwszą rzeczą, która przyjdzie Ci do głowy.",
+            "",
             "ZASADA"
         );
 
-        await wait(1000);
 
-        qIndex=0;
+        await wait(1100);
+
+
+        setText(
+            "Jedno słowo wystarczy.",
+            "",
+            "ZASADA"
+        );
+
+
+        await wait(950);
+
+
+        state.questionIndex=0;
+
+        state.locked=false;
 
         showQuestion();
     }
 );
 
 
-/* ==========================================================
-   FINAŁ — WSZYSTKO WRACA DO POCZĄTKU
-========================================================== */
+/* =========================================================
+   FINAL — RECONSTRUCTION
+========================================================= */
 
 async function finale(){
 
-    locked=true;
+    if(state.final)
+        return;
 
-    input.style.opacity="0";
-    input.style.pointerEvents="none";
 
-    /* muzyka zaczyna narastać */
+    state.final=true;
 
-    musicRestore(.06);
+    state.locked=true;
 
-    await wait(900);
 
-    text(
+    hideInput();
+
+
+    /* -----------------------------------------------------
+       1. KONIEC
+    ----------------------------------------------------- */
+
+    restoreScene();
+
+    await wait(850);
+
+
+    setText(
         "Koniec pytań.",
         "",
         ""
     );
 
+
     await wait(850);
 
-    /* pauza */
 
-    musicDrop();
+    /* -----------------------------------------------------
+       2. CISZA
+    ----------------------------------------------------- */
 
-    await wait(900);
+    silenceScene();
 
-    text(
+    await wait(1000);
+
+
+    setText(
         "Ale nie koniec.",
         "",
         "MIRROR"
     );
 
-    await wait(1000);
-
-    /* ------------------------------------------------------
-       PIERWSZA REKONSTRUKCJA
-    ------------------------------------------------------ */
-
-    text(
-        "Zaczęliśmy od zwykłego pytania.",
-        memory.morning || "—",
-        "POCZĄTEK"
-    );
-
-    ownWord(memory.morning);
-
-    await wait(1100);
-
-    text(
-        "Potem pojawiła się osoba.",
-        memory.person || "—",
-        "LUDZIE"
-    );
-
-    ownWord(memory.person);
-
-    await wait(1100);
-
-    /* ------------------------------------------------------
-       STRACH
-    ------------------------------------------------------ */
-
-    redMode(true);
-
-    bass(38,1.2,.18);
-
-    text(
-        "Potem strach.",
-        memory.fear || "—",
-        "PĘKNIĘCIE"
-    );
-
-    await wait(1200);
-
-    particleBurst(30);
-
-    await wait(700);
-
-    redMode(false);
-
-    /* ------------------------------------------------------
-       STRATA
-    ------------------------------------------------------ */
-
-    musicRestore(.045);
-
-    text(
-        "A potem strata.",
-        memory.loss || "—",
-        "PĘKNIĘCIE"
-    );
-
-    await wait(1100);
-
-    /* ------------------------------------------------------
-       POWRÓT
-    ------------------------------------------------------ */
-
-    musicDrop();
-
-    await wait(600);
-
-    text(
-        "I teraz najważniejsze.",
-        "",
-        ""
-    );
-
-    await wait(800);
-
-    text(
-        "Wróćmy do początku.",
-        "",
-        ""
-    );
-
-    await wait(700);
-
-    /* pokazujemy rzeczy w odwrotnej kolejności */
-
-    const selected=[
-        memory.finalChoice || "",
-        memory.need || "",
-        memory.change || "",
-        memory.loss || "",
-        memory.fear || "",
-        memory.person || "",
-        memory.morning || ""
-    ].filter(Boolean);
-
-    for(let i=0;i<Math.min(5,selected.length);i++){
-
-        musicRestore(.025);
-
-        text(
-            selected[i].toUpperCase(),
-            "",
-            "ODPOWIEDŹ"
-        );
-
-        ownWord(selected[i]);
-
-        await wait(650);
-
-        musicDrop();
-
-        await wait(230);
-
-    }
-
-    /* ------------------------------------------------------
-       NAJWAŻNIEJSZA CZĘŚĆ
-    ------------------------------------------------------ */
-
-    musicRestore(.055);
-
-    await wait(600);
-
-    text(
-        "Widzisz wzór?",
-        "",
-        ""
-    );
-
-    risingTension();
-
-    await wait(1400);
-
-    text(
-        "Ja też.",
-        "",
-        "MIRROR"
-    );
 
     await wait(900);
 
-    /* ------------------------------------------------------
-       NIE "DIAGNOZA", TYLKO WNIOSKI Z ODPOWIEDZI
-    ------------------------------------------------------ */
 
-    if(
-        memory.fear &&
-        memory.loss &&
-        memory.fear.toLowerCase()===
-        memory.loss.toLowerCase()
+    /* -----------------------------------------------------
+       3. ODTWARZANIE
+    ----------------------------------------------------- */
+
+    const reconstruction=[
+
+        [
+            "POCZĄTEK",
+            state.memory.morning
+        ],
+
+        [
+            "LUDZIE",
+            state.memory.person
+        ],
+
+        [
+            "POTRZEBA",
+            state.memory.desire
+        ],
+
+        [
+            "PĘKNIĘCIE",
+            state.memory.fear
+        ],
+
+        [
+            "STRATA",
+            state.memory.loss
+        ],
+
+        [
+            "TERAZ",
+            state.memory.sound
+        ],
+
+        [
+            "BRAK",
+            state.memory.need
+        ],
+
+        [
+            "ZMIANA",
+            state.memory.change
+        ],
+
+        [
+            "OSTATNIE",
+            state.memory.finalChoice
+        ]
+
+    ].filter(
+        item=>item[1]
+    );
+
+
+    for(
+        let i=0;
+        i<reconstruction.length;
+        i++
     ){
 
-        musicDrop();
+        const pair=
+            reconstruction[i];
 
-        await wait(650);
 
-        giant(
-            "WRÓCIŁO.",
-            "#fff",
-            700
+        setText(
+            pair[1].toUpperCase(),
+            "",
+            pair[0]
         );
 
-        heavyImpact();
 
-        await wait(850);
-
-    }else{
-
-        musicDrop();
-
-        await wait(700);
-
-        text(
-            "Nie odpowiedziałeś dwa razy tak samo.",
-            "Ale pewne rzeczy wracały.",
-            "MIRROR"
+        showOwnWord(
+            pair[1],
+            {
+                big:
+                    i>=3
+            }
         );
 
-        await wait(1000);
+
+        if(i>=3)
+            playBass(
+                35,
+                .55,
+                .07+
+                i*.008
+            );
+        else
+            playTone(
+                220+
+                i*30,
+                .3,
+                .018,
+                "triangle"
+            );
+
+
+        await wait(
+            i>=3
+                ?650
+                :500
+        );
+
+
+        if(i>=4){
+
+            spawnEntity(
+                "·",
+                {
+                    animation:"fall",
+                    life:700
+                }
+            );
+        }
     }
 
-    /* ------------------------------------------------------
-       SAMOTNOŚĆ
-    ------------------------------------------------------ */
 
-    musicDrop();
+    /* -----------------------------------------------------
+       4. WZÓR
+    ----------------------------------------------------- */
 
-    await wait(800);
+    silenceScene();
 
-    text(
-        "A teraz ostatnia rzecz.",
+    await wait(700);
+
+
+    setText(
+        "Zaczynasz widzieć wzór?",
+        "",
+        "MIRROR"
+    );
+
+
+    await wait(1000);
+
+
+    tensionRise(
+        2.1
+    );
+
+
+    await wait(850);
+
+
+    setText(
+        "Ja też.",
         "",
         ""
     );
 
+
     await wait(900);
 
-    text(
-        "Jesteś teraz sam?",
-        memory.alone || "—",
+
+    /* -----------------------------------------------------
+       5. POWTÓRZENIA
+    ----------------------------------------------------- */
+
+    if(
+        state.flags.repeatedFear
+    ){
+
+        await giantMessage(
+            "WRÓCIŁO.",
+            "#fff",
+            650
+        );
+
+        impact(
+            1.05
+        );
+
+        await wait(650);
+    }
+
+
+    if(
+        state.flags.repeatedPerson
+    ){
+
+        await giantMessage(
+            "TA SAMA OSOBA.",
+            "#fff",
+            650
+        );
+
+        impact(
+            .75
+        );
+
+        await wait(650);
+    }
+
+
+    if(
+        state.flags.repeatedDesire
+    ){
+
+        await giantMessage(
+            "TA SAMA POTRZEBA.",
+            "#fff",
+            650
+        );
+
+        impact(
+            .85
+        );
+
+        await wait(650);
+    }
+
+
+    /* -----------------------------------------------------
+       6. SAMOTNOŚĆ
+    ----------------------------------------------------- */
+
+    silenceScene();
+
+    await wait(750);
+
+
+    setText(
+        "A teraz wróćmy do jednego pytania.",
+        "",
         "MIRROR"
     );
 
+
+    await wait(850);
+
+
+    setText(
+        "Czy jesteś teraz sam?",
+        state.memory.alone || "—",
+        "ODLEGŁOŚĆ"
+    );
+
+
     await wait(1200);
 
-    /* ------------------------------------------------------
-       CISZA
-    ------------------------------------------------------ */
 
-    blackout(900);
+    /* -----------------------------------------------------
+       7. FAŁSZYWE ZAKOŃCZENIE
+    ----------------------------------------------------- */
 
-    await wait(1000);
+    blackoutScreen(
+        800
+    );
 
-    /* absolutna cisza */
 
-    musicDrop();
+    await wait(900);
 
-    if(AC && master){
 
-        master.gain.cancelScheduledValues(t());
+    silenceScene();
 
-        master.gain.linearRampToValueAtTime(
-            .0001,
-            t()+.1
-        );
-    }
 
-    await wait(1400);
-
-    /* ------------------------------------------------------
-       FAŁSZYWE ZAKOŃCZENIE
-    ------------------------------------------------------ */
-
-    text(
+    setText(
         "KONIEC.",
         "Możesz zamknąć stronę.",
         ""
     );
 
+
     await wait(1800);
 
-    /* ------------------------------------------------------
-       OSTATNI ATAK
-    ------------------------------------------------------ */
 
-    /* nic przez chwilę */
+    /* -----------------------------------------------------
+       8. NIC
+    ----------------------------------------------------- */
 
-    await wait(1200);
+    await wait(1400);
 
-    restoreMaster();
 
-    risingTension();
+    /* -----------------------------------------------------
+       9. OSTATNIA WARSTWA
+    ----------------------------------------------------- */
 
-    await wait(800);
-
-    flashScreen("white",35);
-
-    heavyImpact();
-
-    shake(700,true);
-
-    redMode(true);
-
-    giant(
-        "NIE ODPISUJ.",
-        "#fff",
-        700
+    masterVolume(
+        .30,
+        .2
     );
 
-    await wait(950);
 
-    musicDrop();
+    tensionRise(
+        1.5
+    );
 
-    redMode(false);
 
-    blackout(1000);
+    await wait(550);
+
+
+    redFlashEffect(
+        35
+    );
+
+
+    impact(
+        1.3
+    );
+
+
+    shakeScreen(
+        650,
+        true
+    );
+
+
+    redMode(
+        true
+    );
+
+
+    await giantMessage(
+        "NIE.",
+        "#fff",
+        550
+    );
+
+
+    await wait(650);
+
+
+    redMode(
+        false
+    );
+
+
+    silenceScene();
+
+
+    blackoutScreen(
+        950
+    );
+
 
     await wait(1100);
 
-    /* ------------------------------------------------------
-       OSTATNI TEKST
-    ------------------------------------------------------ */
 
-    text(
+    /* -----------------------------------------------------
+       10. OSTATNI TEKST
+    ----------------------------------------------------- */
+
+    setText(
         "Nie ma drugiego dna.",
         "",
         ""
     );
 
+
     await wait(900);
 
-    text(
+
+    setText(
         "Jest tylko to, co sam tutaj zostawiłeś.",
         "",
         "MIRROR"
     );
 
-    await wait(1200);
 
-    /* bardzo cichy powrót */
+    await wait(1100);
 
-    musicRestore(.012);
 
-    text(
+    setText(
+        "I właśnie dlatego działa.",
+        "",
+        ""
+    );
+
+
+    await wait(1000);
+
+
+    /* -----------------------------------------------------
+       11. CISZA
+    ----------------------------------------------------- */
+
+    silenceScene();
+
+    await wait(1100);
+
+
+    setText(
         "Tym razem...",
         "",
         ""
     );
 
-    await wait(900);
 
-    text(
+    await wait(850);
+
+
+    setText(
         "nie odpowiadaj.",
         "",
         ""
     );
 
+
     await wait(1200);
 
-    /* restart */
 
-    const again=document.createElement("button");
+    /* -----------------------------------------------------
+       12. RESTART
+    ----------------------------------------------------- */
 
-    again.textContent="ZACZNIJ OD NOWA";
+    restoreScene();
 
-    again.style.marginTop="38px";
-    again.style.padding="13px 28px";
-    again.style.background="#eee";
-    again.style.color="#000";
-    again.style.border="0";
-    again.style.cursor="pointer";
-    again.style.letterSpacing="3px";
 
-    content.appendChild(again);
+    const restart=
+        document.createElement(
+            "button"
+        );
 
-    again.addEventListener(
+
+    restart.textContent=
+        "ZACZNIJ OD NOWA";
+
+
+    restart.style.marginTop=
+        "40px";
+
+    restart.style.padding=
+        "14px 30px";
+
+    restart.style.background=
+        "#eee";
+
+    restart.style.color=
+        "#000";
+
+    restart.style.border=
+        "0";
+
+    restart.style.cursor=
+        "pointer";
+
+    restart.style.letterSpacing=
+        "3px";
+
+
+    document
+        .getElementById("content")
+        .appendChild(
+            restart
+        );
+
+
+    restart.addEventListener(
         "click",
         ()=>{
             location.reload();
         }
     );
 
-    locked=false;
+
+    state.locked=false;
 }
 
 
-/* ==========================================================
-   MASTER AUDIO
-========================================================== */
+/* =========================================================
+   FAILSAFE
+   Jeśli jakakolwiek funkcja audio/efektu zawiedzie,
+   aplikacja NIE MA SIĘ ZATRZYMAĆ.
+========================================================= */
 
-function restoreMaster(){
+window.addEventListener(
+    "error",
+    event=>{
 
-    if(!master)
-        return;
-
-    master.gain.cancelScheduledValues(t());
-
-    master.gain.linearRampToValueAtTime(
-        .32,
-        t()+.7
-    );
-}
-
-
-/* ==========================================================
-   LOSOWE ŻYCIE EKRANU
-========================================================== */
-
-setInterval(()=>{
-
-    if(!running)
-        return;
-
-    const r=Math.random();
-
-    if(r<.15)
-        particle("·");
-
-    if(r>.86)
-        particle(
-            ["—","/","\\","?","0","1"][Math.floor(Math.random()*6)]
+        console.warn(
+            "MIRROR recovered:",
+            event.error
         );
 
-    if(r>.965)
-        dot();
+        state.locked=false;
 
-},650);
+        if(
+            state.running &&
+            !state.final &&
+            state.questionIndex>=0
+        ){
 
+            hideInput();
 
-/* ==========================================================
-   MIKRO-ZAKŁÓCENIA
-========================================================== */
+            setTimeout(
+                ()=>{
+                    if(
+                        !state.final
+                    ){
+                        state.questionIndex=
+                            Math.min(
+                                state.questionIndex+1,
+                                questions.length-1
+                            );
 
-setInterval(()=>{
+                        state.locked=false;
 
-    if(!running)
-        return;
-
-    const r=Math.random();
-
-    if(r<.035){
-
-        digitalNoise();
-
-        flicker(100);
-    }
-
-    if(r>.985){
-
-        const old=main.textContent;
-
-        main.textContent="";
-
-        setTimeout(()=>{
-            main.textContent=old;
-        },60);
-    }
-
-},1400);
-
-
-/* ==========================================================
-   DELIKATNY PARALLAX
-========================================================== */
-
-document.addEventListener(
-    "mousemove",
-    e=>{
-
-        if(!running)
-            return;
-
-        if(Math.random()<.035){
-
-            const x=
-                (e.clientX/window.innerWidth-.5)*2;
-
-            const y=
-                (e.clientY/window.innerHeight-.5)*2;
-
-            app.style.transform=
-                `translate(${x*1.5}px,${y*1.5}px)`;
-
-            setTimeout(()=>{
-                app.style.transform="";
-            },90);
+                        showQuestion();
+                    }
+                },
+                350
+            );
         }
     }
 );
+
+
+/* =========================================================
+   AUDIO VISIBILITY RECOVERY
+========================================================= */
+
+document.addEventListener(
+    "visibilitychange",
+    async()=>{
+
+        if(
+            !state.running ||
+            !audioReady
+        )
+            return;
+
+
+        if(
+            document.hidden
+        ){
+
+            state.audioSuspended=true;
+
+            silenceAmbience();
+
+        }else{
+
+            await resumeAudio();
+
+            restoreScene();
+        }
+    }
+);
+
+
+/* =========================================================
+   POINTER DISTURBANCE
+========================================================= */
+
+document.addEventListener(
+    "mousemove",
+    event=>{
+
+        if(
+            !state.running
+        )
+            return;
+
+
+        if(
+            Math.random()<.025
+        ){
+
+            const x=
+                (
+                    event.clientX/
+                    window.innerWidth-
+                    .5
+                )*2;
+
+            const y=
+                (
+                    event.clientY/
+                    window.innerHeight-
+                    .5
+                )*2;
+
+
+            app.style.transform=
+                `translate(
+                    ${x*2}px,
+                    ${y*2}px
+                )`;
+
+
+            setTimeout(
+                ()=>{
+                    app.style.transform="";
+                },
+                100
+            );
+        }
+    }
+);
+
+
+/* =========================================================
+   RANDOM DISTURBANCE CLOCK
+========================================================= */
+
+setInterval(
+    ()=>{
+
+        if(
+            !state.running ||
+            state.locked ||
+            state.final
+        )
+            return;
+
+
+        const chance=
+            Math.min(
+                .38,
+                .07+
+                state.tension*.035
+            );
+
+
+        if(
+            Math.random()<chance
+        ){
+
+            randomMicroEvent();
+        }
+
+    },
+    1350
+);
+
+
+/* =========================================================
+   AMBIENCE HEARTBEAT
+========================================================= */
+
+setInterval(
+    ()=>{
+
+        if(
+            !state.running ||
+            state.locked ||
+            state.final
+        )
+            return;
+
+
+        if(
+            state.tension>=3 &&
+            Math.random()<.32
+        ){
+
+            heartbeat(
+                .35+
+                state.tension*.04
+            );
+        }
+
+    },
+    2600
+);
+
+
+/* =========================================================
+   OCCASIONAL VISUAL INTERRUPTION
+========================================================= */
+
+setInterval(
+    ()=>{
+
+        if(
+            !state.running ||
+            state.locked ||
+            state.final
+        )
+            return;
+
+
+        if(
+            state.tension>=3 &&
+            Math.random()<.08
+        ){
+
+            digitalBurst();
+
+            flickerScreen(
+                120
+            );
+
+            entityBurst(
+                5
+            );
+        }
+
+    },
+    3200
+);
+
+
+/* =========================================================
+   INITIAL STATE
+========================================================= */
+
+updateProgress();
 
 </script>
 
