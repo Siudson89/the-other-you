@@ -2,18 +2,20 @@
 <html lang="pl">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1.0">
-<meta name="theme-color" content="#020204">
-<title>DRUGIE JA — Eksperyment</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MIRROR // HUMAN RECONSTRUCTION</title>
 
 <style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Space+Mono:wght@400;700&display=swap');
+
 :root{
-    --bg:#020204;
-    --fg:#f2f2f2;
+    --bg:#050505;
+    --fg:#ededed;
     --muted:#777;
-    --line:rgba(255,255,255,.13);
-    --soft:rgba(255,255,255,.055);
-    --accent:#cfcfcf;
+    --dim:#303030;
+    --line:#202020;
+    --accent:#e7e7e7;
+    --danger:#b83a3a;
 }
 
 *{
@@ -23,1918 +25,2139 @@
 html,body{
     margin:0;
     width:100%;
-    height:100%;
+    min-height:100%;
     background:var(--bg);
     color:var(--fg);
-    font-family:Arial,Helvetica,sans-serif;
-    overflow:hidden;
+    font-family:Inter,Arial,sans-serif;
 }
 
 body{
-    cursor:default;
+    overflow-x:hidden;
+}
+
+button,input,textarea{
+    font:inherit;
 }
 
 button{
-    font-family:inherit;
+    cursor:pointer;
 }
 
-#canvas{
+#noise{
     position:fixed;
     inset:0;
-    z-index:0;
-}
-
-.noise{
-    position:fixed;
-    inset:0;
-    z-index:20;
     pointer-events:none;
-    opacity:.045;
-    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.8'/%3E%3C/svg%3E");
+    opacity:.035;
+    z-index:50;
+    background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.8'/%3E%3C/svg%3E");
 }
 
-.vignette{
+#scan{
     position:fixed;
-    inset:0;
-    z-index:19;
+    left:0;
+    right:0;
+    height:1px;
+    background:rgba(255,255,255,.035);
+    top:-10px;
+    z-index:51;
     pointer-events:none;
-    background:radial-gradient(circle at center,transparent 30%,rgba(0,0,0,.72) 100%);
+    animation:scan 8s linear infinite;
 }
 
-.scanlines{
-    position:fixed;
-    inset:0;
-    z-index:18;
-    pointer-events:none;
-    opacity:.06;
-    background:repeating-linear-gradient(
-        to bottom,
-        transparent 0,
-        transparent 3px,
-        rgba(255,255,255,.1) 4px
-    );
+@keyframes scan{
+    0%{top:-10px}
+    100%{top:110vh}
+}
+
+#app{
+    min-height:100vh;
+    position:relative;
 }
 
 .screen{
-    position:absolute;
-    inset:0;
-    z-index:5;
-    display:flex;
-    justify-content:center;
+    min-height:100vh;
+    display:none;
     align-items:center;
+    justify-content:center;
     padding:30px;
-    opacity:0;
-    pointer-events:none;
-    transform:scale(1.025);
-    transition:opacity 1s ease,transform 1s ease;
 }
 
 .screen.active{
-    opacity:1;
-    pointer-events:auto;
-    transform:scale(1);
+    display:flex;
 }
 
 .wrap{
-    width:min(1050px,94vw);
-    text-align:center;
+    width:min(920px,100%);
+    margin:auto;
 }
 
-.micro{
+.mono{
+    font-family:"Space Mono",monospace;
+}
+
+.tiny{
     font-size:10px;
-    letter-spacing:5px;
-    color:#666;
+    letter-spacing:.2em;
     text-transform:uppercase;
-}
-
-.hero-title{
-    font-size:clamp(58px,12vw,170px);
-    line-height:.78;
-    letter-spacing:-10px;
-    font-weight:800;
-    margin:25px 0 0;
-}
-
-.hero-sub{
-    margin:35px auto 0;
-    color:#888;
-    font-size:13px;
-    letter-spacing:2px;
-    max-width:600px;
-    line-height:1.8;
-}
-
-.btn{
-    margin-top:45px;
-    padding:17px 32px;
-    color:#fff;
-    background:transparent;
-    border:1px solid rgba(255,255,255,.28);
-    letter-spacing:4px;
-    font-size:11px;
-    cursor:pointer;
-    transition:.3s;
-}
-
-.btn:hover{
-    background:#fff;
-    color:#000;
-    border-color:#fff;
-    transform:translateY(-2px);
-}
-
-.btn.small{
-    margin-top:25px;
-    padding:13px 22px;
-}
-
-.corner{
-    position:absolute;
-    top:25px;
-    left:28px;
-    font-family:monospace;
-    font-size:10px;
-    color:#444;
-    letter-spacing:2px;
-}
-
-.corner.right{
-    left:auto;
-    right:28px;
-}
-
-.question-box{
-    max-width:850px;
-    margin:auto;
-}
-
-.question-number{
     color:#555;
-    font-family:monospace;
-    font-size:11px;
-    letter-spacing:3px;
-    margin-bottom:28px;
 }
 
-.question{
-    font-size:clamp(27px,5vw,62px);
-    line-height:1.06;
-    letter-spacing:-2px;
-    font-weight:500;
-}
-
-.question-sub{
-    color:#666;
-    margin-top:20px;
-    font-size:12px;
-    letter-spacing:1px;
-}
-
-.options{
-    display:grid;
-    grid-template-columns:repeat(2,minmax(0,1fr));
-    gap:10px;
-    max-width:760px;
-    margin:40px auto 0;
-}
-
-.option{
-    padding:21px 20px;
-    border:1px solid var(--line);
-    background:rgba(255,255,255,.025);
-    color:#bbb;
-    cursor:pointer;
-    text-align:left;
-    font-size:13px;
-    transition:.35s;
-    position:relative;
-    overflow:hidden;
-}
-
-.option:before{
-    content:"";
-    position:absolute;
-    inset:0;
-    background:#fff;
-    transform:translateX(-101%);
-    transition:.35s;
-    z-index:-1;
-}
-
-.option:hover{
-    color:#000;
-    border-color:#fff;
-}
-
-.option:hover:before{
-    transform:translateX(0);
-}
-
-.option span{
-    color:#555;
-    margin-right:12px;
-    font-family:monospace;
-}
-
-.progress-line{
-    position:absolute;
-    bottom:0;
-    left:0;
-    height:2px;
-    background:#fff;
-    width:0%;
-    transition:width .7s ease;
-}
-
-.analyzing{
-    font-family:monospace;
-    text-align:left;
-    width:min(700px,90vw);
-    margin:auto;
-}
-
-.analysis-head{
-    font-size:11px;
-    color:#666;
-    letter-spacing:4px;
-    margin-bottom:30px;
-}
-
-.analysis-text{
-    color:#aaa;
-    font-size:13px;
-    line-height:2.2;
-    min-height:210px;
-}
-
-.blink{
+.cursor{
     display:inline-block;
     width:7px;
-    height:14px;
+    height:18px;
     background:#ddd;
-    animation:blink .7s infinite;
+    margin-left:5px;
+    vertical-align:-3px;
+    animation:blink 1s infinite;
 }
 
 @keyframes blink{
     50%{opacity:0}
 }
 
-.glitch{
-    animation:glitch .25s infinite;
+#boot{
+    text-align:center;
 }
 
-@keyframes glitch{
-    0%{transform:translate(0)}
-    25%{transform:translate(2px,-1px)}
-    50%{transform:translate(-2px,1px)}
-    75%{transform:translate(1px,2px)}
-    100%{transform:translate(0)}
+.logo{
+    font-family:"Space Mono",monospace;
+    font-size:clamp(45px,11vw,110px);
+    letter-spacing:.15em;
+    font-weight:400;
+    margin-left:.15em;
 }
 
-/* PROFILE */
-
-.profile-grid{
-    display:grid;
-    grid-template-columns:1fr 1fr;
-    gap:30px;
-    margin-top:35px;
-}
-
-.profile-card{
-    border:1px solid var(--line);
-    background:rgba(0,0,0,.35);
-    padding:25px;
-    text-align:left;
-}
-
-.card-title{
-    color:#666;
-    font-size:9px;
-    letter-spacing:4px;
-    margin-bottom:22px;
-}
-
-.profile-name{
-    font-size:35px;
-    letter-spacing:-1px;
-    margin-bottom:8px;
-}
-
-.profile-desc{
-    color:#888;
-    line-height:1.7;
-    font-size:13px;
-}
-
-.bars{
-    display:grid;
-    gap:13px;
-}
-
-.bar-row{
-    display:grid;
-    grid-template-columns:110px 1fr 40px;
-    align-items:center;
-    gap:10px;
-    font-size:10px;
-    color:#777;
-}
-
-.bar{
-    height:3px;
-    background:#171717;
-    position:relative;
-}
-
-.bar i{
-    display:block;
-    height:100%;
-    width:0;
-    background:#ddd;
-    transition:width 1.3s ease;
-}
-
-.bar-value{
-    text-align:right;
-    font-family:monospace;
-}
-
-/* FUTURES */
-
-.future-title{
-    font-size:clamp(38px,7vw,80px);
-    letter-spacing:-4px;
-}
-
-.future-sub{
-    color:#777;
-    margin-top:15px;
-}
-
-.future-switch{
-    margin:35px auto 25px;
-    display:flex;
-    width:min(700px,90vw);
-    border:1px solid var(--line);
-}
-
-.future-switch button{
-    flex:1;
-    background:transparent;
-    color:#666;
-    border:0;
-    padding:15px;
-    cursor:pointer;
-    font-size:10px;
-    letter-spacing:3px;
-}
-
-.future-switch button.active{
-    color:#fff;
-    background:#111;
-}
-
-.timeline{
-    width:min(850px,92vw);
-    max-height:45vh;
-    overflow:auto;
-    margin:auto;
-    text-align:left;
-    scrollbar-width:thin;
-}
-
-.event{
-    display:grid;
-    grid-template-columns:90px 1fr;
-    border-left:1px solid #333;
-    padding:0 0 30px 28px;
-    position:relative;
-}
-
-.event:before{
-    content:"";
-    position:absolute;
-    left:-4px;
-    top:3px;
-    width:7px;
-    height:7px;
-    background:#ddd;
-    border-radius:50%;
-}
-
-.event-year{
-    color:#666;
-    font-family:monospace;
-    font-size:11px;
-}
-
-.event-content{
-    color:#aaa;
-    font-size:13px;
-    line-height:1.65;
-}
-
-.event-content strong{
-    color:#eee;
-    font-size:15px;
-    display:block;
-    margin-bottom:5px;
-}
-
-/* SPLIT */
-
-.split{
-    width:min(1050px,94vw);
-    height:min(610px,75vh);
-    display:grid;
-    grid-template-columns:1fr 1fr;
-    border:1px solid var(--line);
-    position:relative;
-    overflow:hidden;
-}
-
-.life{
-    padding:45px;
-    display:flex;
-    flex-direction:column;
-    justify-content:center;
-    transition:.5s;
-}
-
-.life:first-child{
-    border-right:1px solid var(--line);
-    background:rgba(255,255,255,.015);
-}
-
-.life-label{
+.subtitle{
     color:#555;
-    font-size:9px;
-    letter-spacing:4px;
-    margin-bottom:25px;
-}
-
-.life h2{
-    font-size:clamp(27px,4vw,48px);
-    letter-spacing:-2px;
-    margin:0 0 18px;
-}
-
-.life p{
-    color:#888;
-    font-size:13px;
-    line-height:1.8;
-}
-
-.life ul{
-    color:#777;
-    padding-left:18px;
-    line-height:2;
-    font-size:12px;
-}
-
-.vs{
-    position:absolute;
-    left:50%;
-    top:50%;
-    transform:translate(-50%,-50%);
-    background:#020204;
-    border:1px solid #444;
-    width:44px;
-    height:44px;
-    border-radius:50%;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    font-family:monospace;
-    font-size:9px;
-    color:#aaa;
-    z-index:3;
-}
-
-/* DECISION */
-
-.decision h2{
-    font-size:clamp(38px,7vw,75px);
-    letter-spacing:-4px;
-    margin:20px 0;
-}
-
-.decision p{
-    color:#777;
-    max-width:650px;
-    margin:auto;
-    line-height:1.8;
-    font-size:13px;
-}
-
-.decision-options{
-    display:flex;
-    justify-content:center;
-    flex-wrap:wrap;
-    gap:10px;
-    margin-top:40px;
-}
-
-.decision-btn{
-    margin:0;
-}
-
-/* FINAL */
-
-.final-symbol{
-    width:100px;
-    height:100px;
-    border:1px solid #555;
-    border-radius:50%;
-    margin:0 auto 30px;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    font-family:monospace;
+    margin-top:20px;
+    font-family:"Space Mono",monospace;
     font-size:11px;
-    animation:pulse 3s infinite;
+    letter-spacing:.28em;
+    text-transform:uppercase;
 }
 
-@keyframes pulse{
-    50%{
-        box-shadow:0 0 70px rgba(255,255,255,.1);
-        border-color:#aaa;
-    }
-}
-
-.final-title{
-    font-size:clamp(42px,8vw,90px);
-    letter-spacing:-5px;
-}
-
-.final-text{
-    max-width:720px;
-    margin:25px auto;
-    color:#999;
+.boot-line{
+    margin:70px auto 0;
+    max-width:550px;
+    color:#8c8c8c;
     line-height:1.9;
     font-size:14px;
 }
 
-.code{
-    margin-top:30px;
-    font-family:monospace;
-    font-size:11px;
-    color:#555;
-    letter-spacing:3px;
+.start{
+    margin-top:45px;
+    background:transparent;
+    color:#ddd;
+    border:1px solid #333;
+    padding:16px 30px;
+    letter-spacing:.15em;
+    text-transform:uppercase;
+    transition:.3s;
 }
 
-.footer{
+.start:hover{
+    background:#eee;
+    color:#050505;
+    border-color:#eee;
+}
+
+#intro .wrap{
+    max-width:700px;
+}
+
+.intro-text{
+    font-size:clamp(24px,4vw,43px);
+    line-height:1.28;
+    font-weight:300;
+}
+
+.intro-small{
+    margin-top:40px;
+    color:#686868;
+    line-height:1.9;
+    font-size:14px;
+}
+
+.danger-note{
+    color:#999;
+    border-left:1px solid #444;
+    padding-left:18px;
+    margin-top:30px;
+    line-height:1.8;
+    font-size:13px;
+}
+
+.next{
+    margin-top:45px;
+    border:0;
+    background:#e9e9e9;
+    color:#050505;
+    padding:15px 24px;
+    font-size:11px;
+    letter-spacing:.14em;
+    text-transform:uppercase;
+}
+
+.next:hover{
+    background:#fff;
+}
+
+#session{
+    align-items:flex-start;
+    padding-top:8vh;
+}
+
+.session-wrap{
+    width:min(920px,100%);
+}
+
+.topbar{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    border-bottom:1px solid var(--line);
+    padding-bottom:16px;
+    margin-bottom:70px;
+}
+
+.progress{
+    width:170px;
+    height:1px;
+    background:#1b1b1b;
+}
+
+.progress > div{
+    height:100%;
+    width:0;
+    background:#aaa;
+    transition:1s;
+}
+
+.question-number{
+    color:#555;
+    font-family:"Space Mono",monospace;
+    font-size:10px;
+    letter-spacing:.15em;
+}
+
+.question-type{
+    color:#414141;
+    font-family:"Space Mono",monospace;
+    font-size:10px;
+}
+
+.question{
+    max-width:850px;
+    font-size:clamp(25px,4.3vw,47px);
+    line-height:1.23;
+    font-weight:300;
+    min-height:180px;
+}
+
+.question em{
+    font-style:normal;
+    color:#777;
+}
+
+.input-zone{
     margin-top:35px;
+}
+
+textarea{
+    width:100%;
+    min-height:150px;
+    resize:none;
+    background:transparent;
+    border:0;
+    border-bottom:1px solid #292929;
+    color:#eee;
+    outline:none;
+    font-size:18px;
+    line-height:1.7;
+    padding:0 0 18px;
+}
+
+textarea::placeholder{
+    color:#353535;
+}
+
+textarea:focus{
+    border-bottom-color:#666;
+}
+
+.answer-footer{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-top:18px;
+}
+
+.char{
     color:#333;
+    font-family:"Space Mono",monospace;
+    font-size:10px;
+}
+
+.continue{
+    background:transparent;
+    border:1px solid #292929;
+    color:#999;
+    padding:12px 20px;
+    font-size:10px;
+    letter-spacing:.15em;
+    text-transform:uppercase;
+    transition:.25s;
+}
+
+.continue:hover{
+    color:#fff;
+    border-color:#777;
+}
+
+.continue:disabled{
+    opacity:.2;
+    cursor:not-allowed;
+}
+
+#interruption{
+    background:#000;
+}
+
+.interrupt-wrap{
+    width:min(850px,100%);
+}
+
+.interrupt-label{
+    font-family:"Space Mono",monospace;
+    color:#777;
+    letter-spacing:.2em;
+    font-size:11px;
+    margin-bottom:45px;
+}
+
+.interrupt-title{
+    font-size:clamp(42px,9vw,100px);
+    font-weight:300;
+    letter-spacing:-.05em;
+    margin:0;
+}
+
+.interrupt-body{
+    max-width:650px;
+    color:#777;
+    font-size:17px;
+    line-height:1.8;
+    margin-top:35px;
+}
+
+.interrupt-body strong{
+    color:#ddd;
+    font-weight:400;
+}
+
+.loading{
+    display:flex;
+    align-items:center;
+    gap:7px;
+    margin-top:40px;
+}
+
+.loading span{
+    width:4px;
+    height:4px;
+    background:#aaa;
+    animation:pulse 1.2s infinite;
+}
+
+.loading span:nth-child(2){animation-delay:.2s}
+.loading span:nth-child(3){animation-delay:.4s}
+
+@keyframes pulse{
+    0%,100%{opacity:.1}
+    50%{opacity:1}
+}
+
+#reconstruction{
+    align-items:flex-start;
+    padding-top:8vh;
+}
+
+.recon-wrap{
+    width:min(1000px,100%);
+}
+
+.recon-header{
+    border-bottom:1px solid #222;
+    padding-bottom:25px;
+    margin-bottom:50px;
+}
+
+.recon-title{
+    font-family:"Space Mono",monospace;
+    font-size:12px;
+    letter-spacing:.18em;
+    color:#888;
+}
+
+.recon-sub{
+    color:#444;
+    font-size:11px;
+    margin-top:10px;
+}
+
+.recon-grid{
+    display:grid;
+    grid-template-columns:repeat(2,1fr);
+    gap:1px;
+    background:#191919;
+}
+
+.recon-card{
+    background:#070707;
+    min-height:210px;
+    padding:28px;
+}
+
+.card-label{
+    font-family:"Space Mono",monospace;
     font-size:9px;
-    letter-spacing:3px;
+    letter-spacing:.16em;
+    color:#555;
+    text-transform:uppercase;
+}
+
+.card-value{
+    margin-top:28px;
+    font-size:27px;
+    font-weight:300;
+    line-height:1.25;
+}
+
+.confidence{
+    margin-top:20px;
+    height:2px;
+    background:#191919;
+}
+
+.confidence div{
+    height:100%;
+    background:#777;
+}
+
+.conf-text{
+    margin-top:8px;
+    color:#4b4b4b;
+    font-family:"Space Mono",monospace;
+    font-size:9px;
+}
+
+.recon-big{
+    grid-column:1/-1;
+    min-height:250px;
+}
+
+.recon-big .card-value{
+    font-size:clamp(27px,4vw,46px);
+}
+
+#evidence{
+    align-items:flex-start;
+    padding-top:8vh;
+}
+
+.evidence-wrap{
+    width:min(900px,100%);
+}
+
+.evidence-title{
+    font-size:clamp(35px,6vw,70px);
+    font-weight:300;
+    letter-spacing:-.04em;
+}
+
+.evidence-sub{
+    color:#555;
+    margin-top:18px;
+    line-height:1.7;
+}
+
+.evidence-list{
+    margin-top:55px;
+    border-top:1px solid #202020;
+}
+
+.evidence-item{
+    border-bottom:1px solid #202020;
+    padding:27px 0;
+}
+
+.evidence-question{
+    color:#444;
+    font-family:"Space Mono",monospace;
+    font-size:9px;
+    letter-spacing:.1em;
+    margin-bottom:13px;
+}
+
+.evidence-answer{
+    color:#aaa;
+    line-height:1.7;
+    font-size:14px;
+}
+
+.evidence-meaning{
+    margin-top:14px;
+    color:#eee;
+    font-size:15px;
+}
+
+#finalQuestion{
+    background:#000;
+}
+
+.final-question{
+    font-size:clamp(30px,5vw,60px);
+    font-weight:300;
+    line-height:1.3;
+    max-width:850px;
+}
+
+.final-note{
+    margin-top:30px;
+    color:#555;
+    line-height:1.7;
+}
+
+#finalReveal{
+    align-items:flex-start;
+    padding-top:8vh;
+}
+
+.final-wrap{
+    width:min(1000px,100%);
+}
+
+.final-kicker{
+    font-family:"Space Mono",monospace;
+    color:#555;
+    font-size:10px;
+    letter-spacing:.2em;
+}
+
+.final-head{
+    font-size:clamp(42px,8vw,90px);
+    line-height:.95;
+    letter-spacing:-.06em;
+    font-weight:300;
+    margin:25px 0 80px;
+}
+
+.final-section{
+    border-top:1px solid #222;
+    padding:35px 0 45px;
+}
+
+.final-label{
+    color:#555;
+    font-family:"Space Mono",monospace;
+    font-size:9px;
+    letter-spacing:.16em;
+    text-transform:uppercase;
+}
+
+.final-value{
+    margin-top:20px;
+    font-size:clamp(20px,3vw,32px);
+    font-weight:300;
+    line-height:1.45;
+    max-width:850px;
+}
+
+.final-explanation{
+    margin-top:17px;
+    color:#666;
+    line-height:1.7;
+    max-width:700px;
+    font-size:13px;
+}
+
+.quote{
+    border-left:1px solid #777;
+    padding-left:20px;
+    color:#bbb;
+}
+
+.red{
+    color:#a34b4b;
+}
+
+.final-bottom{
+    text-align:center;
+    padding:100px 0;
+}
+
+.final-bottom p{
+    color:#555;
+    line-height:1.9;
+    max-width:650px;
+    margin:0 auto;
+}
+
+.restart{
+    margin-top:45px;
+    background:transparent;
+    color:#666;
+    border:1px solid #252525;
+    padding:14px 22px;
+    font-size:10px;
+    letter-spacing:.15em;
+    text-transform:uppercase;
+}
+
+.restart:hover{
+    color:#eee;
+    border-color:#777;
+}
+
+#toast{
+    position:fixed;
+    bottom:25px;
+    left:50%;
+    transform:translateX(-50%) translateY(30px);
+    opacity:0;
+    pointer-events:none;
+    background:#eee;
+    color:#050505;
+    padding:12px 20px;
+    font-family:"Space Mono",monospace;
+    font-size:9px;
+    letter-spacing:.12em;
+    transition:.4s;
+    z-index:100;
+}
+
+#toast.show{
+    opacity:1;
+    transform:translateX(-50%) translateY(0);
 }
 
 @media(max-width:700px){
-    .options{
-        grid-template-columns:1fr;
-    }
-
-    .profile-grid{
-        grid-template-columns:1fr;
-        max-height:65vh;
-        overflow:auto;
-    }
-
-    .split{
-        height:auto;
-        max-height:72vh;
-        overflow:auto;
-        grid-template-columns:1fr;
-    }
-
-    .life:first-child{
-        border-right:0;
-        border-bottom:1px solid var(--line);
-    }
-
-    .vs{
-        display:none;
-    }
-
-    .hero-title{
-        letter-spacing:-6px;
-    }
+    .screen{padding:22px}
+    .recon-grid{grid-template-columns:1fr}
+    .recon-big{grid-column:auto}
+    .question{min-height:150px}
+    .topbar{margin-bottom:45px}
 }
 </style>
 </head>
 
 <body>
 
-<canvas id="canvas"></canvas>
-<div class="noise"></div>
-<div class="scanlines"></div>
-<div class="vignette"></div>
+<div id="noise"></div>
+<div id="scan"></div>
+<div id="toast"></div>
 
-<!-- START -->
+<div id="app">
 
-<section class="screen active" id="s0">
+<!-- BOOT -->
+<section class="screen active" id="boot">
+    <div class="wrap">
+        <div class="logo">MIRROR</div>
+        <div class="subtitle">human reconstruction system // 01</div>
 
-<div class="wrap">
+        <div class="boot-line">
+            Nie będziemy pytać Cię, kim jesteś.
+            <br><br>
+            To byłoby zbyt łatwe.
+            <br><br>
+            Zobaczymy, co można wywnioskować
+            z rzeczy, których nie próbujesz powiedzieć.
+        </div>
 
-<div class="micro">EKSPERYMENT // 001</div>
-
-<div class="hero-title">
-DRUGIE<br>JA
-</div>
-
-<div class="hero-sub">
-Nie jest to test osobowości.<br>
-Nie dostaniesz wyniku, który już gdzieś istnieje.
-<br><br>
-Spróbujemy odtworzyć wersję Ciebie,<br>
-która mogłaby powstać po innych decyzjach.
-</div>
-
-<button class="btn" onclick="start()">ROZPOCZNIJ</button>
-
-<div class="footer">
-NIE SPIESZ SIĘ // ODPOWIADAJ INSTYNKTOWNIE
-</div>
-
-</div>
-
+        <button class="start" onclick="beginIntro()">WEJDŹ</button>
+    </div>
 </section>
 
 
-<!-- QUESTIONS -->
+<!-- INTRO -->
+<section class="screen" id="intro">
+    <div class="wrap">
 
-<section class="screen" id="s1">
+        <div class="tiny">PROTOKÓŁ 01 / ZASADY</div>
 
-<div class="corner" id="qCounter">01 / 12</div>
-<div class="corner right">EKSPERYMENT AKTYWNY</div>
+        <div class="intro-text" style="margin-top:30px">
+            Nie podawaj mi swojego imienia.
+            <br>
+            Nie podawaj wieku.
+            <br>
+            Nie podawaj miasta.
+        </div>
 
-<div class="wrap">
+        <div class="intro-small">
+            Odpowiadaj normalnie. Tak jakbyś pisał do człowieka.
+            Nie próbuj zgadywać, czego szukam.
+        </div>
 
-<div class="question-box">
+        <div class="danger-note">
+            System będzie zapamiętywał wcześniejsze odpowiedzi.
+            <br>
+            Niektóre pytania mogą wrócić później w zupełnie innej formie.
+        </div>
 
-<div class="question-number" id="questionNumber">
-SEKWENCJA 01
-</div>
-
-<div class="question" id="question"></div>
-
-<div class="question-sub" id="questionSub"></div>
-
-<div class="options" id="options"></div>
-
-</div>
-
-</div>
-
-<div class="progress-line" id="progress"></div>
-
+        <button class="next" onclick="startSession()">ROZUMIEM</button>
+    </div>
 </section>
 
 
-<!-- ANALYSIS -->
+<!-- SESSION -->
+<section class="screen" id="session">
+    <div class="session-wrap">
 
-<section class="screen" id="s2">
+        <div class="topbar">
+            <div class="question-number" id="qNumber">SCENA 01 / 12</div>
+            <div class="progress"><div id="progressBar"></div></div>
+            <div class="question-type" id="qType">OBSERVATION</div>
+        </div>
 
-<div class="analyzing">
+        <div class="question" id="questionText"></div>
 
-<div class="analysis-head">
-SYSTEM // REKONSTRUKCJA
-</div>
+        <div class="input-zone">
+            <textarea id="answer" maxlength="1200"
+            placeholder="Napisz tak, jak naprawdę byś odpowiedział..."></textarea>
 
-<div class="analysis-text" id="analysisText"></div>
+            <div class="answer-footer">
+                <div class="char" id="charCount">0 / 1200</div>
+                <button class="continue" id="continueBtn" onclick="submitAnswer()" disabled>
+                    KONTYNUUJ
+                </button>
+            </div>
+        </div>
 
-<span class="blink"></span>
-
-</div>
-
+    </div>
 </section>
 
 
-<!-- PROFILE -->
+<!-- INTERRUPTION -->
+<section class="screen" id="interruption">
+    <div class="interrupt-wrap">
 
-<section class="screen" id="s3">
+        <div class="interrupt-label" id="interruptLabel">SYSTEM INTERRUPTION</div>
 
-<div class="wrap">
+        <h1 class="interrupt-title" id="interruptTitle">
+            CHWILA.
+        </h1>
 
-<div class="micro">MODEL OSOBOWOŚCI</div>
+        <div class="interrupt-body" id="interruptBody"></div>
 
-<div class="profile-grid">
+        <div class="loading" id="loadingDots">
+            <span></span><span></span><span></span>
+        </div>
 
-<div class="profile-card">
-
-<div class="card-title">WYKRYTY WZORZEC</div>
-
-<div class="profile-name" id="profileName"></div>
-
-<div class="profile-desc" id="profileDesc"></div>
-
-</div>
-
-<div class="profile-card">
-
-<div class="card-title">PARAMETRY TRAJEKTORII</div>
-
-<div class="bars" id="bars"></div>
-
-</div>
-
-</div>
-
-<button class="btn small" onclick="showFuture()">POKAŻ PRZYSZŁOŚĆ</button>
-
-</div>
-
+    </div>
 </section>
 
 
-<!-- FUTURE -->
+<!-- RECONSTRUCTION -->
+<section class="screen" id="reconstruction">
+    <div class="recon-wrap">
 
-<section class="screen" id="s4">
+        <div class="recon-header">
+            <div class="recon-title">MIRROR // RECONSTRUCTION #01</div>
+            <div class="recon-sub">wynik nie jest diagnozą — jest hipotezą</div>
+        </div>
 
-<div class="wrap">
+        <div class="recon-grid" id="reconGrid"></div>
 
-<div class="micro">SYMULACJA TRAJEKTORII</div>
+        <div style="text-align:center;margin-top:60px">
+            <button class="next" onclick="showEvidence()">POKAŻ MI DOWODY</button>
+        </div>
 
-<div class="future-title" id="futureTitle">
-DWA ŻYCIA
-</div>
-
-<div class="future-sub">
-Ta sama osoba. Inne decyzje.
-</div>
-
-<div class="future-switch">
-
-<button class="active" onclick="renderFuture(0,this)">
-ŻYCIE KONTYNUOWANE
-</button>
-
-<button onclick="renderFuture(1,this)">
-ŻYCIE ALTERNATYWNE
-</button>
-
-</div>
-
-<div class="timeline" id="timeline"></div>
-
-<button class="btn small" onclick="showSplit()">
-POKAŻ RÓŻNICĘ
-</button>
-
-</div>
-
+    </div>
 </section>
 
 
-<!-- SPLIT -->
+<!-- EVIDENCE -->
+<section class="screen" id="evidence">
+    <div class="evidence-wrap">
 
-<section class="screen" id="s5">
+        <div class="tiny">SYSTEM MEMORY</div>
 
-<div class="wrap">
+        <div class="evidence-title" style="margin-top:22px">
+            Pamiętam więcej,
+            <br>
+            niż myślisz.
+        </div>
 
-<div class="micro">ODCHYLENIE TRAJEKTORII</div>
+        <div class="evidence-sub">
+            Nie pokazuję Ci tylko wyniku.
+            Pokazuję, z czego go zbudowałem.
+        </div>
 
-<div class="split">
+        <div class="evidence-list" id="evidenceList"></div>
 
-<div class="life">
+        <div style="text-align:center;margin-top:60px">
+            <button class="next" onclick="startFinalQuestion()">JESZCZE JEDNO</button>
+        </div>
 
-<div class="life-label">TRAJEKTORIA A</div>
-
-<h2 id="lifeA"></h2>
-
-<p id="descA"></p>
-
-<ul id="listA"></ul>
-
-</div>
-
-<div class="life">
-
-<div class="life-label">TRAJEKTORIA B</div>
-
-<h2 id="lifeB"></h2>
-
-<p id="descB"></p>
-
-<ul id="listB"></ul>
-
-</div>
-
-<div class="vs">VS</div>
-
-</div>
-
-<button class="btn small" onclick="showDecision()">
-JEST JESZCZE JEDNA DECYZJA
-</button>
-
-</div>
-
+    </div>
 </section>
 
 
-<!-- DECISION -->
+<!-- FINAL QUESTION -->
+<section class="screen" id="finalQuestion">
+    <div class="wrap">
 
-<section class="screen" id="s6">
+        <div class="tiny">OSTATNIA SCENA</div>
 
-<div class="wrap decision">
+        <div class="final-question" style="margin-top:30px">
+            Dostajesz możliwość zobaczenia
+            <em style="color:#777">jednej sceny ze swojego życia za 10 lat.</em>
+            <br><br>
+            Nie możesz jej zmienić.
+            <br>
+            Nie możesz z nikim porozmawiać.
+            <br>
+            Możesz tylko patrzeć.
+            <br><br>
+            <strong>Co chcesz zobaczyć?</strong>
+        </div>
 
-<div class="micro">PUNKT ROZGAŁĘZIENIA</div>
+        <div class="input-zone" style="margin-top:55px">
+            <textarea id="finalAnswer" maxlength="1500"
+            placeholder="Nie myśl za długo..."></textarea>
 
-<h2>TERAZ WYBIERASZ.</h2>
+            <div class="answer-footer">
+                <div class="char" id="finalChar">0 / 1500</div>
+                <button class="continue" id="finalBtn" onclick="submitFinal()" disabled>
+                    POKAŻ MI
+                </button>
+            </div>
+        </div>
 
-<p id="decisionText"></p>
-
-<div class="decision-options">
-
-<button class="btn decision-btn" onclick="finalChoice('bezpieczna')">
-ZOSTAJĘ PRZY TYM, CO ZNAM
-</button>
-
-<button class="btn decision-btn" onclick="finalChoice('ryzyko')">
-WYBIERAM NIEZNANE
-</button>
-
-<button class="btn decision-btn" onclick="finalChoice('ludzie')">
-WYBIERAM LUDZI
-</button>
-
-</div>
-
-</div>
-
+    </div>
 </section>
 
 
-<!-- FINAL -->
+<!-- FINAL REVEAL -->
+<section class="screen" id="finalReveal">
+    <div class="final-wrap">
 
-<section class="screen" id="s7">
+        <div class="final-kicker">MIRROR // FINAL RECONSTRUCTION</div>
 
-<div class="wrap">
+        <div class="final-head">
+            NIE POKAŻĘ<br>
+            CI TEJ SCENY.
+        </div>
 
-<div class="final-symbol" id="finalSymbol">
-?
-</div>
+        <div id="finalContent"></div>
 
-<div class="micro">REKONSTRUKCJA ZAKOŃCZONA</div>
+        <div class="final-bottom">
+            <p>
+                MIRROR nie wie, kim jesteś.
+                <br><br>
+                Zrobił tylko to, co zrobiłby uważny człowiek.
+                <br><br>
+                <strong style="color:#aaa">Słuchał.</strong>
+            </p>
 
-<div class="final-title" id="finalTitle"></div>
+            <button class="restart" onclick="location.reload()">
+                URUCHOM PONOWNIE
+            </button>
+        </div>
 
-<div class="final-text" id="finalText"></div>
-
-<div class="code" id="trajectoryCode"></div>
-
-<div class="footer">
-NIE JESTEŚ TYM, CO WYBRAŁEŚ.<br>
-JESTEŚ TYM, CO ROBISZ Z TYM WYBOREM.
-</div>
-
-<button class="btn small" onclick="location.reload()">
-ZACZNIJ OD NOWA
-</button>
-
-</div>
-
+    </div>
 </section>
+
+</div>
 
 
 <script>
 
 /* =========================================================
-   DRUGIE JA
-   WŁASNY SILNIK TRAJEKTORII
+   MIRROR
+   HUMAN RECONSTRUCTION ENGINE
    ========================================================= */
 
-const state = {
 
-    answers: [],
+/* -----------------------------
+   DATA
+----------------------------- */
 
-    traits: {
-        wolnosc: 50,
-        ryzyko: 50,
-        wiez: 50,
-        ambicja: 50,
-        stabilnosc: 50,
-        ciekawosc: 50,
-        niezaleznosc: 50,
-        empatia: 50
-    },
-
-    contradictions: [],
-
-    identity: "",
-
-    futureA: [],
-    futureB: [],
-
-    choice: ""
-};
-
-
-const questions = [
+const scenes = [
 
 {
-    text:"Dostajesz jutro 100 000 €. Nikt nie wie, że je masz. Czego NIE robisz jako pierwszego?",
-    sub:"Nie wybieraj tego, co brzmi rozsądnie. Wybierz pierwszą prawdziwą reakcję.",
-    options:[
-        ["A","Kupuję coś, o czym od dawna marzę."],
-        ["B","Zmieniam miejsce, w którym żyję."],
-        ["C","Odkładam prawie wszystko."],
-        ["D","Dzwonię do konkretnej osoby."]
-    ],
-    effects:[
-        {ryzyko:8,wolnosc:4,ambicja:2},
-        {wolnosc:12,niezaleznosc:8,ryzyko:5},
-        {stabilnosc:15,ryzyko:-8},
-        {wiez:15,empatia:8}
-    ]
+    type:"CHOICE WITHOUT CHOICE",
+    text:
+    `Masz 10 minut do wyjścia.
+
+W pokoju są:
+telefon,
+klucze,
+portfel,
+zdjęcie
+i jedna rzecz, której od dawna nie potrafisz wyrzucić.
+
+Możesz zabrać tylko jedną.
+
+Co bierzesz i dlaczego?`,
+    tag:"attachment"
 },
 
 {
-    text:"Masz pewność, że nikt nigdy Cię nie oceni. Co zmieniłbyś w swoim życiu?",
-    sub:"To pytanie jest ważniejsze niż wygląda.",
-    options:[
-        ["A","Pracę."],
-        ["B","Ludzi wokół mnie."],
-        ["C","Miejsce."],
-        ["D","Siebie."]
-    ],
-    effects:[
-        {ambicja:10,wolnosc:5},
-        {wiez:-5,niezaleznosc:10,ciekawosc:5},
-        {wolnosc:14,ryzyko:6},
-        {ciekawosc:12,ambicja:7}
-    ]
+    type:"ENVIRONMENT",
+    text:
+    `Opisz miejsce, do którego wracasz po naprawdę ciężkim dniu.
+
+Nie podawaj nazwy miasta.
+Nie mów, gdzie mieszkasz.
+
+Powiedz tylko:
+co widzisz,
+jaki dźwięk słyszysz,
+jaka jest temperatura
+i co znajduje się najbliżej drzwi.`,
+    tag:"environment"
 },
 
 {
-    text:"Wyobraź sobie, że możesz zobaczyć dokładnie swoje życie za 15 lat. Patrzysz czy nie?",
-    sub:"Wiedza ma cenę.",
-    options:[
-        ["A","Tak. Muszę wiedzieć."],
-        ["B","Nie. Odebrałoby mi to emocje."],
-        ["C","Tylko jeśli zobaczę również porażki."],
-        ["D","Tylko jeśli mogę później zmienić wynik."]
-    ],
-    effects:[
-        {stabilnosc:8,ryzyko:-4},
-        {wolnosc:10,ciekawosc:6},
-        {ciekawosc:15,empatia:5},
-        {wolnosc:8,niezaleznosc:7,ryzyko:5}
-    ]
+    type:"ABSENCE",
+    text:
+    `Ktoś, kogo naprawdę lubisz, dzwoni.
+
+Widzisz telefon.
+Wiesz, że możesz odebrać.
+
+Nie odbierasz.
+
+Dlaczego?`,
+    tag:"relationships"
 },
 
 {
-    text:"Ktoś bardzo Ci bliski chce, żebyś został w miejscu, którego Ty nie znosisz. Co robisz?",
-    sub:"Nie ma tutaj dobrej odpowiedzi.",
-    options:[
-        ["A","Zostaję dla tej osoby."],
-        ["B","Odchodzę."],
-        ["C","Szukam kompromisu."],
-        ["D","Nie wiem."]
-    ],
-    effects:[
-        {wiez:18,empatia:12,wolnosc:-8},
-        {wolnosc:15,niezaleznosc:12},
-        {wiez:8,stabilnosc:7},
-        {ciekawosc:5}
-    ]
+    type:"FUTURE",
+    text:
+    `Masz 1000 €.
+
+Nie możesz wydać ich na siebie.
+
+Musisz zrobić z nimi coś, czego efekt zobaczysz dopiero za rok.
+
+Co robisz?`,
+    tag:"values"
 },
 
 {
-    text:"Masz gwarancję sukcesu, ale przez 5 lat będziesz robić coś, czego nie lubisz.",
-    sub:"Co wybierasz?",
-    options:[
-        ["A","Biorę gwarancję."],
-        ["B","Odrzucam ją."],
-        ["C","Biorę, jeśli później będę wolny."],
-        ["D","Próbuję znaleźć trzecią drogę."]
-    ],
-    effects:[
-        {stabilnosc:18,ambicja:10,ryzyko:-10},
-        {wolnosc:15,ryzyko:12},
-        {ambicja:12,stabilnosc:5},
-        {ciekawosc:14,niezaleznosc:8}
-    ]
+    type:"WOUND",
+    text:
+    `Napisz jedno zdanie, które mogłoby Cię naprawdę zranić.
+
+Nie wyjaśniaj dlaczego.`,
+    tag:"vulnerability"
 },
 
 {
-    text:"Co bardziej boli?",
-    sub:"Pierwsza odpowiedź jest zazwyczaj ciekawsza.",
-    options:[
-        ["A","Stracić kogoś."],
-        ["B","Zmarnować własny potencjał."],
-        ["C","Nie mieć wolności."],
-        ["D","Nie wiedzieć, co mogło się wydarzyć."]
-    ],
-    effects:[
-        {wiez:20,empatia:15},
-        {ambicja:20,niezaleznosc:7},
-        {wolnosc:20,ryzyko:5},
-        {ciekawosc:20,ryzyko:8}
-    ]
+    type:"ESCAPE",
+    text:
+    `Jutro rano możesz obudzić się w dowolnym miejscu na świecie.
+
+Nikt nie będzie Cię szukał.
+Nie masz żadnych zobowiązań.
+Masz wystarczająco dużo pieniędzy na pierwszy miesiąc.
+
+Gdzie jesteś?
+
+I co robisz przez pierwszą godzinę?`,
+    tag:"freedom"
 },
 
 {
-    text:"Masz możliwość wyjechać jutro do kraju, którego nigdy nie widziałeś. Nie masz planu.",
-    sub:"Masz 10 sekund na decyzję.",
-    options:[
-        ["A","Jadę."],
-        ["B","Nie."],
-        ["C","Jadę, ale najpierw sprawdzam wszystko."],
-        ["D","Szukam kogoś, kto pojedzie ze mną."]
-    ],
-    effects:[
-        {wolnosc:15,ryzyko:18,ciekawosc:12},
-        {stabilnosc:15,ryzyko:-12},
-        {ciekawosc:12,stabilnosc:5},
-        {wiez:12,ryzyko:8}
-    ]
+    type:"ORDINARY",
+    text:
+    `Jest 6:00 rano.
+
+Nie musisz dzisiaj nigdzie iść.
+Nikt niczego od Ciebie nie chce.
+
+Co robisz przez pierwsze 10 minut po przebudzeniu?`,
+    tag:"routine"
 },
 
 {
-    text:"Możesz usunąć z pamięci jedno bolesne wydarzenie. Usuwasz?",
-    sub:"Jeżeli usuniesz je, usuniesz również to, czego Cię nauczyło.",
-    options:[
-        ["A","Tak."],
-        ["B","Nie."],
-        ["C","Tylko jeśli nadal będę pamiętać lekcję."],
-        ["D","Nie wiem."]
-    ],
-    effects:[
-        {stabilnosc:10,empatia:-3},
-        {empatia:15,ciekawosc:8},
-        {empatia:12,ambicja:7},
-        {ciekawosc:5}
-    ]
+    type:"LOSS",
+    text:
+    `Wyobraź sobie, że za pięć lat możesz stracić jedną z tych rzeczy:
+
+pieniądze,
+wolność,
+miłość,
+status,
+zdrowie.
+
+Którą utratę najtrudniej byłoby Ci zaakceptować?
+
+Dlaczego?`,
+    tag:"fear"
 },
 
 {
-    text:"Gdyby Twoje życie było filmem, czego najbardziej bałbyś się w jego ostatniej scenie?",
-    sub:"Nie musisz tego nikomu pokazywać.",
-    options:[
-        ["A","Że nikogo nie będzie obok."],
-        ["B","Że niczego nie osiągnąłem."],
-        ["C","Że nie żyłem po swojemu."],
-        ["D","Że nie spróbowałem."]
-    ],
-    effects:[
-        {wiez:20,empatia:15},
-        {ambicja:20},
-        {wolnosc:20,niezaleznosc:10},
-        {ryzyko:15,ciekawosc:15}
-    ]
+    type:"SOCIAL",
+    text:
+    `Wchodzisz do pomieszczenia pełnego ludzi.
+
+Nikt Cię nie zna.
+
+Masz dwie możliwości:
+
+możesz sprawić, żeby Cię polubili,
+albo możesz sprawić, żeby Cię zapamiętali.
+
+Co wybierasz?`,
+    tag:"identity"
 },
 
 {
-    text:"Wybierz jedną rzecz, której nie chciałbyś stracić nawet za cenę sukcesu.",
-    sub:"Nie analizuj.",
-    options:[
-        ["A","Ludzi."],
-        ["B","Wolności."],
-        ["C","Spokoju."],
-        ["D","Możliwości rozwoju."]
-    ],
-    effects:[
-        {wiez:18,empatia:10},
-        {wolnosc:18,niezaleznosc:10},
-        {stabilnosc:18},
-        {ambicja:18,ciekawosc:8}
-    ]
+    type:"CONTRADICTION",
+    text:
+    `Powiedz o jednej rzeczy, którą bardzo chcesz zmienić w swoim życiu.
+
+A teraz odpowiedz na trudniejszą część:
+
+Co zyskujesz dzięki temu, że nadal się nie zmieniła?`,
+    tag:"contradiction"
 },
 
 {
-    text:"Dostajesz możliwość rozpoczęcia życia od zera, ale tracisz wszystko, co masz teraz.",
-    sub:"Nie możesz zabrać pieniędzy, rzeczy ani pozycji.",
-    options:[
-        ["A","Tak."],
-        ["B","Nie."],
-        ["C","Tylko gdybym mógł zabrać jedną osobę."],
-        ["D","Tylko gdybym wiedział, gdzie zaczynam."]
-    ],
-    effects:[
-        {wolnosc:20,ryzyko:20},
-        {stabilnosc:18},
-        {wiez:20,empatia:8},
-        {ciekawosc:15,stabilnosc:5}
-    ]
+    type:"REGRET",
+    text:
+    `Masz możliwość wrócić do jednego momentu ze swojego życia.
+
+Nie możesz go zmienić.
+
+Możesz tylko jeszcze raz go zobaczyć.
+
+Który moment wybierasz?`,
+    tag:"memory"
 },
 
 {
-    text:"Ostatnie pytanie. Czy osoba, którą jesteś dzisiaj, byłaby dumna z osoby, którą spotkasz za 10 lat?",
-    sub:"Nie odpowiadaj tak, jak powinieneś. Odpowiedz tak, jak czujesz.",
-    options:[
-        ["A","Tak."],
-        ["B","Nie."],
-        ["C","Nie wiem."],
-        ["D","Będzie musiała mnie jeszcze zaskoczyć."]
-    ],
-    effects:[
-        {stabilnosc:8},
-        {ambicja:15,niezaleznosc:8},
-        {ciekawosc:15},
-        {wolnosc:10,ciekawosc:15,ryzyko:8}
-    ]
+    type:"TRUTH",
+    text:
+    `Wyobraź sobie, że ktoś zna Cię od dziesięciu lat.
+
+Patrzy na wszystkie Twoje decyzje.
+
+Jaką jedną rzecz powiedziałby o Tobie,
+której Ty prawdopodobnie nie chciałbyś usłyszeć?`,
+    tag:"self"
 }
 
 ];
 
 
-/* =========================================================
-   CANVAS — ŻYWE TŁO
-   ========================================================= */
+/* -----------------------------
+   STATE
+----------------------------- */
 
-const canvas=document.getElementById("canvas");
-const ctx=canvas.getContext("2d");
+let current = 0;
 
-let W,H;
-let particles=[];
+const state = {
+    answers:[],
+    words:[],
+    signals:{},
+    score:{
+        freedom:0,
+        security:0,
+        connection:0,
+        recognition:0,
+        novelty:0,
+        control:0,
+        avoidance:0,
+        ambition:0,
+        introspection:0,
+        attachment:0
+    },
+    finalAnswer:""
+};
 
-function resize(){
-    W=canvas.width=innerWidth*devicePixelRatio;
-    H=canvas.height=innerHeight*devicePixelRatio;
-    canvas.style.width=innerWidth+"px";
-    canvas.style.height=innerHeight+"px";
 
-    particles=[];
+/* -----------------------------
+   BASIC HELPERS
+----------------------------- */
 
-    for(let i=0;i<100;i++){
-        particles.push({
-            x:Math.random()*W,
-            y:Math.random()*H,
-            r:Math.random()*1.5+.2,
-            vx:(Math.random()-.5)*.12,
-            vy:(Math.random()-.5)*.12,
-            a:Math.random()*.5
-        });
-    }
+function $(id){
+    return document.getElementById(id);
 }
-
-addEventListener("resize",resize);
-resize();
-
-function animate(){
-    ctx.clearRect(0,0,W,H);
-
-    for(const p of particles){
-
-        p.x+=p.vx;
-        p.y+=p.vy;
-
-        if(p.x<0)p.x=W;
-        if(p.x>W)p.x=0;
-        if(p.y<0)p.y=H;
-        if(p.y>H)p.y=0;
-
-        ctx.beginPath();
-        ctx.arc(p.x,p.y,p.r,0,Math.PI*2);
-        ctx.fillStyle=`rgba(255,255,255,${p.a})`;
-        ctx.fill();
-    }
-
-    requestAnimationFrame(animate);
-}
-
-animate();
-
-
-/* =========================================================
-   AUDIO
-   ========================================================= */
-
-let audioCtx=null;
-
-function audioStart(){
-
-    if(!audioCtx){
-        audioCtx=new(window.AudioContext||window.webkitAudioContext)();
-    }
-
-}
-
-function tone(freq,duration=.08,type="sine",volume=.025){
-
-    if(!audioCtx)return;
-
-    const o=audioCtx.createOscillator();
-    const g=audioCtx.createGain();
-
-    o.frequency.value=freq;
-    o.type=type;
-
-    g.gain.setValueAtTime(volume,audioCtx.currentTime);
-    g.gain.exponentialRampToValueAtTime(.0001,audioCtx.currentTime+duration);
-
-    o.connect(g);
-    g.connect(audioCtx.destination);
-
-    o.start();
-    o.stop(audioCtx.currentTime+duration);
-}
-
-
-/* =========================================================
-   SCREEN CONTROL
-   ========================================================= */
 
 function show(id){
-
     document.querySelectorAll(".screen").forEach(s=>{
         s.classList.remove("active");
     });
+    $(id).classList.add("active");
+    window.scrollTo(0,0);
+}
 
-    document.getElementById(id).classList.add("active");
+function wait(ms){
+    return new Promise(resolve=>setTimeout(resolve,ms));
+}
+
+function random(min,max){
+    return Math.floor(Math.random()*(max-min+1))+min;
+}
+
+function escapeHTML(str){
+    return str
+        .replace(/&/g,"&amp;")
+        .replace(/</g,"&lt;")
+        .replace(/>/g,"&gt;")
+        .replace(/"/g,"&quot;");
 }
 
 
-/* =========================================================
+/* -----------------------------
    START
-   ========================================================= */
+----------------------------- */
 
-function start(){
+function beginIntro(){
+    show("intro");
+}
 
-    audioStart();
-    tone(180,.15,"sine",.04);
-
-    show("s1");
-
-    setTimeout(()=>{
-        renderQuestion();
-    },500);
+function startSession(){
+    show("session");
+    loadScene();
 }
 
 
-/* =========================================================
-   QUESTIONS
-   ========================================================= */
+/* -----------------------------
+   SCENES
+----------------------------- */
 
-let currentQuestion=0;
+function loadScene(){
 
-function renderQuestion(){
+    const scene = scenes[current];
 
-    const q=questions[currentQuestion];
+    $("qNumber").textContent =
+        `SCENA ${String(current+1).padStart(2,"0")} / ${scenes.length}`;
 
-    document.getElementById("questionNumber").textContent=
-        "SEKWENCJA "+String(currentQuestion+1).padStart(2,"0");
+    $("qType").textContent = scene.type;
 
-    document.getElementById("qCounter").textContent=
-        String(currentQuestion+1).padStart(2,"0")+" / "+
-        String(questions.length).padStart(2,"0");
+    $("progressBar").style.width =
+        `${(current/scenes.length)*100}%`;
 
-    document.getElementById("question").textContent=q.text;
+    $("questionText").innerHTML =
+        formatQuestion(scene.text);
 
-    document.getElementById("questionSub").textContent=q.sub;
+    $("answer").value="";
+    $("charCount").textContent="0 / 1200";
+    $("continueBtn").disabled=true;
 
-    document.getElementById("progress").style.width=
-        ((currentQuestion)/questions.length*100)+"%";
+    $("answer").focus();
+}
 
-    const container=document.getElementById("options");
+function formatQuestion(text){
 
-    container.innerHTML="";
-
-    q.options.forEach((o,index)=>{
-
-        const b=document.createElement("button");
-
-        b.className="option";
-
-        b.innerHTML=
-            `<span>${o[0]}</span>${o[1]}`;
-
-        b.onclick=()=>answer(index);
-
-        container.appendChild(b);
-
-    });
-
+    return escapeHTML(text)
+        .replace(/\n/g,"<br>")
+        .replace(/(Nie podawaj nazwy miasta\.)/g,
+            "<em>$1</em>")
+        .replace(/(Nie wyjaśniaj dlaczego\.)/g,
+            "<em>$1</em>")
+        .replace(/(Co zyskujesz dzięki temu, że nadal się nie zmieniła\?)/g,
+            "<em>$1</em>");
 }
 
 
-/* =========================================================
-   ANSWER ENGINE
-   ========================================================= */
+/* -----------------------------
+   INPUT
+----------------------------- */
 
-function answer(index){
+$("answer").addEventListener("input",function(){
 
-    audioStart();
+    const value=this.value.trim();
 
-    tone(110+index*35,.09,"sine",.025);
+    $("charCount").textContent =
+        `${this.value.length} / 1200`;
 
-    const q=questions[currentQuestion];
+    $("continueBtn").disabled =
+        value.length < 3;
+});
+
+
+$("finalAnswer").addEventListener("input",function(){
+
+    $("finalChar").textContent =
+        `${this.value.length} / 1500`;
+
+    $("finalBtn").disabled =
+        this.value.trim().length < 3;
+});
+
+
+/* -----------------------------
+   ANSWER PROCESSING
+----------------------------- */
+
+async function submitAnswer(){
+
+    const text=$("answer").value.trim();
+
+    if(!text) return;
 
     state.answers.push({
-        question:currentQuestion,
-        index:index,
-        text:q.options[index][1]
+        scene:current+1,
+        type:scenes[current].type,
+        tag:scenes[current].tag,
+        text:text
     });
 
-    const effect=q.effects[index];
+    analyze(text,scenes[current].tag);
 
-    Object.keys(effect).forEach(k=>{
-        state.traits[k]+=effect[k];
+    current++;
+
+    if(current===4){
+        await interruptionOne();
+    }
+    else if(current===8){
+        await interruptionTwo();
+    }
+    else if(current===scenes.length){
+        await interruptionThree();
+        buildReconstruction();
+    }
+    else{
+        loadScene();
+    }
+}
+
+
+/* -----------------------------
+   ANALYSIS ENGINE
+----------------------------- */
+
+const lexicon={
+
+freedom:[
+    "wolność","wyjecha","podróż","podroz","świat","swiat",
+    "sam","niezależ","niezalez","uciec","zmiana","gdziekolwiek",
+    "spontan","bez zobowiąza","bez zobowia","nie chcę ogranic"
+],
+
+security:[
+    "bezpie","stabil","dom","mieszka","pienią","praca",
+    "spokój","spokoj","pewność","pewnosc","rodzina","ubezpie",
+    "oszczęd","oszczed"
+],
+
+connection:[
+    "rodzina","partner","partnerka","dziewcz","chłopak","chlopak",
+    "przyjac","miłość","milosc","ludzie","razem","blisko",
+    "dziecko","dzieci","mama","tata"
+],
+
+recognition:[
+    "sukces","udowod","szacun","uznanie","najleps","wygr",
+    "pienią","pieniad","status","karier","wynik","osiąg",
+    "osiagn"
+],
+
+novelty:[
+    "now","zmian","podróż","podroz","adrenal","sprób",
+    "sprob","pozn","imprez","miasto","przyg","inaczej"
+],
+
+control:[
+    "sam zdecy","kontrol","plan","samemu","nie zależ",
+    "niezależ","niezalez","nikt mi","po swojemu","decyduj"
+],
+
+avoidance:[
+    "nie wiem","nie chcę","nie chce","raczej nie","uciek",
+    "ignor","odpuszcz","zostaj","nie odbier","nie odpow"
+],
+
+ambition:[
+    "leps","więcej","wiecej","cel","rozwój","rozwoj","osiąg",
+    "osiagn","budow","zarab","sukces","praca","umiej"
+],
+
+introspection:[
+    "myśl","mysl","czuję","czuje","czuję że","czuje ze",
+    "boję","boje","zastan","pamiętam","pamietam","sens",
+    "dlaczego","trudn","ważne","wazne"
+],
+
+attachment:[
+    "zdjęcie","zdjecie","pamią","pamie","klucz","dom",
+    "rodzina","osoba","wiadomo","prezent","pierścion","pierscion"
+]
+
+};
+
+
+function analyze(text,tag){
+
+    const lower=text.toLowerCase();
+
+    state.words.push(
+        ...lower
+        .replace(/[.,!?;:()]/g," ")
+        .split(/\s+/)
+        .filter(x=>x.length>4)
+    );
+
+    Object.keys(lexicon).forEach(signal=>{
+
+        lexicon[signal].forEach(word=>{
+
+            if(lower.includes(word)){
+                state.score[signal]++;
+            }
+
+        });
+
     });
 
-    currentQuestion++;
+    // długość odpowiedzi = sygnał ostrożności / refleksji
+    if(text.length>350){
+        state.score.introspection+=1;
+    }
 
-    if(currentQuestion<questions.length){
+    if(text.length<60){
+        state.score.avoidance+=1;
+    }
 
-        document.getElementById("options").style.opacity="0";
+    // pierwsza osoba
+    const firstPerson=(lower.match(/\b(ja|mnie|mi|moje|mój|moja|chcę|muszę|lubię|czuję)\b/g)||[]).length;
 
-        setTimeout(()=>{
+    if(firstPerson>=3){
+        state.score.introspection+=1;
+    }
 
-            document.getElementById("options").style.opacity="1";
+    // słowa absolutne
+    const absolutes=(lower.match(/\b(zawsze|nigdy|wszyscy|nikt|wszystko|nic)\b/g)||[]).length;
 
-            renderQuestion();
-
-        },350);
-
-    }else{
-
-        document.getElementById("progress").style.width="100%";
-
-        setTimeout(analyze,700);
-
+    if(absolutes>=2){
+        state.score.control+=1;
     }
 
 }
 
 
-/* =========================================================
-   NORMALIZE
-   ========================================================= */
+/* -----------------------------
+   INTERRUPTION 01
+----------------------------- */
 
-function normalizeTraits(){
+async function interruptionOne(){
 
-    Object.keys(state.traits).forEach(k=>{
-        state.traits[k]=Math.max(0,Math.min(100,state.traits[k]));
+    show("interruption");
+
+    $("interruptLabel").textContent="SYSTEM INTERRUPTION / 01";
+    $("interruptTitle").textContent="CHWILA.";
+
+    $("interruptBody").innerHTML=
+        `Nie odpowiadasz przypadkowo.<br><br>
+        Na tym etapie nie wiem jeszcze <strong>kim jesteś.</strong>
+        <br><br>
+        Ale zaczynam widzieć sposób,
+        w jaki podejmujesz decyzje.`;
+
+    await wait(5200);
+
+    loadScene();
+}
+
+
+/* -----------------------------
+   INTERRUPTION 02
+----------------------------- */
+
+async function interruptionTwo(){
+
+    show("interruption");
+
+    $("interruptLabel").textContent="SYSTEM INTERRUPTION / 02";
+    $("interruptTitle").textContent="MAM WZÓR.";
+
+    const pattern=getDominantPattern();
+
+    $("interruptBody").innerHTML=
+        `W kilku odpowiedziach pojawiła się ta sama tendencja.
+        <br><br>
+        <strong>${pattern}</strong>
+        <br><br>
+        Jeszcze nie wiem, czy to cecha.
+        <br>
+        Może to tylko sposób, w jaki odpowiadasz dzisiaj.`;
+
+    await wait(6000);
+
+    loadScene();
+}
+
+
+/* -----------------------------
+   INTERRUPTION 03
+----------------------------- */
+
+async function interruptionThree(){
+
+    show("interruption");
+
+    $("interruptLabel").textContent="SYSTEM INTERRUPTION / 03";
+    $("interruptTitle").textContent="TERAZ UWAŻAJ.";
+
+    $("interruptBody").innerHTML=
+        `Do tej pory odpowiadałeś na pytania.
+        <br><br>
+        Teraz zacznę porównywać
+        <strong>Twoje odpowiedzi ze sobą.</strong>
+        <br><br>
+        To właśnie tutaj zaczynają pojawiać się sprzeczności.`;
+
+    await wait(5500);
+}
+
+
+/* -----------------------------
+   PATTERN ENGINE
+----------------------------- */
+
+function getDominantPattern(){
+
+    const scores=state.score;
+
+    let max=-1;
+    let winner="";
+
+    Object.keys(scores).forEach(k=>{
+        if(scores[k]>max){
+            max=scores[k];
+            winner=k;
+        }
     });
 
+    const messages={
+        freedom:"często wybierasz możliwość odejścia zamiast możliwość pozostania.",
+        security:"ważniejsze od samego sukcesu wydaje się dla Ciebie poczucie, że masz gdzie wrócić.",
+        connection:"ludzie pojawiają się w Twoich odpowiedziach częściej, niż prawdopodobnie planowałeś.",
+        recognition:"nie chodzi Ci wyłącznie o osiągnięcie celu — ważne jest również to, żeby miało ono znaczenie.",
+        novelty:"powtarzalność wydaje się męczyć Cię szybciej niż ryzyko.",
+        control:"bardzo często próbujesz zostawić sobie możliwość samodzielnego wyboru.",
+        avoidance:"niektóre odpowiedzi omijasz, zamiast udzielić na nie prostej odpowiedzi.",
+        ambition:"w wielu scenariuszach myślisz nie tylko o tym, co jest teraz, ale o tym, co można zbudować później.",
+        introspection:"masz tendencję do szukania drugiego dna nawet w prostych pytaniach.",
+        attachment:"rzeczy i miejsca mają dla Ciebie większą wartość emocjonalną, niż wynikałoby z ich praktycznego znaczenia."
+    };
+
+    return messages[winner];
 }
 
 
-/* =========================================================
-   CONTRADICTIONS
-   ========================================================= */
+/* -----------------------------
+   RECONSTRUCTION
+----------------------------- */
 
-function detectContradictions(){
+function buildReconstruction(){
 
-    const t=state.traits;
+    const age=estimateAge();
+    const environment=estimateEnvironment();
+    const motive=getCoreMotive();
+    const contradiction=getContradiction();
+    const fear=getCoreFear();
+    const style=getCommunicationStyle();
 
-    state.contradictions=[];
+    const cards=[
 
-    if(t.wolnosc>72 && t.stabilnosc>72){
-        state.contradictions.push(
-            "Wolność i bezpieczeństwo są dla Ciebie równie ważne."
-        );
+    {
+        label:"WIEK — HIPOTEZA",
+        value:age.text,
+        confidence:age.confidence
+    },
+
+    {
+        label:"ŚRODOWISKO — HIPOTEZA",
+        value:environment.text,
+        confidence:environment.confidence
+    },
+
+    {
+        label:"NAJSILNIEJSZY WZÓR",
+        value:motive,
+        confidence:null
+    },
+
+    {
+        label:"SPOSÓB ODPOWIADANIA",
+        value:style,
+        confidence:null
+    },
+
+    {
+        label:"NAJWIĘKSZA SPRZECZNOŚĆ",
+        value:contradiction,
+        confidence:null,
+        big:true
+    },
+
+    {
+        label:"PRAWDOPODOBNY LĘK",
+        value:fear,
+        confidence:null,
+        big:true
     }
 
-    if(t.wiez>72 && t.niezaleznosc>72){
-        state.contradictions.push(
-            "Potrzebujesz ludzi, ale jednocześnie bardzo bronisz swojej niezależności."
-        );
-    }
+    ];
 
-    if(t.ryzyko>72 && t.stabilnosc>72){
-        state.contradictions.push(
-            "Pociąga Cię ryzyko, ale nie chcesz płacić za nie ceną chaosu."
-        );
-    }
+    $("reconGrid").innerHTML="";
 
-    if(t.ambicja>72 && t.stabilnosc>72){
-        state.contradictions.push(
-            "Chcesz więcej, ale nie chcesz stracić tego, co już zbudowałeś."
-        );
-    }
+    cards.forEach(card=>{
 
-    if(t.ciekawosc>72 && t.stabilnosc<35){
-        state.contradictions.push(
-            "Nowe doświadczenia są dla Ciebie ważniejsze niż przewidywalność."
-        );
-    }
+        const div=document.createElement("div");
 
+        div.className=
+            "recon-card"+(card.big?" recon-big":"");
+
+        let html=`
+            <div class="card-label">${card.label}</div>
+            <div class="card-value">${card.value}</div>
+        `;
+
+        if(card.confidence!==null){
+
+            html+=`
+                <div class="confidence">
+                    <div style="width:${card.confidence}%"></div>
+                </div>
+                <div class="conf-text">
+                    PEWNOŚĆ SYSTEMU: ${card.confidence}%
+                </div>
+            `;
+
+        }
+
+        div.innerHTML=html;
+
+        $("reconGrid").appendChild(div);
+
+    });
+
+    show("reconstruction");
 }
 
 
-/* =========================================================
-   IDENTITY
-   ========================================================= */
+/* -----------------------------
+   AGE
+----------------------------- */
 
-function buildIdentity(){
+function estimateAge(){
 
-    const t=state.traits;
+    const total=state.answers
+        .map(a=>a.text)
+        .join(" ")
+        .toLowerCase();
 
-    if(
-        t.wolnosc>70 &&
-        t.ryzyko>65 &&
-        t.niezaleznosc>65
-    ){
+    let score=0;
+
+    const young=[
+        "studia","szkoła","szkola","rodzice","matura",
+        "uniwersyt","akademik"
+    ];
+
+    const adult=[
+        "praca","kredyt","mieszkanie","czynsz","firma",
+        "dziecko","dzieci","pensja","szef","urlop"
+    ];
+
+    young.forEach(x=>{
+        if(total.includes(x)) score-=1;
+    });
+
+    adult.forEach(x=>{
+        if(total.includes(x)) score+=1;
+    });
+
+    if(score>=3){
         return {
-            name:"WŁÓCZYKIJ",
-            desc:"Najsilniejszym impulsem nie jest dla Ciebie sukces. Jest nim możliwość wyboru. Kiedy czujesz, że ktoś albo coś zamyka Ci drzwi, zaczynasz myśleć o wyjściu. Potrafisz zaakceptować niepewność, jeżeli ceną jest własna przestrzeń."
+            text:"30–38",
+            confidence:61
         };
     }
 
-    if(
-        t.ambicja>70 &&
-        t.ciekawosc>65
-    ){
+    if(score<=-2){
         return {
-            name:"TWÓRCA",
-            desc:"Nie wystarcza Ci samo uczestniczenie w życiu. Chcesz coś po sobie zostawić. Twoja ciekawość napędza ambicję, ale jednocześnie sprawia, że trudno Ci długo pozostawać w miejscu."
-        };
-    }
-
-    if(
-        t.wiez>70 &&
-        t.empatia>65
-    ){
-        return {
-            name:"ŁĄCZNIK",
-            desc:"Decyzje podejmujesz nie tylko przez pryzmat siebie. Ludzie są częścią Twojej definicji szczęścia. Potrafisz wiele poświęcić dla relacji, ale właśnie dlatego niewłaściwe osoby mogą mieć nad Tobą zbyt dużą władzę."
-        };
-    }
-
-    if(
-        t.stabilnosc>70 &&
-        t.ryzyko<45
-    ){
-        return {
-            name:"ARCHITEKT",
-            desc:"Nie boisz się planowania. Wręcz przeciwnie — lubisz wiedzieć, na czym stoisz. Twoją siłą jest zdolność budowania rzeczy powoli. Twoim zagrożeniem jest moment, w którym stabilność zaczyna udawać szczęście."
+            text:"18–24",
+            confidence:59
         };
     }
 
     return {
-        name:"NIEPRZEWIDYWALNY",
-        desc:"System nie znalazł jednej dominującej wersji Ciebie. W Twoich odpowiedziach istnieją sprzeczne kierunki. To nie błąd. To oznacza, że nie jesteś jeszcze przywiązany do jednej wersji własnego życia."
+        text:"24–30",
+        confidence:66
     };
-
 }
 
 
-/* =========================================================
-   ANALYSIS
-   ========================================================= */
+/* -----------------------------
+   ENVIRONMENT
+----------------------------- */
 
-function analyze(){
+function estimateEnvironment(){
 
-    normalizeTraits();
-    detectContradictions();
+    const text=state.answers
+        .filter(a=>a.tag==="environment")
+        .map(a=>a.text)
+        .join(" ")
+        .toLowerCase();
 
-    show("s2");
+    const all=state.answers.map(a=>a.text).join(" ").toLowerCase();
 
-    const text=document.getElementById("analysisText");
+    let cold=0;
+    let city=0;
+    let nature=0;
+    let transport=0;
 
-    text.innerHTML="";
+    [
+        "zim","śnieg","snieg","mróz","mroz","zimno",
+        "ciemno","deszcz","wiatr","kurtka"
+    ].forEach(x=>{
+        if(all.includes(x)) cold++;
+    });
 
-    const lines=[
+    [
+        "metro","tramwaj","autobus","pociąg","pociag",
+        "ulica","blok","centrum","sklep","miasto"
+    ].forEach(x=>{
+        if(all.includes(x)) city++;
+    });
 
-        "odbieranie odpowiedzi...",
-        "normalizacja danych...",
-        "analiza decyzji pierwszego impulsu...",
-        "porównywanie wartości deklarowanych z wartościami ukrytymi...",
-        "wyszukiwanie konfliktów wewnętrznych...",
-        `wykryto ${state.contradictions.length} potencjalnych sprzeczności...`,
-        "generowanie alternatywnych trajektorii...",
-        "odrzucanie scenariuszy o niskiej spójności...",
-        "rekonstrukcja zakończona."
-    ];
+    [
+        "las","jezior","góry","gory","morze","plaża","plaza",
+        "wieś","wies","pole"
+    ].forEach(x=>{
+        if(all.includes(x)) nature++;
+    });
 
-    let i=0;
+    [
+        "samochód","samochod","rower","hulajnoga","lotnisko",
+        "pociąg","pociag"
+    ].forEach(x=>{
+        if(all.includes(x)) transport++;
+    });
 
-    function next(){
+    if(cold>=2 && city>=2){
 
-        if(i<lines.length){
-
-            text.innerHTML+=lines[i]+"<br>";
-
-            tone(70+i*17,.035,"square",.012);
-
-            i++;
-
-            setTimeout(next,520);
-
-        }else{
-
-            setTimeout(buildProfile,800);
-
-        }
+        return {
+            text:"Chłodne / północne środowisko miejskie",
+            confidence:72
+        };
 
     }
 
-    next();
+    if(city>=2 && transport>=1){
 
-}
+        return {
+            text:"Miejski styl życia z dużą mobilnością",
+            confidence:69
+        };
 
+    }
 
-/* =========================================================
-   PROFILE
-   ========================================================= */
+    if(nature>=2){
 
-function buildProfile(){
+        return {
+            text:"Środowisko z silnym kontaktem z naturą",
+            confidence:64
+        };
 
-    state.identity=buildIdentity();
+    }
 
-    document.getElementById("profileName").textContent=
-        state.identity.name;
-
-    document.getElementById("profileDesc").textContent=
-        state.identity.desc;
-
-    const bars=document.getElementById("bars");
-
-    bars.innerHTML="";
-
-    const labels={
-        wolnosc:"WOLNOŚĆ",
-        ryzyko:"RYZYKO",
-        wiez:"WIĘŹ",
-        ambicja:"AMBICJA",
-        stabilnosc:"STABILNOŚĆ",
-        ciekawosc:"CIEKAWOŚĆ",
-        niezaleznosc:"NIEZALEŻNOŚĆ",
-        empatia:"EMPATIA"
+    return {
+        text:"Miejskie lub podmiejskie środowisko",
+        confidence:54
     };
-
-    Object.keys(labels).forEach(k=>{
-
-        const value=Math.round(state.traits[k]);
-
-        const row=document.createElement("div");
-
-        row.className="bar-row";
-
-        row.innerHTML=`
-            <div>${labels[k]}</div>
-            <div class="bar"><i></i></div>
-            <div class="bar-value">${value}</div>
-        `;
-
-        bars.appendChild(row);
-
-        setTimeout(()=>{
-            row.querySelector("i").style.width=value+"%";
-        },150);
-
-    });
-
-    show("s3");
-
 }
 
 
-/* =========================================================
-   FUTURE GENERATOR
-   ========================================================= */
+/* -----------------------------
+   CORE MOTIVE
+----------------------------- */
 
-function generateFutures(){
+function getCoreMotive(){
 
-    const t=state.traits;
+    const s=state.score;
 
-    const A=[];
-    const B=[];
+    if(s.freedom>=s.security &&
+       s.freedom>=s.connection &&
+       s.freedom>=s.recognition){
 
-    A.push({
-        year:"2027",
-        title:"Rok porządkowania",
-        text:
-        t.stabilnosc>60
-        ?"Zaczynasz świadomie budować stabilniejszą bazę. Mniej chaosu, więcej kontroli."
-        :"Zaczynasz zauważać, że dotychczasowy układ przestał Ci wystarczać."
-    });
+        return "Potrzeba możliwości wyboru — bardziej niż samego komfortu.";
+    }
 
-    A.push({
-        year:"2029",
-        title:
-        t.ambicja>65
-        ?"Pierwszy duży przełom"
-        :"Pierwsza poważna zmiana",
-        text:
-        t.ambicja>65
-        ?"Podejmujesz decyzję, która zwiększa Twoje możliwości, ale również odpowiedzialność."
-        :"Pojawia się możliwość zmiany kierunku. Nie wykorzystujesz jej od razu."
-    });
+    if(s.connection>=s.recognition &&
+       s.connection>=s.freedom){
 
-    A.push({
-        year:"2032",
-        title:"Cena stabilności",
-        text:
-        t.stabilnosc>70
-        ?"Masz więcej bezpieczeństwa niż wcześniej. Zaczynasz jednak zadawać sobie pytanie, czy bezpieczeństwo było właściwym celem."
-        :"Twoje życie jest spokojniejsze, ale część Ciebie nadal zastanawia się nad niewykorzystanymi możliwościami."
-    });
+        return "Potrzeba bliskości, ale bez utraty własnej przestrzeni.";
+    }
 
-    A.push({
-        year:"2036",
-        title:"Konfrontacja",
-        text:
-        t.wiez>65
-        ?"Najważniejsza decyzja tego okresu będzie dotyczyła człowieka, nie pieniędzy."
-        :"Najważniejsza decyzja tego okresu będzie dotyczyła Ciebie."
-    });
+    if(s.recognition>=s.security &&
+       s.recognition>=s.connection){
 
-    A.push({
-        year:"2041",
-        title:"Późna odpowiedź",
-        text:
-        "Patrzysz wstecz i rozumiesz, że większość wielkich zmian zaczynała się od decyzji, które wtedy wydawały się małe."
-    });
+        return "Potrzeba poczucia, że Twoje życie coś znaczy.";
+    }
 
+    if(s.security>=s.freedom){
 
-    B.push({
-        year:"2027",
-        title:"Ruch",
-        text:
-        "Robisz coś, czego obecna wersja Ciebie długo nie chciała zrobić. Nie masz pełnego planu."
-    });
+        return "Potrzeba stabilnego miejsca, z którego możesz podejmować własne decyzje.";
+    }
 
-    B.push({
-        year:"2029",
-        title:"Nowe środowisko",
-        text:
-        t.ciekawosc>65
-        ?"Poznajesz ludzi i miejsca, które zmieniają sposób, w jaki definiujesz normalne życie."
-        :"Nowe otoczenie zmusza Cię do nauczenia się rzeczy, których wcześniej unikałeś."
-    });
-
-    B.push({
-        year:"2032",
-        title:"Strata i zysk",
-        text:
-        t.wiez>65
-        ?"Jedna relacja kończy się albo zmienia formę. Inna staje się ważniejsza, niż przewidywałeś."
-        :"Tracisz część dawnej stabilności, ale zyskujesz przestrzeń, której wcześniej Ci brakowało."
-    });
-
-    B.push({
-        year:"2036",
-        title:"Druga wersja Ciebie",
-        text:
-        "Ludzie, którzy znali Cię wcześniej, zauważają zmianę. Nie chodzi o wygląd ani pieniądze. Chodzi o sposób, w jaki podejmujesz decyzje."
-    });
-
-    B.push({
-        year:"2041",
-        title:"Nie żałujesz",
-        text:
-        "Nie wszystko poszło dobrze. Ale kiedy pytasz siebie, czy powinieneś był spróbować — odpowiedź jest prosta."
-    });
-
-    state.futureA=A;
-    state.futureB=B;
+    return "Potrzeba życia, które nie wydaje się przypadkowe.";
 }
 
 
-/* =========================================================
-   FUTURE SCREEN
-   ========================================================= */
+/* -----------------------------
+   FEAR
+----------------------------- */
 
-function showFuture(){
+function getCoreFear(){
 
-    generateFutures();
+    const s=state.score;
 
-    show("s4");
+    if(s.freedom>s.security+1){
 
-    renderFuture(0,document.querySelector(".future-switch button"));
+        return "Nie tyle boisz się zmiany, co możliwości utknięcia w życiu, którego sam nie wybrałeś.";
+    }
+
+    if(s.connection>s.freedom){
+
+        return "Możliwe, że bardziej niż samotności obawiasz się utraty ważnych ludzi.";
+    }
+
+    if(s.recognition>=s.connection){
+
+        return "Możliwe, że trudniej znosisz poczucie niewykorzystanego potencjału niż samą porażkę.";
+    }
+
+    return "Najsilniejszy lęk wydaje się związany z utratą kontroli nad kierunkiem własnego życia.";
 }
 
-function renderFuture(which,button){
 
-    document.querySelectorAll(".future-switch button")
-        .forEach(b=>b.classList.remove("active"));
+/* -----------------------------
+   CONTRADICTION
+----------------------------- */
 
-    if(button)button.classList.add("active");
+function getContradiction(){
 
-    const list=which===0?state.futureA:state.futureB;
+    const s=state.score;
 
-    const title=which===0
-        ?"ŻYCIE, KTÓRE KONTYNUJESZ"
-        :"ŻYCIE, KTÓRE MOGŁOBY SIĘ WYDARZYĆ";
+    if(s.freedom>=3 && s.security>=2){
 
-    document.getElementById("futureTitle").textContent=title;
+        return "Chcesz wolności, ale nie chcesz stracić miejsca, do którego możesz wrócić.";
+    }
 
-    const timeline=document.getElementById("timeline");
+    if(s.connection>=3 && s.control>=2){
 
-    timeline.innerHTML="";
+        return "Chcesz bliskości, ale jednocześnie bardzo pilnujesz własnej niezależności.";
+    }
 
-    list.forEach(e=>{
+    if(s.ambition>=3 && s.avoidance>=2){
 
-        const div=document.createElement("div");
+        return "Chcesz zmiany, ale część Ciebie wciąż negocjuje cenę, jaką trzeba za nią zapłacić.";
+    }
 
-        div.className="event";
+    if(s.novelty>=3 && s.security>=2){
 
-        div.innerHTML=`
-            <div class="event-year">${e.year}</div>
-            <div class="event-content">
-                <strong>${e.title}</strong>
-                ${e.text}
+        return "Szukasz nowych doświadczeń, ale nie chcesz, żeby eksperyment zniszczył stabilność.";
+    }
+
+    return "Chcesz odpowiedzi, ale jednocześnie zostawiasz sobie możliwość powiedzenia: „to nie o mnie”.";
+}
+
+
+/* -----------------------------
+   COMMUNICATION STYLE
+----------------------------- */
+
+function getCommunicationStyle(){
+
+    const avg=
+        state.answers.reduce((a,b)=>a+b.text.length,0)/
+        Math.max(1,state.answers.length);
+
+    if(avg>350){
+
+        return "Rozbudowany. Gdy temat jest ważny, dodajesz kontekst zamiast odpowiadać jednym zdaniem.";
+    }
+
+    if(avg<100){
+
+        return "Oszczędny. Nie dajesz więcej informacji, niż uważasz za potrzebne.";
+    }
+
+    return "Selektywny. Potrafisz powiedzieć dużo, ale nie wszystko.";
+}
+
+
+/* -----------------------------
+   EVIDENCE
+----------------------------- */
+
+function showEvidence(){
+
+    const list=$("evidenceList");
+
+    list.innerHTML="";
+
+    const important=state.answers
+        .filter(a=>a.text.length>20)
+        .slice(0,7);
+
+    important.forEach((a,i)=>{
+
+        const meaning=explainAnswer(a);
+
+        const item=document.createElement("div");
+
+        item.className="evidence-item";
+
+        item.innerHTML=`
+            <div class="evidence-question">
+                SCENA ${String(a.scene).padStart(2,"0")} // ${a.type}
+            </div>
+
+            <div class="evidence-answer">
+                „${escapeHTML(shorten(a.text,280))}”
+            </div>
+
+            <div class="evidence-meaning">
+                ${meaning}
             </div>
         `;
 
-        timeline.appendChild(div);
-
+        list.appendChild(item);
     });
 
+    show("evidence");
 }
 
 
-/* =========================================================
-   SPLIT
-   ========================================================= */
+function shorten(text,max){
 
-function showSplit(){
+    if(text.length<=max) return text;
 
-    const t=state.traits;
-
-    const AName=
-        t.stabilnosc>t.ryzyko
-        ?"ŻYCIE ZBUDOWANE"
-        :"ŻYCIE KONTYNUOWANE";
-
-    const BName=
-        t.wolnosc>t.stabilnosc
-        ?"ŻYCIE ODKRYTE"
-        :"ŻYCIE ODWAŻNE";
-
-    document.getElementById("lifeA").textContent=AName;
-
-    document.getElementById("lifeB").textContent=BName;
-
-    document.getElementById("descA").textContent=
-        "Ta wersja Ciebie wybiera przewidywalność, rozwój krok po kroku i rzeczy, które można utrzymać przez lata.";
-
-    document.getElementById("descB").textContent=
-        "Ta wersja Ciebie zgadza się zapłacić cenę niepewności za możliwość doświadczenia czegoś, czego nie da się zaplanować.";
-
-    document.getElementById("listA").innerHTML=
-        `<li>więcej kontroli</li>
-         <li>mniej przypadkowych decyzji</li>
-         <li>większa przewidywalność</li>
-         <li>ryzyko poczucia „mogłem spróbować”</li>`;
-
-    document.getElementById("listB").innerHTML=
-        `<li>więcej niepewności</li>
-         <li>więcej nowych doświadczeń</li>
-         <li>większa możliwość zmiany</li>
-         <li>ryzyko utraty obecnego komfortu</li>`;
-
-    show("s5");
-
+    return text.substring(0,max)+"…";
 }
 
 
-/* =========================================================
-   DECISION
-   ========================================================= */
+function explainAnswer(a){
 
-function showDecision(){
+    const text=a.text.toLowerCase();
 
-    const t=state.traits;
+    if(a.tag==="attachment"){
 
-    let text=
-        "System znalazł dwie spójne wersje przyszłości. "+
-        "Ale jest problem: żadna z nich nie jest naprawdę Twoja. "+
-        "Ostatnia decyzja należy do Ciebie.";
-
-    if(state.contradictions.length){
-
-        text+=
-            " Wykryty konflikt: "+
-            state.contradictions[0];
+        return "System wykorzystuje tę odpowiedź do sprawdzania, co automatycznie uznajesz za warte ochrony.";
     }
 
-    document.getElementById("decisionText").textContent=text;
+    if(a.tag==="environment"){
 
-    show("s6");
+        return "Ta odpowiedź nie służy do znalezienia Twojego adresu. Pokazuje sposób, w jaki zauważasz własne otoczenie.";
+    }
 
+    if(a.tag==="relationships"){
+
+        return "Tutaj ważniejsza od samej odpowiedzi jest granica między bliskością a potrzebą wycofania się.";
+    }
+
+    if(a.tag==="values"){
+
+        return "To pokazuje, czy myślisz bardziej o natychmiastowej nagrodzie, przyszłości czy innych ludziach.";
+    }
+
+    if(a.tag==="vulnerability"){
+
+        return "System szuka nie tego, co Cię obraża, ale tego, jak opisujesz własną wartość.";
+    }
+
+    if(a.tag==="freedom"){
+
+        return "W tej odpowiedzi pojawia się informacja o tym, jak wyglądałoby Twoje życie bez obecnych ograniczeń.";
+    }
+
+    if(a.tag==="contradiction"){
+
+        return "To pytanie sprawdza, czy przeszkoda jest wyłącznie problemem — czy również pełni jakąś funkcję.";
+    }
+
+    if(a.tag==="fear"){
+
+        return "Tutaj wybór straty mówi często więcej niż wybór korzyści.";
+    }
+
+    if(a.tag==="identity"){
+
+        return "System porównuje potrzebę akceptacji z potrzebą pozostawienia po sobie śladu.";
+    }
+
+    return "Ta odpowiedź została zachowana jako element większego wzoru.";
 }
 
 
-/* =========================================================
+/* -----------------------------
    FINAL
-   ========================================================= */
+----------------------------- */
 
-function finalChoice(choice){
+function startFinalQuestion(){
 
-    state.choice=choice;
+    show("finalQuestion");
 
-    let title="";
-    let text="";
-    let symbol="";
-
-    const t=state.traits;
-
-    if(choice==="ryzyko"){
-
-        title="DRUGA STRONA";
-
-        symbol="02";
-
-        text=
-        "Wybrałeś możliwość zamiast gwarancji. "+
-        "To nie oznacza, że Twoja przyszłość będzie łatwiejsza. "+
-        "Oznacza tylko, że przestajesz oczekiwać od życia, że najpierw pokaże Ci bezpieczną drogę. "+
-        "Najbardziej interesujące jest to, że ta odpowiedź jest spójna z "+
-        Math.round(t.wolnosc)+"% Twojego profilu.";
-
-    }
-
-    if(choice==="bezpieczna"){
-
-        title="ARCHITEKT";
-
-        symbol="01";
-
-        text=
-        "Wybrałeś konstrukcję zamiast chaosu. "+
-        "Nie jest to tchórzostwo. Stabilność może być świadomą strategią. "+
-        "Ale istnieje jedno pytanie, którego ten wybór nie rozwiązuje: "+
-        "czy budujesz życie, którego naprawdę chcesz, czy tylko takie, którego nie boisz się stracić?";
-
-    }
-
-    if(choice==="ludzie"){
-
-        title="ŁĄCZNIK";
-
-        symbol="∞";
-
-        text=
-        "Wybrałeś ludzi. To najtrudniejsza opcja, ponieważ ludzie nie mają instrukcji obsługi. "+
-        "Możesz stracić czas, pieniądze, miejsce, a nawet część własnej niezależności. "+
-        "Ale właśnie relacje mogą sprawić, że przyszłość przestaje być tylko listą osiągnięć.";
-
-    }
-
-    document.getElementById("finalTitle").textContent=title;
-
-    document.getElementById("finalText").textContent=text;
-
-    document.getElementById("finalSymbol").textContent=symbol;
-
-    document.getElementById("trajectoryCode").textContent=
-        "TRAJEKTORIA // "+generateCode();
-
-    show("s7");
-
-    tone(220,.5,"sine",.04);
-
+    setTimeout(()=>{
+        $("finalAnswer").focus();
+    },400);
 }
 
 
-/* =========================================================
-   UNIQUE CODE
-   ========================================================= */
+async function submitFinal(){
 
-function generateCode(){
+    const text=$("finalAnswer").value.trim();
 
-    let value=0;
+    if(!text) return;
 
-    state.answers.forEach((a,i)=>{
-        value+=(a.index+1)*(i+7)*31;
-    });
+    state.finalAnswer=text;
 
-    Object.values(state.traits).forEach(v=>{
-        value+=Math.round(v)*17;
-    });
+    show("interruption");
 
-    value=Math.abs(Math.floor(value));
+    $("interruptLabel").textContent="FINAL ANALYSIS";
+    $("interruptTitle").textContent="NIE.";
 
-    return value.toString(36).toUpperCase().slice(0,8).padStart(8,"0");
+    $("interruptBody").innerHTML=
+        `Nie pokażę Ci tej sceny.
+        <br><br>
+        Bo właśnie powiedziałeś mi coś
+        <strong>ważniejszego niż to, co chcesz zobaczyć.</strong>`;
 
+    await wait(5000);
+
+    buildFinal();
 }
 
 
-/* =========================================================
+/* -----------------------------
+   FINAL INTERPRETATION
+----------------------------- */
+
+function interpretFinal(text){
+
+    const t=text.toLowerCase();
+
+    const things=[];
+
+    if(/rodzin|dzieck|partner|partnerka|żon|zona|mąż|maz|miłoś|milos/.test(t)){
+        things.push("bliskość");
+    }
+
+    if(/pienią|pieniad|dom|mieszkan|samoch|firma|prac|zarab/.test(t)){
+        things.push("stabilność");
+    }
+
+    if(/podróż|podroz|świat|swiat|lot|wyjazd|morze|góry|gory/.test(t)){
+        things.push("wolność");
+    }
+
+    if(/sukces|wygran|najleps|osiągn|osiagn|bogat|cel/.test(t)){
+        things.push("osiągnięcie");
+    }
+
+    if(/spokój|spokoj|cisza|samot|dom|bezpie/.test(t)){
+        things.push("spokój");
+    }
+
+    if(/szczęśli|szczesli|uśmiech|usmiech|radość|radosc/.test(t)){
+        things.push("szczęście");
+    }
+
+    if(things.length===0){
+        things.push("pewność, że obrany kierunek miał sens");
+    }
+
+    return things;
+}
+
+
+function buildFinal(){
+
+    const desired=interpretFinal(state.finalAnswer);
+
+    let hidden="";
+
+    if(state.score.freedom>=3){
+        hidden=
+        "W Twoich odpowiedziach wielokrotnie pojawiała się potrzeba zachowania możliwości odejścia. Dlatego podejrzewam, że nie chodzi Ci wyłącznie o osiągnięcie celu. Chodzi Ci o to, żeby mieć pewność, że nadal możesz wybrać.";
+    }
+    else if(state.score.connection>=3){
+        hidden=
+        "W wielu odpowiedziach pojawiali się inni ludzie. Nie zawsze wprost. Dlatego podejrzewam, że część Twoich decyzji ma sens dopiero wtedy, gdy możesz dzielić ich rezultat z kimś ważnym.";
+    }
+    else if(state.score.recognition>=3){
+        hidden=
+        "W Twoich odpowiedziach kilka razy pojawiła się potrzeba, żeby życie było czymś więcej niż tylko wygodne. Podejrzewam, że boisz się nie tyle porażki, co przeciętności.";
+    }
+    else{
+        hidden=
+        "W Twoich odpowiedziach powtarzała się potrzeba znalezienia kierunku, który nie będzie przypadkowy. Podejrzewam, że większym problemem niż brak odpowiedzi jest brak pewności, która odpowiedź jest naprawdę Twoja.";
+    }
+
+    const contradiction=getContradiction();
+
+    $("finalContent").innerHTML=`
+
+        <div class="final-section">
+
+            <div class="final-label">
+                TO, CO WŁAŚNIE POWIEDZIAŁEŚ
+            </div>
+
+            <div class="final-value">
+                Chcesz zobaczyć:
+                <span class="quote">${escapeHTML(shorten(state.finalAnswer,500))}</span>
+            </div>
+
+            <div class="final-explanation">
+                System nie traktuje tej odpowiedzi jako przepowiedni.
+                Traktuje ją jako informację o tym, czego Twoja wyobraźnia
+                automatycznie szuka w przyszłości.
+            </div>
+
+        </div>
+
+
+        <div class="final-section">
+
+            <div class="final-label">
+                CO PRAWDOPODOBNIE NAPRAWDĘ CHCESZ ZOBACZYĆ
+            </div>
+
+            <div class="final-value">
+                ${desired.join(" + ")}
+            </div>
+
+            <div class="final-explanation">
+                To nie musi być Twoja świadoma odpowiedź.
+                To wzór wynikający z tego, co pojawiało się
+                w całej rozmowie.
+            </div>
+
+        </div>
+
+
+        <div class="final-section">
+
+            <div class="final-label">
+                RZECZ, KTÓREJ NIE POWIEDZIAŁEŚ
+            </div>
+
+            <div class="final-value">
+                ${hidden}
+            </div>
+
+            <div class="final-explanation">
+                <span class="red">HIPOTEZA — NIE FAKT.</span>
+                MIRROR może się mylić.
+            </div>
+
+        </div>
+
+
+        <div class="final-section">
+
+            <div class="final-label">
+                A TERAZ NAJWAŻNIEJSZE
+            </div>
+
+            <div class="final-value">
+                ${contradiction}
+            </div>
+
+        </div>
+
+
+        <div class="final-section">
+
+            <div class="final-label">
+                OSTATNIA RZECZ
+            </div>
+
+            <div class="final-value">
+                Nie powiedziałeś mi,
+                kim jesteś.
+                <br><br>
+                Powiedziałeś mi tylko,
+                <strong>co robisz, kiedy nikt nie mówi Ci, kim masz być.</strong>
+            </div>
+
+        </div>
+    `;
+
+    show("finalReveal");
+}
+
+
+/* -----------------------------
    KEYBOARD
-   ========================================================= */
+----------------------------- */
 
-document.addEventListener("keydown",e=>{
+$("answer").addEventListener("keydown",function(e){
 
-    if(!document.getElementById("s1").classList.contains("active"))
-        return;
+    if(e.key==="Enter" && !e.shiftKey){
 
-    const map={
-        "1":0,
-        "2":1,
-        "3":2,
-        "4":3
-    };
+        e.preventDefault();
 
-    if(map[e.key]!==undefined){
-
-        const buttons=document.querySelectorAll(".option");
-
-        if(buttons[map[e.key]]){
-
-            buttons[map[e.key]].click();
-
+        if(!$("continueBtn").disabled){
+            submitAnswer();
         }
 
     }
 
 });
+
+
+$("finalAnswer").addEventListener("keydown",function(e){
+
+    if(e.key==="Enter" && !e.shiftKey){
+
+        e.preventDefault();
+
+        if(!$("finalBtn").disabled){
+            submitFinal();
+        }
+
+    }
+
+});
+
+
+/* -----------------------------
+   RANDOM MICRO GLITCHES
+----------------------------- */
+
+setInterval(()=>{
+
+    if(Math.random()<.18){
+
+        const el=document.querySelector(".question");
+
+        if(el && document.querySelector("#session").classList.contains("active")){
+
+            el.style.transform=
+                `translateX(${random(-1,1)}px)`;
+
+            setTimeout(()=>{
+                el.style.transform="";
+            },80);
+
+        }
+
+    }
+
+},2500);
 
 </script>
 
