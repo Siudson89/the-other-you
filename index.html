@@ -2,8 +2,8 @@
 <html lang="pl">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>MIRROR</title>
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>MIRROR — DO NOT LOOK AWAY</title>
 
 <style>
 *{
@@ -16,80 +16,85 @@ html,body{
     width:100%;
     height:100%;
     overflow:hidden;
-    background:#050505;
+    background:#030303;
     color:#eee;
     font-family:Arial,Helvetica,sans-serif;
 }
 
 body{
-    cursor:default;
-    transition:background .5s,color .5s;
+    transition:filter .15s,background .5s;
 }
 
 #app{
     position:relative;
-    width:100%;
-    height:100%;
+    width:100vw;
+    height:100vh;
     overflow:hidden;
     background:
-        radial-gradient(circle at 50% 45%,#111 0%,#070707 45%,#020202 100%);
+        radial-gradient(circle at 50% 48%,#141414 0%,#070707 43%,#010101 100%);
 }
 
-#noise{
+#grain{
     position:absolute;
     inset:-50%;
-    opacity:.035;
-    pointer-events:none;
     z-index:90;
+    pointer-events:none;
+    opacity:.045;
     background-image:
-        repeating-radial-gradient(circle at 0 0,#fff 0 1px,transparent 1px 3px);
-    animation:noiseMove .15s steps(2) infinite;
+        repeating-radial-gradient(
+            circle at 0 0,
+            rgba(255,255,255,.8) 0 1px,
+            transparent 1px 4px
+        );
+    animation:grain .14s steps(2) infinite;
 }
 
-#scanlines{
+#scan{
     position:absolute;
     inset:0;
+    z-index:89;
     pointer-events:none;
-    z-index:80;
     opacity:.08;
-    background:repeating-linear-gradient(
-        to bottom,
-        transparent 0px,
-        transparent 3px,
-        rgba(255,255,255,.12) 4px
-    );
+    background:
+        repeating-linear-gradient(
+            to bottom,
+            transparent 0,
+            transparent 3px,
+            rgba(255,255,255,.12) 4px
+        );
 }
 
 #vignette{
     position:absolute;
     inset:0;
+    z-index:88;
     pointer-events:none;
-    z-index:81;
-    background:radial-gradient(
-        ellipse at center,
-        transparent 35%,
-        rgba(0,0,0,.35) 65%,
-        rgba(0,0,0,.92) 100%
-    );
+    background:
+        radial-gradient(
+            ellipse at center,
+            transparent 25%,
+            rgba(0,0,0,.25) 55%,
+            rgba(0,0,0,.94) 100%
+        );
 }
 
-#flash{
-    position:absolute;
-    inset:0;
-    background:#fff;
-    opacity:0;
-    pointer-events:none;
-    z-index:200;
-}
-
+#flash,
 #redFlash{
     position:absolute;
     inset:0;
-    background:#d00;
-    opacity:0;
-    mix-blend-mode:screen;
     pointer-events:none;
-    z-index:199;
+    opacity:0;
+}
+
+#flash{
+    z-index:200;
+    background:#fff;
+}
+
+#redFlash{
+    z-index:201;
+    background:#b00000;
+    mix-blend-mode:screen;
 }
 
 #content{
@@ -97,67 +102,64 @@ body{
     left:50%;
     top:50%;
     transform:translate(-50%,-50%);
-    width:min(850px,88vw);
-    min-height:420px;
+    width:min(900px,90vw);
+    min-height:460px;
     display:flex;
     flex-direction:column;
-    justify-content:center;
     align-items:center;
+    justify-content:center;
     text-align:center;
-    z-index:20;
+    z-index:30;
 }
 
-#eyebrow{
-    min-height:20px;
-    margin-bottom:22px;
-    font-size:11px;
-    letter-spacing:5px;
-    color:#666;
-    transition:.3s;
+#chapter{
+    min-height:18px;
+    margin-bottom:24px;
+    color:#555;
+    font-size:10px;
+    letter-spacing:6px;
+    text-transform:uppercase;
 }
 
-#mainText{
-    max-width:850px;
-    font-size:clamp(27px,4vw,55px);
+#main{
+    min-height:75px;
+    max-width:900px;
+    font-size:clamp(28px,4.4vw,62px);
+    line-height:1.02;
     font-weight:600;
-    line-height:1.08;
-    letter-spacing:-1px;
-    min-height:65px;
-    transition:opacity .25s,transform .25s,filter .25s;
-    text-shadow:0 0 30px rgba(255,255,255,.04);
+    letter-spacing:-1.5px;
+    text-shadow:0 0 35px rgba(255,255,255,.04);
 }
 
-#subText{
-    margin-top:20px;
-    max-width:700px;
+#sub{
     min-height:25px;
-    font-size:14px;
+    max-width:680px;
+    margin-top:20px;
     color:#666;
+    font-size:14px;
     line-height:1.5;
-    transition:.3s;
 }
 
-#inputArea{
-    width:min(650px,88vw);
-    margin-top:45px;
+#input{
+    width:min(620px,85vw);
+    margin-top:42px;
     opacity:0;
-    transform:translateY(12px);
+    transform:translateY(15px);
     pointer-events:none;
-    transition:.35s;
+    transition:.3s;
 }
 
 #answer{
     width:100%;
-    background:transparent;
+    padding:12px 5px;
     border:0;
     border-bottom:1px solid #444;
-    color:white;
-    outline:none;
-    padding:12px 4px;
+    outline:0;
+    background:transparent;
+    color:#fff;
     text-align:center;
     font-size:25px;
     letter-spacing:1px;
-    transition:.25s;
 }
 
 #answer:focus{
@@ -165,18 +167,19 @@ body{
 }
 
 #answer::placeholder{
-    color:#333;
+    color:#303030;
 }
 
 #send{
-    margin-top:25px;
+    margin-top:23px;
+    border:1px solid #444;
     background:#eee;
     color:#050505;
-    border:0;
     padding:12px 28px;
-    font-weight:bold;
-    letter-spacing:2px;
     cursor:pointer;
+    font-size:11px;
+    font-weight:bold;
+    letter-spacing:3px;
     transition:.2s;
 }
 
@@ -185,96 +188,93 @@ body{
 }
 
 #send:active{
-    transform:scale(.95);
+    transform:scale(.94);
 }
 
 #start{
-    margin-top:38px;
-    padding:14px 35px;
+    margin-top:42px;
+    padding:14px 34px;
+    background:#070707;
     border:1px solid #555;
     color:#eee;
-    background:#080808;
     letter-spacing:4px;
     cursor:pointer;
     transition:.25s;
 }
 
 #start:hover{
+    color:#000;
     background:#eee;
-    color:#050505;
-    border-color:#eee;
 }
 
-#progress{
+#bar{
     position:absolute;
     left:25px;
-    bottom:22px;
-    width:180px;
+    bottom:23px;
+    width:190px;
     height:2px;
-    background:#1a1a1a;
-    z-index:25;
+    background:#181818;
+    z-index:40;
 }
 
-#progressBar{
+#barFill{
     height:100%;
     width:0%;
     background:#aaa;
-    transition:width 1s ease;
+    transition:width 1s;
 }
 
-#counter{
+#count{
     position:absolute;
     right:25px;
-    bottom:17px;
+    bottom:18px;
+    z-index:40;
+    color:#444;
     font-size:10px;
     letter-spacing:3px;
-    color:#444;
-    z-index:25;
 }
 
-#cursor{
-    position:fixed;
-    width:8px;
-    height:8px;
+#cursorDot{
+    position:absolute;
+    width:5px;
+    height:5px;
     border-radius:50%;
-    background:#ddd;
-    opacity:0;
+    background:#aaa;
     pointer-events:none;
-    z-index:300;
-    transform:translate(-50%,-50%);
-    transition:background .2s,width .2s,height .2s;
+    opacity:0;
+    z-index:250;
+    box-shadow:0 0 10px rgba(255,255,255,.5);
 }
 
-#particles{
+#objects,
+#words{
     position:absolute;
     inset:0;
     pointer-events:none;
-    z-index:10;
 }
 
-.particle{
-    position:absolute;
-    color:#777;
-    font-size:10px;
-    opacity:0;
-    pointer-events:none;
-    user-select:none;
+#objects{
+    z-index:20;
 }
 
-#floatingText{
-    position:absolute;
-    inset:0;
-    pointer-events:none;
-    z-index:110;
+#words{
+    z-index:120;
 }
 
-.floatWord{
+.floating{
     position:absolute;
-    color:#aaa;
-    font-size:12px;
-    letter-spacing:4px;
     opacity:0;
     white-space:nowrap;
+    color:#777;
+    font-size:11px;
+    letter-spacing:4px;
+}
+
+.floating.big{
+    font-size:clamp(35px,7vw,100px);
+    font-weight:900;
+    color:#ddd;
+    letter-spacing:8px;
 }
 
 #warning{
@@ -282,126 +282,119 @@ body{
     left:50%;
     top:50%;
     transform:translate(-50%,-50%);
-    font-size:clamp(30px,7vw,90px);
+    z-index:300;
+    pointer-events:none;
+    opacity:0;
+    font-size:clamp(38px,9vw,125px);
     font-weight:900;
     letter-spacing:8px;
-    color:#fff;
-    opacity:0;
-    pointer-events:none;
-    z-index:250;
+    color:white;
     text-shadow:
-        3px 0 #900,
-        -3px 0 #0aa;
+        5px 0 #900,
+        -4px 0 #0aa;
 }
 
-#redCorner{
+#redDot{
     position:absolute;
-    width:5px;
-    height:5px;
+    z-index:250;
+    width:6px;
+    height:6px;
     background:#f00;
-    box-shadow:0 0 15px #f00;
+    box-shadow:0 0 20px #f00;
     opacity:0;
-    z-index:150;
 }
 
-body.redMode #app{
+.red #app{
     background:
-        radial-gradient(circle at 50% 45%,#220000 0%,#090000 50%,#020000 100%);
+        radial-gradient(circle at 50% 48%,#280000 0%,#090000 48%,#010000 100%);
 }
 
-body.redMode #mainText{
-    color:#eee;
-}
-
-body.invert{
-    filter:invert(1);
-}
-
-body.dark #mainText{
-    color:#333;
-}
-
-.shake{
-    animation:shake .09s infinite;
-}
-
-.bigShake{
-    animation:bigShake .06s infinite;
+.dark #main{
+    color:#222;
 }
 
 .glitch{
-    animation:glitch .12s steps(2) infinite;
+    animation:glitch .1s steps(2) infinite;
+}
+
+.shake{
+    animation:shake .08s infinite;
+}
+
+.hardShake{
+    animation:hardShake .055s infinite;
 }
 
 .flicker{
-    animation:flicker .18s steps(2) infinite;
+    animation:flicker .13s steps(2) infinite;
 }
 
-.floatUp{
-    animation:floatUp 1.5s ease-out forwards;
-}
-
-.fadeAway{
-    animation:fadeAway 1s ease forwards;
-}
-
-@keyframes noiseMove{
+@keyframes grain{
     0%{transform:translate(0,0)}
-    25%{transform:translate(3%,2%)}
-    50%{transform:translate(-2%,4%)}
-    75%{transform:translate(4%,-3%)}
+    25%{transform:translate(3%,-2%)}
+    50%{transform:translate(-3%,3%)}
+    75%{transform:translate(2%,4%)}
     100%{transform:translate(0,0)}
+}
+
+@keyframes glitch{
+    0%{transform:translate(-50%,-50%)}
+    20%{transform:translate(calc(-50% + 10px),-50%) skew(5deg)}
+    40%{transform:translate(calc(-50% - 8px),calc(-50% + 2px)) skew(-5deg)}
+    60%{transform:translate(-50%,calc(-50% - 5px)) skew(2deg)}
+    80%{transform:translate(calc(-50% + 4px),-50%)}
+    100%{transform:translate(-50%,-50%)}
 }
 
 @keyframes shake{
     0%{transform:translate(-50%,-50%)}
-    25%{transform:translate(calc(-50% + 3px),calc(-50% - 2px))}
-    50%{transform:translate(calc(-50% - 3px),calc(-50% + 2px))}
-    75%{transform:translate(calc(-50% + 2px),calc(-50% + 3px))}
+    25%{transform:translate(calc(-50% + 4px),calc(-50% - 3px))}
+    50%{transform:translate(calc(-50% - 4px),calc(-50% + 2px))}
+    75%{transform:translate(calc(-50% + 3px),calc(-50% + 4px))}
     100%{transform:translate(-50%,-50%)}
 }
 
-@keyframes bigShake{
+@keyframes hardShake{
     0%{transform:translate(-50%,-50%)}
-    25%{transform:translate(calc(-50% + 13px),calc(-50% - 8px))}
-    50%{transform:translate(calc(-50% - 12px),calc(-50% + 9px))}
-    75%{transform:translate(calc(-50% + 8px),calc(-50% + 12px))}
-    100%{transform:translate(-50%,-50%)}
-}
-
-@keyframes glitch{
-    0%{transform:translate(-50%,-50%) skew(0)}
-    20%{transform:translate(calc(-50% + 8px),-50%) skew(4deg)}
-    40%{transform:translate(calc(-50% - 6px),-50%) skew(-5deg)}
-    60%{transform:translate(-50%,calc(-50% + 4px)) skew(2deg)}
-    80%{transform:translate(calc(-50% + 3px),-50%) skew(-2deg)}
+    20%{transform:translate(calc(-50% + 17px),calc(-50% - 9px))}
+    40%{transform:translate(calc(-50% - 15px),calc(-50% + 12px))}
+    60%{transform:translate(calc(-50% + 11px),calc(-50% + 15px))}
+    80%{transform:translate(calc(-50% - 8px),calc(-50% - 7px))}
     100%{transform:translate(-50%,-50%)}
 }
 
 @keyframes flicker{
     0%,100%{opacity:1}
-    20%{opacity:.15}
-    30%{opacity:.8}
-    50%{opacity:.05}
-    70%{opacity:1}
+    12%{opacity:.15}
+    24%{opacity:.9}
+    41%{opacity:.03}
+    65%{opacity:.8}
+    78%{opacity:.1}
 }
 
-@keyframes floatUp{
+@keyframes floatAway{
     0%{
         opacity:0;
-        transform:translateY(30px) scale(.8);
+        transform:translateY(30px) scale(.7);
     }
     15%{opacity:1}
-    80%{opacity:.6}
+    80%{opacity:.7}
     100%{
         opacity:0;
-        transform:translateY(-120px) scale(1.4);
+        transform:translateY(-150px) scale(1.3) rotate(4deg);
     }
 }
 
-@keyframes fadeAway{
-    from{opacity:1;filter:blur(0)}
-    to{opacity:0;filter:blur(12px)}
+@keyframes fall{
+    0%{
+        opacity:0;
+        transform:translateY(-100px) rotate(0);
+    }
+    20%{opacity:1}
+    100%{
+        opacity:0;
+        transform:translateY(160px) rotate(30deg);
+    }
 }
 </style>
 </head>
@@ -410,202 +403,271 @@ body.dark #mainText{
 
 <div id="app">
 
-    <div id="noise"></div>
-    <div id="scanlines"></div>
+    <div id="grain"></div>
+    <div id="scan"></div>
     <div id="vignette"></div>
 
     <div id="flash"></div>
     <div id="redFlash"></div>
 
-    <div id="particles"></div>
-    <div id="floatingText"></div>
+    <div id="objects"></div>
+    <div id="words"></div>
 
     <div id="warning"></div>
+    <div id="redDot"></div>
+    <div id="cursorDot"></div>
 
     <div id="content">
-        <div id="eyebrow">MIRROR</div>
-        <div id="mainText">Nie będę Cię o nic prosić.</div>
-        <div id="subText">To zajmie kilka minut.</div>
 
-        <button id="start">ROZPOCZNIJ</button>
+        <div id="chapter">MIRROR</div>
 
-        <div id="inputArea">
+        <div id="main">
+            Nie będę Ci niczego tłumaczyć.
+        </div>
+
+        <div id="sub">
+            Po prostu odpowiadaj.
+        </div>
+
+        <button id="start">
+            ROZPOCZNIJ
+        </button>
+
+        <div id="input">
+
             <input
                 id="answer"
+                type="text"
                 autocomplete="off"
                 spellcheck="false"
-                maxlength="120"
-                placeholder="jedno słowo wystarczy"
+                maxlength="100"
+                placeholder="jedno słowo"
             >
-            <button id="send">DALEJ</button>
+
+            <button id="send">
+                DALEJ
+            </button>
+
         </div>
+
     </div>
 
-    <div id="progress">
-        <div id="progressBar"></div>
+    <div id="bar">
+        <div id="barFill"></div>
     </div>
 
-    <div id="counter">00 / 00</div>
-
-    <div id="redCorner"></div>
-    <div id="cursor"></div>
+    <div id="count">00 / 00</div>
 
 </div>
 
 <script>
-/* =========================================================
-   MIRROR — PSYCHOLOGICAL HORROR EXPERIENCE
-   Wszystko działa lokalnie.
-   Brak API.
-   Brak kamery.
-   Brak mikrofonu.
-   Brak wysyłania odpowiedzi.
-========================================================= */
+
+/* ==========================================================
+   MIRROR — VERSION "THE DESCENT"
+
+   Całość działa lokalnie.
+   Audio generowane przez Web Audio API.
+   Brak API / kamery / mikrofonu / geolokalizacji.
+========================================================== */
 
 const $ = id => document.getElementById(id);
 
 const app = $("app");
 const content = $("content");
-const eyebrow = $("eyebrow");
-const mainText = $("mainText");
-const subText = $("subText");
-const inputArea = $("inputArea");
+const chapter = $("chapter");
+const main = $("main");
+const sub = $("sub");
+const start = $("start");
+const input = $("input");
 const answer = $("answer");
 const send = $("send");
-const start = $("start");
-const progressBar = $("progressBar");
-const counter = $("counter");
+const barFill = $("barFill");
+const count = $("count");
 const flash = $("flash");
 const redFlash = $("redFlash");
-const particles = $("particles");
-const floatingText = $("floatingText");
+const objects = $("objects");
+const words = $("words");
 const warning = $("warning");
-const cursor = $("cursor");
-const redCorner = $("redCorner");
+const redDot = $("redDot");
+const cursorDot = $("cursorDot");
 
 let running = false;
 let locked = false;
-let index = -1;
-let audioStarted = false;
-let ambient = null;
-let ambientGain = null;
+let qIndex = -1;
 
 const memory = {
+
     answers: [],
-    words: [],
-    people: [],
-    fears: [],
-    objects: [],
-    emotions: [],
-    first: "",
+
+    /* rzeczy, które użytkownik sam wybrał */
+    fear: "",
+    person: "",
+    desire: "",
+    loss: "",
+    need: "",
+    morning: "",
+    happiness: "",
     alone: "",
-    lastAnswer: "",
-    hesitation: 0,
-    changedAnswer: false
+
+    /* odpowiedzi pomocnicze */
+    emotionalWords: [],
+    strongWords: [],
+
+    /* czy zmienił odpowiedź */
+    changed: false,
+
+    /* czas odpowiedzi */
+    times: [],
+
+    lastQuestionStart: 0
 };
 
 
-/* =========================================================
-   AUDIO ENGINE
-========================================================= */
+/* ==========================================================
+   AUDIO
+========================================================== */
 
-const AudioContextClass =
-    window.AudioContext || window.webkitAudioContext;
+let AC = null;
+let master = null;
 
-let audioCtx;
-let master;
+let musicGain = null;
+let musicOsc1 = null;
+let musicOsc2 = null;
+let musicLfo = null;
+
+let audioReady = false;
 
 function initAudio(){
 
-    if(audioStarted) return;
-
-    audioStarted = true;
+    if(audioReady) return;
 
     try{
 
-        audioCtx = new AudioContextClass();
+        AC = new (window.AudioContext || window.webkitAudioContext)();
 
-        master = audioCtx.createGain();
-        master.gain.value = 0.28;
+        master = AC.createGain();
+        master.gain.value = .32;
 
-        master.connect(audioCtx.destination);
+        master.connect(AC.destination);
 
-        startAmbient();
+        audioReady = true;
+
+        createMusic();
 
     }catch(e){
+
         console.log("Audio unavailable");
+
     }
 }
 
-function now(){
-    return audioCtx ? audioCtx.currentTime : 0;
+function t(){
+    return AC ? AC.currentTime : 0;
 }
 
-function tone(freq, duration, volume=.08, type="sine", delay=0){
+function tone(
+    frequency,
+    duration,
+    volume=.05,
+    type="sine",
+    delay=0
+){
 
-    if(!audioCtx) return;
+    if(!AC) return;
 
-    const t = now()+delay;
+    const osc = AC.createOscillator();
+    const gain = AC.createGain();
 
-    const osc = audioCtx.createOscillator();
-    const gain = audioCtx.createGain();
+    const startTime = t()+delay;
 
     osc.type = type;
-    osc.frequency.setValueAtTime(freq,t);
 
-    gain.gain.setValueAtTime(.0001,t);
+    osc.frequency.setValueAtTime(
+        frequency,
+        startTime
+    );
+
+    gain.gain.setValueAtTime(
+        .0001,
+        startTime
+    );
+
     gain.gain.exponentialRampToValueAtTime(
         Math.max(.0002,volume),
-        t+.015
+        startTime+.015
     );
+
     gain.gain.exponentialRampToValueAtTime(
         .0001,
-        t+duration
+        startTime+duration
     );
 
     osc.connect(gain);
     gain.connect(master);
 
-    osc.start(t);
-    osc.stop(t+duration+.05);
+    osc.start(startTime);
+    osc.stop(startTime+duration+.05);
 }
 
-function sweep(from,to,duration=.8,volume=.08,type="sine"){
+function sweep(
+    from,
+    to,
+    duration=.8,
+    volume=.05,
+    type="sine"
+){
 
-    if(!audioCtx) return;
+    if(!AC) return;
 
-    const t=now();
+    const osc = AC.createOscillator();
+    const gain = AC.createGain();
 
-    const osc=audioCtx.createOscillator();
-    const gain=audioCtx.createGain();
+    const startTime=t();
 
     osc.type=type;
 
-    osc.frequency.setValueAtTime(from,t);
-    osc.frequency.exponentialRampToValueAtTime(
-        Math.max(20,to),
-        t+duration
+    osc.frequency.setValueAtTime(
+        from,
+        startTime
     );
 
-    gain.gain.setValueAtTime(.0001,t);
-    gain.gain.exponentialRampToValueAtTime(volume,t+.03);
-    gain.gain.exponentialRampToValueAtTime(.0001,t+duration);
+    osc.frequency.exponentialRampToValueAtTime(
+        Math.max(20,to),
+        startTime+duration
+    );
+
+    gain.gain.setValueAtTime(.0001,startTime);
+
+    gain.gain.exponentialRampToValueAtTime(
+        volume,
+        startTime+.04
+    );
+
+    gain.gain.exponentialRampToValueAtTime(
+        .0001,
+        startTime+duration
+    );
 
     osc.connect(gain);
     gain.connect(master);
 
-    osc.start(t);
-    osc.stop(t+duration+.05);
+    osc.start(startTime);
+    osc.stop(startTime+duration+.05);
 }
 
-function noise(duration=.25,volume=.08,filterFreq=1800,delay=0){
+function noise(
+    duration=.25,
+    volume=.06,
+    frequency=1000,
+    delay=0
+){
 
-    if(!audioCtx) return;
+    if(!AC) return;
 
-    const buffer=audioCtx.createBuffer(
+    const buffer=AC.createBuffer(
         1,
-        audioCtx.sampleRate*duration,
-        audioCtx.sampleRate
+        Math.floor(AC.sampleRate*duration),
+        AC.sampleRate
     );
 
     const data=buffer.getChannelData(0);
@@ -614,231 +676,291 @@ function noise(duration=.25,volume=.08,filterFreq=1800,delay=0){
         data[i]=Math.random()*2-1;
     }
 
-    const source=audioCtx.createBufferSource();
-    const filter=audioCtx.createBiquadFilter();
-    const gain=audioCtx.createGain();
+    const source=AC.createBufferSource();
+    const filter=AC.createBiquadFilter();
+    const gain=AC.createGain();
 
     source.buffer=buffer;
 
     filter.type="bandpass";
-    filter.frequency.value=filterFreq;
-    filter.Q.value=1.4;
+    filter.frequency.value=frequency;
+    filter.Q.value=1.5;
 
-    const t=now()+delay;
+    const startTime=t()+delay;
 
-    gain.gain.setValueAtTime(.0001,t);
-    gain.gain.exponentialRampToValueAtTime(volume,t+.015);
-    gain.gain.exponentialRampToValueAtTime(.0001,t+duration);
+    gain.gain.setValueAtTime(.0001,startTime);
+
+    gain.gain.exponentialRampToValueAtTime(
+        volume,
+        startTime+.015
+    );
+
+    gain.gain.exponentialRampToValueAtTime(
+        .0001,
+        startTime+duration
+    );
 
     source.connect(filter);
     filter.connect(gain);
     gain.connect(master);
 
-    source.start(t);
+    source.start(startTime);
 }
 
-function bass(freq=45,duration=.8,volume=.22){
+function bass(
+    frequency=40,
+    duration=.8,
+    volume=.18
+){
 
-    if(!audioCtx) return;
+    if(!AC) return;
 
-    const t=now();
+    const osc=AC.createOscillator();
+    const gain=AC.createGain();
 
-    const osc=audioCtx.createOscillator();
-    const gain=audioCtx.createGain();
+    const startTime=t();
 
     osc.type="sine";
 
-    osc.frequency.setValueAtTime(freq,t);
-    osc.frequency.exponentialRampToValueAtTime(
-        Math.max(25,freq*.55),
-        t+duration
+    osc.frequency.setValueAtTime(
+        frequency,
+        startTime
     );
 
-    gain.gain.setValueAtTime(.0001,t);
-    gain.gain.exponentialRampToValueAtTime(volume,t+.03);
-    gain.gain.exponentialRampToValueAtTime(.0001,t+duration);
+    osc.frequency.exponentialRampToValueAtTime(
+        Math.max(20,frequency*.6),
+        startTime+duration
+    );
+
+    gain.gain.setValueAtTime(.0001,startTime);
+
+    gain.gain.exponentialRampToValueAtTime(
+        volume,
+        startTime+.025
+    );
+
+    gain.gain.exponentialRampToValueAtTime(
+        .0001,
+        startTime+duration
+    );
 
     osc.connect(gain);
     gain.connect(master);
 
-    osc.start(t);
-    osc.stop(t+duration+.1);
+    osc.start(startTime);
+    osc.stop(startTime+duration+.1);
 }
 
-function clickSound(){
 
-    tone(1700,.025,.07,"square");
-    tone(850,.04,.035,"square",.025);
+/* ---------- MUSIC ---------- */
+
+function createMusic(){
+
+    if(!AC) return;
+
+    musicGain=AC.createGain();
+    musicGain.gain.value=.0001;
+
+    musicGain.connect(master);
+
+    musicOsc1=AC.createOscillator();
+    musicOsc2=AC.createOscillator();
+
+    musicOsc1.type="sine";
+    musicOsc2.type="triangle";
+
+    musicOsc1.frequency.value=48;
+    musicOsc2.frequency.value=73;
+
+    musicOsc1.connect(musicGain);
+    musicOsc2.connect(musicGain);
+
+    musicOsc1.start();
+    musicOsc2.start();
+
+    /* bardzo wolne pulsowanie */
+
+    musicLfo=AC.createOscillator();
+
+    const lfoGain=AC.createGain();
+
+    musicLfo.frequency.value=.075;
+    lfoGain.gain.value=.012;
+
+    musicLfo.connect(lfoGain);
+    lfoGain.connect(musicGain.gain);
+
+    musicLfo.start();
+}
+
+function music(level=.025){
+
+    if(!musicGain) return;
+
+    musicGain.gain.cancelScheduledValues(t());
+
+    musicGain.gain.linearRampToValueAtTime(
+        level,
+        t()+1
+    );
+}
+
+function musicStop(){
+
+    if(!musicGain) return;
+
+    musicGain.gain.cancelScheduledValues(t());
+
+    musicGain.gain.linearRampToValueAtTime(
+        .0001,
+        t()+.12
+    );
+}
+
+function musicDrop(){
+
+    musicStop();
+
+    bass(32,.6,.15);
+}
+
+function musicRestore(level=.035){
+
+    music(level);
+}
+
+
+/* ---------- SOUND EVENTS ---------- */
+
+function click(){
+
+    tone(1600,.025,.045,"square");
+    tone(800,.045,.025,"square",.025);
 }
 
 function softClick(){
 
-    tone(700,.04,.025,"triangle");
+    tone(700,.05,.025,"triangle");
 }
 
 function heartbeat(){
 
-    tone(55,.16,.18,"sine");
-    tone(48,.13,.13,"sine",.18);
+    bass(52,.12,.14);
+
+    setTimeout(()=>{
+        bass(43,.11,.10);
+    },150);
 }
 
-function heartbeatFast(){
+function heartbeatDouble(){
 
     heartbeat();
-    heartbeat();
-    setTimeout(heartbeat,380);
-    setTimeout(heartbeat,570);
+
+    setTimeout(()=>{
+        heartbeat();
+    },330);
 }
 
-function impact(){
+function metalHit(){
 
-    bass(42,.55,.38);
-    noise(.22,.18,420);
-    tone(75,.5,.1,"sawtooth");
+    tone(880,.35,.09,"square");
+    tone(1320,.24,.055,"square",.035);
+    tone(420,.45,.06,"triangle",.1);
 }
 
-function metal(){
+function needle(){
 
-    tone(900,.35,.10,"metal");
-    tone(1400,.2,.07,"square",.03);
-    tone(430,.45,.05,"triangle",.1);
+    tone(3300,.14,.045,"sine");
+    tone(4100,.10,.03,"sine",.16);
 }
 
-function highNeedle(){
+function digitalNoise(){
 
-    tone(3200,.18,.05,"sine");
-    tone(3900,.12,.035,"sine",.16);
-}
+    for(let i=0;i<9;i++){
 
-function horrorWhisper(){
-
-    noise(.65,.045,700);
-    tone(130,.7,.035,"triangle");
-    tone(94,.9,.03,"sine",.2);
-}
-
-function digitalError(){
-
-    for(let i=0;i<8;i++){
         tone(
-            100+Math.random()*1800,
+            120+Math.random()*2000,
             .025+Math.random()*.05,
-            .025,
+            .018,
             Math.random()>.5?"square":"sawtooth",
             i*.045
         );
     }
 }
 
-function explosion(){
+function whisperSound(){
 
-    bass(30,.9,.5);
-    noise(.55,.3,160);
-    noise(.25,.18,900,.08);
-    tone(70,.7,.18,"sawtooth");
+    noise(.7,.035,700);
+    tone(110,.8,.025,"triangle");
 }
 
-function startAmbient(){
+function heavyImpact(){
 
-    if(!audioCtx) return;
-
-    ambient=audioCtx.createOscillator();
-    ambientGain=audioCtx.createGain();
-
-    ambient.type="sine";
-    ambient.frequency.value=43;
-    ambientGain.gain.value=.018;
-
-    ambient.connect(ambientGain);
-    ambientGain.connect(master);
-
-    ambient.start();
+    bass(28,.85,.34);
+    noise(.45,.22,150);
+    noise(.18,.12,700,.08);
+    tone(60,.65,.12,"sawtooth");
 }
 
-function ambientUp(value=.04){
+function risingTension(){
 
-    if(!ambientGain) return;
+    sweep(50,800,2.2,.055,"sawtooth");
 
-    ambientGain.gain.cancelScheduledValues(now());
+    setTimeout(()=>{
+        heartbeat();
+    },700);
 
-    ambientGain.gain.linearRampToValueAtTime(
-        value,
-        now()+.8
-    );
-}
+    setTimeout(()=>{
+        heartbeat();
+    },1100);
 
-function ambientDown(){
-
-    if(!ambientGain) return;
-
-    ambientGain.gain.cancelScheduledValues(now());
-
-    ambientGain.gain.linearRampToValueAtTime(
-        .002,
-        now()+.6
-    );
-}
-
-function silenceAudio(){
-
-    if(!master) return;
-
-    master.gain.cancelScheduledValues(now());
-
-    master.gain.linearRampToValueAtTime(
-        .0001,
-        now()+.15
-    );
-}
-
-function restoreAudio(){
-
-    if(!master) return;
-
-    master.gain.cancelScheduledValues(now());
-
-    master.gain.linearRampToValueAtTime(
-        .28,
-        now()+.8
-    );
+    setTimeout(()=>{
+        heartbeatDouble();
+    },1500);
 }
 
 
-/* =========================================================
+/* ==========================================================
    VISUAL ENGINE
-========================================================= */
+========================================================== */
 
 function wait(ms){
     return new Promise(resolve=>setTimeout(resolve,ms));
 }
 
-function flashScreen(color="#fff",duration=80){
+function flashScreen(color="white",duration=70){
 
-    const el=color==="#d00"?redFlash:flash;
+    const el=color==="red"?redFlash:flash;
 
     el.style.transition="none";
     el.style.opacity="1";
 
     setTimeout(()=>{
-        el.style.transition=`opacity ${duration/1000}s ease`;
+
+        el.style.transition=
+            `opacity ${duration/1000}s ease`;
+
         el.style.opacity="0";
+
     },20);
 }
 
-function shake(ms=400,big=false){
+function shake(ms=300,strong=false){
 
-    content.classList.remove("shake","bigShake");
+    content.classList.remove("shake","hardShake");
 
     void content.offsetWidth;
 
-    content.classList.add(big?"bigShake":"shake");
+    content.classList.add(
+        strong?"hardShake":"shake"
+    );
 
     setTimeout(()=>{
-        content.classList.remove("shake","bigShake");
+        content.classList.remove("shake","hardShake");
     },ms);
 }
 
-function glitch(ms=600){
+function glitch(ms=400){
 
     content.classList.add("glitch");
 
@@ -847,1118 +969,1261 @@ function glitch(ms=600){
     },ms);
 }
 
-function flicker(ms=700){
+function flicker(ms=400){
 
-    mainText.classList.add("flicker");
+    main.classList.add("flicker");
 
     setTimeout(()=>{
-        mainText.classList.remove("flicker");
+        main.classList.remove("flicker");
     },ms);
 }
 
-function redMode(on=true){
+function redMode(on){
 
-    document.body.classList.toggle("redMode",on);
-}
-
-function invert(ms=100){
-
-    document.body.classList.add("invert");
-
-    setTimeout(()=>{
-        document.body.classList.remove("invert");
-    },ms);
+    document.body.classList.toggle("red",on);
 }
 
 function blackout(ms=600){
 
-    app.style.transition="background .1s";
-    app.style.background="#000";
-
-    mainText.style.opacity="0";
-    subText.style.opacity="0";
+    main.style.opacity="0";
+    sub.style.opacity="0";
+    chapter.style.opacity="0";
 
     setTimeout(()=>{
 
-        app.style.background="";
-        mainText.style.opacity="1";
-        subText.style.opacity="1";
+        main.style.opacity="1";
+        sub.style.opacity="1";
+        chapter.style.opacity="1";
 
     },ms);
 }
 
-function moveCursor(x,y,size=8,color="#ddd"){
-
-    cursor.style.left=x+"px";
-    cursor.style.top=y+"px";
-    cursor.style.width=size+"px";
-    cursor.style.height=size+"px";
-    cursor.style.background=color;
-    cursor.style.opacity="1";
-}
-
-function hideCursor(){
-    cursor.style.opacity="0";
-}
-
-function randomParticle(symbol="·"){
-
-    const p=document.createElement("div");
-
-    p.className="particle";
-    p.textContent=symbol;
-
-    p.style.left=Math.random()*100+"%";
-    p.style.top=(20+Math.random()*70)+"%";
-
-    p.style.fontSize=(7+Math.random()*18)+"px";
-
-    particles.appendChild(p);
-
-    requestAnimationFrame(()=>{
-        p.style.transition=
-            "opacity .3s, transform 2s cubic-bezier(.2,.8,.2,1)";
-        p.style.opacity=(.2+Math.random()*.6).toString();
-        p.style.transform=
-            `translate(${(-100+Math.random()*200)}px,${(-150+Math.random()*300)}px)
-             rotate(${Math.random()*360}deg)`;
-    });
-
-    setTimeout(()=>{
-        p.style.opacity="0";
-    },900+Math.random()*1200);
-
-    setTimeout(()=>{
-        p.remove();
-    },2500);
-}
-
-function particleBurst(count=20){
-
-    for(let i=0;i<count;i++){
-
-        setTimeout(()=>{
-            randomParticle(
-                Math.random()>.7
-                    ? ["0","1","/","\\","—","?"][Math.floor(Math.random()*6)]
-                    : "·"
-            );
-        },i*18);
-    }
-}
-
-function floatingWord(text){
-
-    const el=document.createElement("div");
-
-    el.className="floatWord";
-    el.textContent=text;
-
-    el.style.left=(15+Math.random()*70)+"%";
-    el.style.top=(25+Math.random()*55)+"%";
-
-    floatingText.appendChild(el);
-
-    requestAnimationFrame(()=>{
-        el.classList.add("floatUp");
-    });
-
-    setTimeout(()=>el.remove(),1600);
-}
-
-function giantWarning(text,color="#fff",duration=900){
+function giant(text,color="#fff",duration=800){
 
     warning.textContent=text;
     warning.style.color=color;
     warning.style.opacity="1";
 
-    glitch(500);
+    glitch(450);
 
     setTimeout(()=>{
-        warning.style.transition="opacity .25s";
+
+        warning.style.transition="opacity .2s";
         warning.style.opacity="0";
+
     },duration);
 }
 
-function redCornerPulse(){
+function dot(){
 
-    redCorner.style.left=Math.random()*95+"%";
-    redCorner.style.top=Math.random()*95+"%";
-    redCorner.style.opacity="1";
+    redDot.style.left=Math.random()*95+"%";
+    redDot.style.top=Math.random()*90+"%";
+
+    redDot.style.opacity="1";
 
     setTimeout(()=>{
-        redCorner.style.opacity="0";
-    },500);
+        redDot.style.opacity="0";
+    },450);
+}
+
+function particle(
+    char="·",
+    big=false,
+    falling=false
+){
+
+    const el=document.createElement("div");
+
+    el.className="floating"+(big?" big":"");
+
+    el.textContent=char;
+
+    el.style.left=(5+Math.random()*90)+"%";
+    el.style.top=(10+Math.random()*80)+"%";
+
+    words.appendChild(el);
+
+    requestAnimationFrame(()=>{
+
+        el.style.animation=
+            `${falling?"fall":"floatAway"} ${
+                .9+Math.random()*1.5
+            }s ease forwards`;
+
+    });
+
+    setTimeout(()=>{
+        el.remove();
+    },2600);
+}
+
+function particleBurst(amount=20){
+
+    const chars=[
+        "·",
+        "—",
+        "/",
+        "\\",
+        "0",
+        "1",
+        "?",
+        "!",
+        "□"
+    ];
+
+    for(let i=0;i<amount;i++){
+
+        setTimeout(()=>{
+
+            particle(
+                chars[Math.floor(Math.random()*chars.length)],
+                Math.random()<.08,
+                Math.random()<.15
+            );
+
+        },i*15);
+    }
+}
+
+function ownWord(text){
+
+    if(!text) return;
+
+    const el=document.createElement("div");
+
+    el.className="floating";
+
+    el.textContent=text.toUpperCase();
+
+    el.style.left=(20+Math.random()*60)+"%";
+    el.style.top=(30+Math.random()*40)+"%";
+
+    el.style.color="#aaa";
+
+    words.appendChild(el);
+
+    requestAnimationFrame(()=>{
+
+        el.style.animation=
+            "floatAway 1.5s ease forwards";
+
+    });
+
+    setTimeout(()=>{
+        el.remove();
+    },1700);
+}
+
+function moveDot(){
+
+    cursorDot.style.left=
+        (window.innerWidth/2+(Math.random()*130-65))
+        +"px";
+
+    cursorDot.style.top=
+        (window.innerHeight/2+150+(Math.random()*30-15))
+        +"px";
+
+    cursorDot.style.opacity="1";
+
+    setTimeout(()=>{
+        cursorDot.style.opacity="0";
+    },160);
 }
 
 
-/* =========================================================
-   TEXT / UI
-========================================================= */
+/* ==========================================================
+   UI
+========================================================== */
 
 function clearUI(){
 
-    mainText.textContent="";
-    subText.textContent="";
-    eyebrow.textContent="";
+    main.textContent="";
+    sub.textContent="";
+    chapter.textContent="";
 
-    inputArea.style.opacity="0";
-    inputArea.style.transform="translateY(12px)";
-    inputArea.style.pointerEvents="none";
+    input.style.opacity="0";
+    input.style.pointerEvents="none";
 
     answer.value="";
 }
 
-function showText(main,sub="",label="MIRROR"){
+function text(
+    title,
+    description="",
+    label=""
+){
 
     clearUI();
 
-    eyebrow.textContent=label;
-    mainText.textContent=main;
-    subText.textContent=sub;
+    chapter.textContent=label;
+    main.textContent=title;
+    sub.textContent=description;
 
-    mainText.style.opacity="1";
-    subText.style.opacity="1";
+    main.style.opacity="1";
+    sub.style.opacity="1";
 }
 
-function showInput(){
+function inputOn(){
 
-    inputArea.style.opacity="1";
-    inputArea.style.transform="translateY(0)";
-    inputArea.style.pointerEvents="auto";
+    input.style.opacity="1";
+    input.style.transform="translateY(0)";
+    input.style.pointerEvents="auto";
 
     answer.focus();
 }
 
-function updateProgress(){
+function progress(){
 
     const total=questions.length;
 
-    const percent=Math.max(
-        0,
-        Math.min(100,((index+1)/total)*100)
-    );
+    barFill.style.width=
+        (((qIndex+1)/total)*100)+"%";
 
-    progressBar.style.width=percent+"%";
-
-    counter.textContent=
-        String(Math.max(0,index+1)).padStart(2,"0")
-        +" / "+
-        String(total).padStart(2,"0");
+    count.textContent=
+        String(Math.max(0,qIndex+1)).padStart(2,"0")
+        +" / "
+        +String(total).padStart(2,"0");
 }
 
 
-/* =========================================================
-   PYTANIA
-========================================================= */
+/* ==========================================================
+   PYTANIA — JEDNA ŚCIEŻKA
+========================================================== */
 
 const questions=[
 
     {
-        text:"Jak się dziś czujesz?",
-        label:"01",
-        sound:"soft",
-        hint:"jedno słowo wystarczy"
+        id:"morning",
+        q:"Co zrobiłeś dziś rano?",
+        hint:"jedno słowo",
+        chapter:"POCZĄTEK"
     },
 
     {
-        text:"Co robiłeś rano?",
-        label:"02",
-        sound:"normal",
-        hint:"jedno słowo"
+        id:"mood",
+        q:"Jak się teraz czujesz?",
+        hint:"jedno słowo",
+        chapter:"POCZĄTEK"
     },
 
     {
-        text:"Z kim najczęściej rozmawiasz?",
-        label:"03",
-        sound:"people",
-        hint:"imię albo relacja"
+        id:"person",
+        q:"Kto jest dla Ciebie ważny?",
+        hint:"jedno słowo",
+        chapter:"LUDZIE"
     },
 
     {
-        text:"Czego teraz chcesz?",
-        label:"04",
-        sound:"desire",
-        hint:"jedno słowo"
+        id:"desire",
+        q:"Czego teraz chcesz?",
+        hint:"jedno słowo",
+        chapter:"POTRZEBA"
     },
 
     {
-        text:"Czego nie chcesz?",
-        label:"05",
-        sound:"dark",
-        hint:"jedno słowo"
+        id:"fear",
+        q:"Czego najbardziej się boisz?",
+        hint:"jedno słowo",
+        chapter:"PĘKNIĘCIE"
     },
 
     {
-        text:"Czego się boisz?",
-        label:"06",
-        sound:"fear",
-        hint:"nie musisz się tłumaczyć"
+        id:"loss",
+        q:"Czego nie chcesz stracić?",
+        hint:"jedno słowo",
+        chapter:"PĘKNIĘCIE"
     },
 
     {
-        text:"Komu ufasz?",
-        label:"07",
-        sound:"trust",
-        hint:"jedno słowo"
+        id:"alone",
+        q:"Jesteś teraz sam?",
+        hint:"tak / nie",
+        chapter:"ODLEGŁOŚĆ"
     },
 
     {
-        text:"Czy jesteś teraz sam?",
-        label:"08",
-        sound:"alone",
-        hint:"tak / nie"
+        id:"object",
+        q:"Czego dotykasz?",
+        hint:"jedno słowo",
+        chapter:"TERAZ"
     },
 
     {
-        text:"Co jest najbliżej Ciebie?",
-        label:"09",
-        sound:"object",
-        hint:"jedno słowo"
+        id:"sound",
+        q:"Co słyszysz?",
+        hint:"jedno słowo",
+        chapter:"TERAZ"
     },
 
     {
-        text:"Czego najbardziej nie chcesz stracić?",
-        label:"10",
-        sound:"loss",
-        hint:"jedno słowo"
+        id:"trust",
+        q:"Komu ufasz?",
+        hint:"jedno słowo",
+        chapter:"ZBLIŻENIE"
     },
 
     {
-        text:"Kiedy ostatnio udawałeś, że jest dobrze?",
-        label:"11",
-        sound:"lie",
-        hint:"wczoraj / dziś / dawno / nigdy"
+        id:"need",
+        q:"Czego Ci brakuje?",
+        hint:"jedno słowo",
+        chapter:"ZBLIŻENIE"
     },
 
     {
-        text:"Jednym słowem: jesteś szczęśliwy?",
-        label:"12",
-        sound:"truth",
-        hint:"tak / nie / czasami"
+        id:"change",
+        q:"Co chciałbyś zmienić?",
+        hint:"jedno słowo",
+        chapter:"ZBLIŻENIE"
     },
 
     {
-        text:"Co najbardziej chciałbyś zmienić?",
-        label:"13",
-        sound:"change",
-        hint:"jedno słowo"
+        id:"happy",
+        q:"Szczęśliwy?",
+        hint:"tak / nie / czasami",
+        chapter:"SPRAWDZENIE"
     },
 
     {
-        text:"Czego najbardziej potrzebujesz?",
-        label:"14",
-        sound:"need",
-        hint:"jedno słowo"
+        id:"honest",
+        q:"Która odpowiedź była najtrudniejsza?",
+        hint:"numer albo słowo",
+        chapter:"SPRAWDZENIE"
     },
 
     {
-        text:"Czy powiedziałeś mi całą prawdę?",
-        label:"15",
-        sound:"trap",
-        hint:"tak / nie"
+        id:"truth",
+        q:"Skłamałeś choć raz?",
+        hint:"tak / nie",
+        chapter:"SPRAWDZENIE"
+    },
+
+    {
+        id:"finalChoice",
+        q:"Gdybyś mógł zabrać jedną rzecz ze sobą — co?",
+        hint:"jedno słowo",
+        chapter:"OSTATNIE"
     }
 
 ];
 
 
-/* =========================================================
-   ANALIZA ODPOWIEDZI
-========================================================= */
+/* ==========================================================
+   PAMIĘĆ
+========================================================== */
 
-function cleanWord(value){
+function clean(v){
 
-    return value
+    return v
         .trim()
         .replace(/\s+/g," ")
-        .slice(0,120);
+        .slice(0,100);
 }
 
-function wordsOf(value){
+function remember(q,value){
 
-    return cleanWord(value)
-        .toLowerCase()
-        .split(/\s+/)
-        .filter(Boolean);
-}
-
-function rememberAnswer(value){
-
-    const v=cleanWord(value);
+    const v=clean(value);
 
     memory.answers.push(v);
-    memory.lastAnswer=v;
 
-    const words=wordsOf(v);
+    if(q.id==="morning")
+        memory.morning=v;
 
-    words.forEach(word=>{
+    if(q.id==="person")
+        memory.person=v;
 
-        if(word.length>=4 && !memory.words.includes(word)){
-            memory.words.push(word);
-        }
+    if(q.id==="desire")
+        memory.desire=v;
 
-    });
+    if(q.id==="fear")
+        memory.fear=v;
 
-    const people=[
-        "mama","tata","brat","siostra",
-        "dziewczyna","chłopak","partner",
-        "żona","mąż","przyjaciel","przyjaciółka",
-        "szef","kolega","koleżanka"
-    ];
+    if(q.id==="loss")
+        memory.loss=v;
 
-    const fears=[
-        "śmierć","samotność","ciemność",
-        "utrata","choroba","pieniądze",
-        "praca","ludzie","porażka",
-        "przyszłość","ból","wojna"
-    ];
+    if(q.id==="alone")
+        memory.alone=v;
 
-    const emotions=[
-        "szczęśliwy","szczęśliwa","smutny","smutna",
-        "zmęczony","zmęczona","spokojny","spokojna",
-        "zły","zła","wkurzony","wkurzona",
-        "samotny","samotna","przestraszony","przestraszona",
-        "dobrze","źle","średnio"
-    ];
+    if(q.id==="need")
+        memory.need=v;
 
-    words.forEach(w=>{
+    if(q.id==="happy")
+        memory.happiness=v;
 
-        if(people.includes(w) && !memory.people.includes(w)){
-            memory.people.push(w);
-        }
+    if(q.id==="change")
+        memory.strongWords.push(v);
 
-        if(fears.includes(w) && !memory.fears.includes(w)){
-            memory.fears.push(w);
-        }
+    if(q.id==="finalChoice")
+        memory.strongWords.push(v);
 
-        if(emotions.includes(w) && !memory.emotions.includes(w)){
-            memory.emotions.push(w);
-        }
-
-    });
-
-    if(!memory.first){
-        memory.first=v;
+    if(
+        q.id==="mood" ||
+        q.id==="fear" ||
+        q.id==="need"
+    ){
+        memory.emotionalWords.push(v);
     }
 }
 
-function validAnswer(value){
-
-    const v=cleanWord(value);
+function valid(v){
 
     if(!v) return false;
 
-    if(v.length<2) return false;
+    const x=v.toLowerCase();
 
-    /* Pozwalamy na krótkie odpowiedzi tak/nie */
-    const lower=v.toLowerCase();
+    const allowed=[
+        "tak",
+        "nie",
+        "nie wiem",
+        "czasami",
+        "czasem",
+        "nigdy"
+    ];
 
-    if(
-        lower==="tak" ||
-        lower==="nie" ||
-        lower==="nie wiem" ||
-        lower==="czasami" ||
-        lower==="czasem"
-    ){
+    if(allowed.includes(x))
         return true;
-    }
 
-    /* blokada przypadkowego spamowania */
-    if(/(.)\1{5,}/i.test(v)) return false;
+    if(v.length<2)
+        return false;
 
-    if(/^[0-9]+$/.test(v)) return false;
+    if(/^(.)\1{5,}$/i.test(v))
+        return false;
 
-    const letters=v.replace(/[^a-ząćęłńóśźż]/gi,"");
-
-    if(letters.length<2) return false;
+    if(/^[0-9]+$/.test(v))
+        return false;
 
     return true;
 }
 
 
-/* =========================================================
-   REAKCJE NA TYP PYTANIA
-========================================================= */
+/* ==========================================================
+   AUDIO + QUESTION INTRO
+========================================================== */
 
-async function questionSound(type){
+async function questionAudio(q){
 
-    if(!audioCtx) return;
+    musicRestore(
+        q.chapter==="PĘKNIĘCIE" ? .045 :
+        q.chapter==="ZBLIŻENIE" ? .055 :
+        .028
+    );
 
-    switch(type){
+    switch(q.id){
 
-        case "soft":
-            ambientDown();
+        case"morning":
             softClick();
-            await wait(500);
-            tone(420,.5,.025,"sine");
             break;
 
-        case "normal":
-            clickSound();
-            tone(220,.25,.035,"triangle");
+        case"mood":
+            tone(250,.4,.025,"triangle");
             break;
 
-        case "people":
-            tone(320,.3,.035,"triangle");
-            tone(480,.35,.025,"triangle",.12);
+        case"person":
+            tone(280,.5,.025,"sine");
+            await wait(250);
+            tone(420,.45,.025,"sine");
             break;
 
-        case "desire":
-            sweep(90,380,.7,.045,"sine");
+        case"desire":
+            sweep(80,450,.8,.04);
             break;
 
-        case "dark":
-            bass(50,.8,.14);
-            horrorWhisper();
+        case"fear":
+            risingTension();
             break;
 
-        case "fear":
-            ambientUp(.055);
-            heartbeat();
-            await wait(260);
-            heartbeat();
-            await wait(400);
-            highNeedle();
+        case"loss":
+            bass(39,.9,.13);
+            sweep(180,55,1,.035);
             break;
 
-        case "trust":
-            tone(250,.7,.025,"sine");
-            await wait(450);
-            tone(190,.8,.025,"sine");
-            break;
+        case"alone":
 
-        case "alone":
-            ambientDown();
+            musicDrop();
+
             await wait(350);
-            silenceAudio();
-            await wait(900);
+
             heartbeat();
+
+            await wait(450);
+
+            heartbeat();
+
             break;
 
-        case "object":
-            softClick();
-            await wait(300);
-            metal();
+        case"object":
+            metalHit();
             break;
 
-        case "loss":
-            bass(38,1,.18);
-            sweep(120,42,1,.06,"sine");
-            break;
-
-        case "lie":
-            silenceAudio();
-            await wait(500);
-            tone(1000,.08,.04,"square");
-            await wait(300);
-            tone(1000,.08,.04,"square");
+        case"sound":
+            tone(700,.15,.03,"sine");
             await wait(400);
-            restoreAudio();
+            needle();
             break;
 
-        case "truth":
-            tone(500,.2,.035,"sine");
-            await wait(180);
-            tone(800,.18,.035,"sine");
+        case"trust":
+            tone(180,.7,.025,"sine");
             break;
 
-        case "change":
-            sweep(80,700,1,.07,"sawtooth");
+        case"need":
+            bass(44,.9,.12);
             break;
 
-        case "need":
-            bass(44,.8,.11);
-            tone(180,.6,.025,"triangle",.2);
+        case"change":
+            sweep(70,600,1.1,.05,"sawtooth");
             break;
 
-        case "trap":
-            silenceAudio();
-            await wait(600);
-            tone(1600,.05,.04,"square");
-            await wait(100);
-            tone(1600,.05,.04,"square");
+        case"happy":
+            tone(500,.2,.03,"sine");
+            tone(700,.2,.025,"sine",.2);
+            break;
+
+        case"honest":
+
+            musicDrop();
+
+            await wait(450);
+
+            tone(1000,.07,.04,"square");
+
+            await wait(300);
+
+            tone(1000,.07,.04,"square");
+
+            break;
+
+        case"truth":
+
+            musicDrop();
+
+            await wait(700);
+
+            heartbeatDouble();
+
+            break;
+
+        case"finalChoice":
+
+            musicRestore(.065);
+
+            risingTension();
+
             break;
     }
 }
 
 
-/* =========================================================
-   EFEKTY PO ODPOWIEDZI
-========================================================= */
-
-async function answerReaction(q,value){
-
-    const lower=value.toLowerCase();
-
-    if(q.sound==="soft"){
-
-        floatingWord(
-            lower.length<8 ? lower : "ZAPISANE"
-        );
-
-        await wait(250);
-
-        if(lower.includes("dobr") || lower.includes("szczę")){
-            tone(600,.35,.025,"sine");
-        }else{
-            tone(180,.35,.035,"triangle");
-        }
-
-    }
-
-    else if(q.sound==="people"){
-
-        particleBurst(8);
-
-        if(memory.people.length){
-
-            floatingWord(
-                memory.people[memory.people.length-1]
-            );
-
-            await wait(400);
-            softClick();
-        }
-    }
-
-    else if(q.sound==="desire"){
-
-        sweep(120,550,.6,.05,"triangle");
-        particleBurst(12);
-
-        await wait(350);
-
-        if(value.length>6){
-            floatingWord("NAPRAWDĘ?");
-        }
-    }
-
-    else if(q.sound==="dark"){
-
-        ambientUp(.06);
-
-        await wait(350);
-
-        if(
-            lower.includes("nie") ||
-            lower.includes("nic")
-        ){
-            tone(800,.12,.03,"square");
-            glitch(300);
-        }else{
-            bass(45,.9,.18);
-            redCornerPulse();
-        }
-    }
-
-    else if(q.sound==="fear"){
-
-        redMode(true);
-
-        heartbeatFast();
-
-        await wait(250);
-
-        particleBurst(20);
-
-        if(value.length>5){
-            giantWarning("ZAPAMIĘTANE","#b00",700);
-        }
-
-        await wait(900);
-
-        redMode(false);
-    }
-
-    else if(q.sound==="trust"){
-
-        await wait(350);
-
-        if(
-            value.toLowerCase()==="nie" ||
-            value.toLowerCase().includes("nik")
-        ){
-            silenceAudio();
-            await wait(700);
-            tone(60,.7,.16,"sine");
-        }else{
-            tone(700,.3,.03,"sine");
-        }
-    }
-
-    else if(q.sound==="alone"){
-
-        /* NAJWAŻNIEJSZY MOMENT */
-
-        await wait(700);
-
-        blackout(500);
-
-        await wait(500);
-
-        restoreAudio();
-
-        giantWarning(
-            lower==="tak" ? "DOBRZE." : "DOBRZE.",
-            "#fff",
-            650
-        );
-
-        await wait(800);
-
-        if(lower==="tak"){
-
-            silenceAudio();
-
-            showText(
-                "Nie odwracaj się.",
-                "",
-                "MIRROR"
-            );
-
-            await wait(850);
-
-            showText(
-                "Żart.",
-                "",
-                ""
-            );
-
-            await wait(450);
-
-            showText(
-                "Chyba.",
-                "",
-                ""
-            );
-
-            horrorWhisper();
-            await wait(700);
-
-            restoreAudio();
-
-        }else{
-
-            showText(
-                "Dobrze.",
-                "Zapamiętam.",
-                "MIRROR"
-            );
-
-            await wait(700);
-
-            highNeedle();
-        }
-
-    }
-
-    else if(q.sound==="object"){
-
-        metal();
-        particleBurst(18);
-
-        await wait(350);
-
-        floatingWord(
-            value.length>10
-                ? "BLISKO"
-                : value.toUpperCase()
-        );
-
-        await wait(500);
-
-        if(lower.includes("telefon")){
-            tone(1200,.1,.035,"square");
-            tone(1200,.1,.035,"square",.15);
-        }
-    }
-
-    else if(q.sound==="loss"){
-
-        ambientUp(.07);
-        bass(38,.9,.22);
-
-        await wait(400);
-
-        if(value.length>4){
-            floatingWord(value.toUpperCase());
-        }
-
-        await wait(500);
-
-        noise(.3,.08,350);
-    }
-
-    else if(q.sound==="lie"){
-
-        /* To jest jedyny moment związany z prawdą.
-           Nie oskarżamy użytkownika automatycznie. */
-
-        silenceAudio();
-
-        await wait(700);
-
-        if(
-            lower==="nigdy" ||
-            lower==="nie"
-        ){
-            showText(
-                "Interesujące.",
-                "Nie powiedziałem, że Ci nie wierzę.",
-                "SPRAWDZENIE"
-            );
-        }else{
-
-            showText(
-                "Dobrze.",
-                "To była konkretna odpowiedź.",
-                "SPRAWDZENIE"
-            );
-        }
-
-        await wait(1100);
-
-        restoreAudio();
-    }
-
-    else if(q.sound==="truth"){
-
-        await wait(350);
-
-        if(
-            lower==="tak" ||
-            lower==="szczęśliwy" ||
-            lower==="szczęśliwa"
-        ){
-
-            tone(700,.4,.03,"sine");
-
-            await wait(400);
-
-            floatingWord("NAPRAWDĘ?");
-        }
-
-        else if(
-            lower==="nie"
-        ){
-
-            bass(45,.7,.16);
-            await wait(350);
-            tone(90,.8,.04,"triangle");
-
-        }
-
-        else{
-
-            highNeedle();
-            glitch(250);
-        }
-    }
-
-    else if(q.sound==="change"){
-
-        sweep(60,900,1.1,.08,"sawtooth");
-
-        await wait(250);
-
-        particleBurst(25);
-
-        await wait(300);
-
-        if(value.length>4){
-            floatingWord("JEDNA RZECZ.");
-        }
-    }
-
-    else if(q.sound==="need"){
-
-        ambientUp(.06);
-
-        await wait(450);
-
-        tone(250,.5,.025,"sine");
-
-        if(value.length>5){
-            floatingWord("ROZUMIEM");
-        }
-    }
-
-    else if(q.sound==="trap"){
-
-        /* Jedna, zaplanowana pułapka. */
-
-        await wait(500);
-
-        if(
-            lower==="nie" ||
-            lower.includes("nie")
-        ){
-
-            restoreAudio();
-
-            giantWarning(
-                "DOBRZE.",
-                "#fff",
-                700
-            );
-
-            await wait(850);
-
-            showText(
-                "Właśnie tego oczekiwałem.",
-                "Nie dlatego, że skłamałeś.",
-                "SPÓJNOŚĆ"
-            );
-
-            await wait(1000);
-
-        }else{
-
-            restoreAudio();
-
-            tone(420,.25,.03,"triangle");
-
-            await wait(450);
-
-            showText(
-                "Możliwe.",
-                "Ale tego nie da się tutaj sprawdzić.",
-                "SPÓJNOŚĆ"
-            );
-
-            await wait(1000);
-        }
-    }
-}
-
-
-/* =========================================================
-   QUESTION FLOW
-========================================================= */
-
-async function questionScene(){
+/* ==========================================================
+   QUESTION
+========================================================== */
+
+async function showQuestion(){
 
     if(!running) return;
 
     locked=true;
 
-    const q=questions[index];
+    const q=questions[qIndex];
 
-    updateProgress();
+    progress();
 
     clearUI();
 
-    eyebrow.textContent=q.label;
+    chapter.textContent=q.chapter;
+    main.textContent=q.q;
+    sub.textContent=q.hint;
 
-    mainText.textContent=q.text;
+    main.style.opacity="0";
 
-    subText.textContent=q.hint;
-
-    mainText.style.opacity="0";
-
-    await wait(180);
-
-    mainText.style.opacity="1";
-
-    questionSound(q.sound);
-
-    /* różne wejścia tekstu */
-
-    if(q.sound==="fear"){
-        glitch(300);
-    }
-
-    if(q.sound==="alone"){
-        ambientDown();
-    }
-
-    if(q.sound==="trap"){
-        mainText.classList.add("flicker");
-
-        setTimeout(()=>{
-            mainText.classList.remove("flicker");
-        },450);
-    }
-
-    await wait(350);
-
-    showInput();
-
-    locked=false;
-
-    answer.focus();
-}
-
-
-/* =========================================================
-   PRZERYWNIKI
-========================================================= */
-
-async function interruption(type){
-
-    if(!running) return;
-
-    inputArea.style.opacity="0";
-    inputArea.style.pointerEvents="none";
-
-    if(type==="early"){
-
-        await wait(350);
-
-        showText(
-            "Nie musisz się zastanawiać.",
-            "Pierwsza odpowiedź jest zwykle ciekawsza.",
-            "MIRROR"
-        );
-
-        softClick();
-
-        await wait(900);
-    }
-
-    if(type==="afterFear"){
-
-        silenceAudio();
-
-        await wait(500);
-
-        showText(
-            "Nie rozwijaj tego.",
-            "",
-            ""
-        );
-
-        await wait(600);
-
-        showText(
-            "Jedno słowo.",
-            "",
-            ""
-        );
-
-        await wait(650);
-
-        restoreAudio();
-
-        redCornerPulse();
-    }
-
-    if(type==="afterAlone"){
-
-        await wait(600);
-
-        showText(
-            "Spokojnie.",
-            "",
-            ""
-        );
-
-        await wait(450);
-
-        showText(
-            "To tylko ekran.",
-            "",
-            ""
-        );
-
-        await wait(650);
-
-        glitch(300);
-
-        showText(
-            "Przynajmniej na razie.",
-            "",
-            ""
-        );
-
-        await wait(850);
-    }
-
-    if(type==="mid"){
-
-        ambientDown();
-
-        await wait(500);
-
-        blackout(350);
-
-        await wait(450);
-
-        showText(
-            "Jeszcze kilka.",
-            "",
-            "MIRROR"
-        );
-
-        await wait(600);
-
-        particleBurst(15);
-
-        restoreAudio();
-    }
-}
-
-
-/* =========================================================
-   SPECJALNE ZDARZENIA W TRAKCIE PISANIA
-========================================================= */
-
-let typingTimer=null;
-let typingCount=0;
-
-answer.addEventListener("input",()=>{
-
-    if(!running) return;
-
-    typingCount++;
-
-    moveCursor(
-        window.innerWidth/2 + (Math.random()*80-40),
-        window.innerHeight/2 + 140 + (Math.random()*25-12),
-        5,
-        typingCount%8===0 ? "#f00" : "#777"
+    await wait(
+        q.id==="alone" ||
+        q.id==="truth"
+            ? 450
+            : 160
     );
 
-    clearTimeout(typingTimer);
+    main.style.opacity="1";
 
-    typingTimer=setTimeout(()=>{
+    await questionAudio(q);
 
-        hideCursor();
+    await wait(300);
 
-    },250);
+    inputOn();
 
-    /* delikatna reakcja na dłuższe pisanie */
+    memory.lastQuestionStart=performance.now();
 
-    if(typingCount===18){
+    locked=false;
+}
+
+
+/* ==========================================================
+   ODPOWIEDŹ — REAKCJE
+========================================================== */
+
+async function reaction(q,value){
+
+    const v=value.toLowerCase();
+
+    switch(q.id){
+
+        case"morning":
+
+            ownWord(value);
+
+            await wait(300);
+
+            if(value.length>8){
+                text(
+                    "Długa odpowiedź.",
+                    "A prosiłem o jedno słowo.",
+                    "MIRROR"
+                );
+
+                glitch(250);
+
+                await wait(700);
+            }
+
+            break;
+
+
+        case"mood":
+
+            if(
+                v.includes("dobr") ||
+                v.includes("szczę")
+            ){
+
+                tone(600,.35,.025);
+
+                await wait(500);
+
+                ownWord(value);
+
+            }else{
+
+                bass(48,.5,.09);
+
+                await wait(400);
+
+                flicker(250);
+            }
+
+            break;
+
+
+        case"person":
+
+            music(.04);
+
+            await wait(400);
+
+            ownWord(value);
+
+            await wait(600);
+
+            text(
+                "Dobrze.",
+                "Zapamiętaj tę odpowiedź.",
+                "LUDZIE"
+            );
+
+            await wait(800);
+
+            break;
+
+
+        case"desire":
+
+            sweep(100,600,.8,.05);
+
+            particleBurst(15);
+
+            await wait(600);
+
+            text(
+                "To jest ciekawe.",
+                value.toUpperCase(),
+                "POTRZEBA"
+            );
+
+            await wait(900);
+
+            break;
+
+
+        case"fear":
+
+            redMode(true);
+
+            heartbeatDouble();
+
+            await wait(350);
+
+            particleBurst(25);
+
+            await wait(350);
+
+            ownWord(value);
+
+            await wait(500);
+
+            /* nie mówimy "boisz się..." */
+
+            text(
+                "Nie rozwijaj tego.",
+                "Idziemy dalej.",
+                "MIRROR"
+            );
+
+            await wait(900);
+
+            redMode(false);
+
+            break;
+
+
+        case"loss":
+
+            bass(36,1.1,.19);
+
+            await wait(400);
+
+            if(
+                memory.fear &&
+                value.toLowerCase()===memory.fear.toLowerCase()
+            ){
+
+                giant(
+                    "ZNOWU",
+                    "#fff",
+                    600
+                );
+
+                heavyImpact();
+
+                await wait(750);
+
+            }else{
+
+                ownWord(value);
+
+                await wait(650);
+            }
+
+            break;
+
+
+        case"alone":
+
+            /* KLUCZOWA SCENA */
+
+            musicDrop();
+
+            await wait(650);
+
+            blackout(450);
+
+            await wait(500);
+
+            restoreAudio();
+
+            if(v==="tak"){
+
+                text(
+                    "Dobrze.",
+                    "",
+                    ""
+                );
+
+                await wait(500);
+
+                text(
+                    "Nie ruszaj się.",
+                    "",
+                    ""
+                );
+
+                heartbeat();
+
+                await wait(700);
+
+                text(
+                    "To tylko część gry.",
+                    "",
+                    ""
+                );
+
+                await wait(550);
+
+                /* nagłe odwrócenie */
+
+                flashScreen("white",50);
+                heavyImpact();
+                shake(500,true);
+
+                giant(
+                    "NIE.",
+                    "#fff",
+                    500
+                );
+
+                await wait(800);
+
+            }else{
+
+                text(
+                    "Dobrze.",
+                    "Nie będziemy tego sprawdzać.",
+                    ""
+                );
+
+                await wait(700);
+
+                whisperSound();
+
+                await wait(700);
+
+                text(
+                    "Kontynuuj.",
+                    "",
+                    "MIRROR"
+                );
+            }
+
+            musicRestore(.035);
+
+            break;
+
+
+        case"object":
+
+            metalHit();
+
+            await wait(300);
+
+            ownWord(value);
+
+            await wait(400);
+
+            if(
+                memory.alone==="tak"
+            ){
+
+                musicDrop();
+
+                await wait(500);
+
+                text(
+                    "Dziwne.",
+                    "Nagle zaczynam zwracać uwagę na to, co jest obok Ciebie.",
+                    "TERAZ"
+                );
+
+                await wait(950);
+
+                musicRestore(.04);
+            }
+
+            break;
+
+
+        case"sound":
+
+            tone(900,.2,.03);
+
+            await wait(400);
+
+            text(
+                "Słyszysz coś.",
+                "To wystarczy.",
+                "TERAZ"
+            );
+
+            await wait(650);
+
+            /* pauza muzyki */
+
+            musicDrop();
+
+            await wait(850);
+
+            /* nagły dźwięk */
+
+            metalHit();
+            flashScreen("white",45);
+
+            await wait(250);
+
+            text(
+                "Dobrze.",
+                "",
+                ""
+            );
+
+            await wait(600);
+
+            musicRestore(.045);
+
+            break;
+
+
+        case"trust":
+
+            await wait(350);
+
+            if(
+                memory.person &&
+                v===memory.person.toLowerCase()
+            ){
+
+                bass(40,.8,.14);
+
+                await wait(400);
+
+                text(
+                    "Ta sama osoba.",
+                    "",
+                    "ZBLIŻENIE"
+                );
+
+                await wait(900);
+
+            }else{
+
+                ownWord(value);
+
+                await wait(500);
+            }
+
+            break;
+
+
+        case"need":
+
+            bass(42,.7,.13);
+
+            await wait(500);
+
+            if(
+                memory.desire &&
+                v===memory.desire.toLowerCase()
+            ){
+
+                giant(
+                    "WRÓCIŁO.",
+                    "#fff",
+                    650
+                );
+
+                heavyImpact();
+
+                await wait(800);
+
+            }else{
+
+                ownWord(value);
+            }
+
+            break;
+
+
+        case"change":
+
+            sweep(70,850,1,.06,"sawtooth");
+
+            particleBurst(25);
+
+            await wait(600);
+
+            if(
+                memory.fear &&
+                v===memory.fear.toLowerCase()
+            ){
+
+                redMode(true);
+
+                giant(
+                    "TA SAMA RZECZ.",
+                    "#fff",
+                    750
+                );
+
+                heartbeatDouble();
+
+                await wait(900);
+
+                redMode(false);
+
+            }else{
+
+                ownWord(value);
+            }
+
+            break;
+
+
+        case"happy":
+
+            await wait(450);
+
+            if(v==="tak"){
+
+                tone(650,.3,.03);
+
+                await wait(500);
+
+                text(
+                    "Dobrze.",
+                    "Nie będę Ci tego odbierać.",
+                    "SPRAWDZENIE"
+                );
+
+            }else if(v==="nie"){
+
+                bass(42,.8,.15);
+
+                await wait(500);
+
+                text(
+                    "Rozumiem.",
+                    "",
+                    "SPRAWDZENIE"
+                );
+
+            }else{
+
+                glitch(250);
+
+                text(
+                    "Czasami.",
+                    "Najbardziej niebezpieczna odpowiedź.",
+                    "SPRAWDZENIE"
+                );
+            }
+
+            await wait(950);
+
+            break;
+
+
+        case"honest":
+
+            /* NIE OSKARŻAMY */
+
+            musicDrop();
+
+            await wait(700);
+
+            text(
+                "Dobrze.",
+                "Nie sprawdzam.",
+                "SPRAWDZENIE"
+            );
+
+            await wait(750);
+
+            musicRestore(.035);
+
+            break;
+
+
+        case"truth":
+
+            musicDrop();
+
+            await wait(700);
+
+            if(v==="tak"){
+
+                heartbeatDouble();
+
+                await wait(300);
+
+                giant(
+                    "DOBRZE.",
+                    "#fff",
+                    650
+                );
+
+                await wait(750);
+
+                text(
+                    "Właśnie o to chodzi.",
+                    "Nie muszę wiedzieć kiedy.",
+                    "SPRAWDZENIE"
+                );
+
+            }else{
+
+                tone(180,.3,.04,"triangle");
+
+                await wait(500);
+
+                text(
+                    "Nie szkodzi.",
+                    "Nie będę Cię łapać na słowach.",
+                    "SPRAWDZENIE"
+                );
+            }
+
+            await wait(1000);
+
+            musicRestore(.045);
+
+            break;
+
+
+        case"finalChoice":
+
+            risingTension();
+
+            await wait(500);
+
+            particleBurst(35);
+
+            await wait(500);
+
+            ownWord(value);
+
+            await wait(800);
+
+            break;
+    }
+}
+
+
+/* ==========================================================
+   PRZERWANE MOMENTY
+========================================================== */
+
+async function interruption(stage){
+
+    if(stage==="one"){
+
+        musicDrop();
+
+        await wait(550);
+
+        text(
+            "Zauważyłeś?",
+            "",
+            ""
+        );
+
+        await wait(700);
+
+        text(
+            "Jeszcze nie.",
+            "",
+            ""
+        );
+
+        await wait(500);
+
+        musicRestore(.03);
+    }
+
+
+    if(stage==="two"){
+
+        musicDrop();
+
+        await wait(500);
+
+        blackout(300);
+
+        await wait(450);
+
+        giant(
+            "STOP",
+            "#fff",
+            450
+        );
+
+        heavyImpact();
+
+        await wait(650);
+
+        text(
+            "Kontynuuj.",
+            "",
+            "MIRROR"
+        );
+
+        await wait(650);
+
+        musicRestore(.045);
+    }
+
+
+    if(stage==="three"){
+
+        /* spodziewany moment — użytkownik oczekuje jumpscare */
+
+        risingTension();
+
+        await wait(700);
+
+        text(
+            "Zaraz coś się stanie.",
+            "",
+            ""
+        );
+
+        await wait(700);
+
+        /* NIC */
+
+        musicDrop();
+
+        await wait(1300);
 
         softClick();
 
-        if(Math.random()>.45){
-            flicker(250);
-        }
+        await wait(500);
+
+        text(
+            "Nic.",
+            "Właśnie tego oczekiwałeś.",
+            ""
+        );
+
+        await wait(900);
+
+        /* i dopiero wtedy */
+
+        flashScreen("red",45);
+
+        heavyImpact();
+
+        shake(500,true);
+
+        giant(
+            "TERAZ.",
+            "#fff",
+            500
+        );
+
+        await wait(800);
+
+        musicRestore(.05);
     }
-
-    if(typingCount===30){
-
-        tone(1100,.05,.025,"square");
-
-        randomParticle("?");
-    }
-
-});
+}
 
 
-/* =========================================================
+/* ==========================================================
    SUBMIT
-========================================================= */
+========================================================== */
 
-async function submitAnswer(){
+async function submit(){
 
-    if(!running || locked) return;
+    if(!running || locked)
+        return;
 
-    const value=cleanWord(answer.value);
+    const value=clean(answer.value);
 
-    if(!validAnswer(value)){
+    if(!valid(value)){
 
         answer.style.borderBottomColor="#900";
 
@@ -1975,545 +2240,668 @@ async function submitAnswer(){
 
     locked=true;
 
-    answer.blur();
+    const q=questions[qIndex];
 
-    rememberAnswer(value);
+    const elapsed=
+        performance.now()-memory.lastQuestionStart;
 
-    /* zapisujemy specjalnie odpowiedź o samotności */
+    memory.times.push(elapsed);
 
-    if(index===7){
-        memory.alone=value;
+    if(
+        memory.answers.length>0 &&
+        value.toLowerCase()===
+        memory.answers[memory.answers.length-1].toLowerCase()
+    ){
+        memory.changed=true;
     }
 
-    /* efekt przyjęcia */
+    remember(q,value);
 
-    clickSound();
+    input.style.opacity="0";
+    input.style.pointerEvents="none";
 
-    inputArea.style.opacity="0";
-    inputArea.style.pointerEvents="none";
+    click();
 
-    await wait(250);
+    await wait(200);
 
-    /* reakcja właściwa */
+    await reaction(q,value);
 
-    await answerReaction(
-        questions[index],
-        value
-    );
+    /* ------------------------------------------------------
+       zaplanowane eskalacje
+    ------------------------------------------------------ */
 
-    /* zaplanowane przerywniki */
-
-    if(index===0){
-
-        await interruption("early");
-
+    if(qIndex===1){
+        await interruption("one");
     }
 
-    if(index===5){
-
-        await interruption("afterFear");
-
+    if(qIndex===4){
+        await interruption("two");
     }
 
-    if(index===7){
-
-        await interruption("afterAlone");
-
+    if(qIndex===8){
+        await interruption("three");
     }
 
-    if(index===10){
+    if(qIndex<questions.length-1){
 
-        await interruption("mid");
-
-    }
-
-    /* następne pytanie */
-
-    if(index < questions.length-1){
-
-        index++;
-
-        locked=false;
+        qIndex++;
 
         await wait(350);
 
-        questionScene();
+        locked=false;
+
+        showQuestion();
 
     }else{
 
-        await finalSequence();
-
+        await finale();
     }
 }
 
 
-/* =========================================================
-   ENTER / BUTTON
-========================================================= */
+/* ==========================================================
+   ENTER
+========================================================== */
 
-send.addEventListener("click",submitAnswer);
+send.addEventListener(
+    "click",
+    submit
+);
 
-answer.addEventListener("keydown",e=>{
-
-    if(e.key==="Enter"){
-        e.preventDefault();
-        submitAnswer();
+answer.addEventListener(
+    "keydown",
+    e=>{
+        if(e.key==="Enter"){
+            e.preventDefault();
+            submit();
+        }
     }
-
-});
-
-
-/* =========================================================
-   START
-========================================================= */
-
-start.addEventListener("click",async()=>{
-
-    if(running) return;
-
-    running=true;
-
-    initAudio();
-
-    try{
-        await audioCtx.resume();
-    }catch(e){}
-
-    start.style.display="none";
-
-    clickSound();
-
-    await wait(400);
-
-    showText(
-        "Dobrze.",
-        "Nie ma tutaj poprawnych odpowiedzi.",
-        "MIRROR"
-    );
-
-    tone(420,.25,.035,"sine");
-
-    await wait(1100);
-
-    showText(
-        "Odpowiadaj pierwszą rzeczą, która przyjdzie Ci do głowy.",
-        "Jedno słowo zwykle wystarczy.",
-        "ZASADA"
-    );
-
-    await wait(1100);
-
-    index=0;
-
-    questionScene();
-
-});
+);
 
 
-/* =========================================================
-   LOSOWE TŁO — NIEPRZERWANY ŻYJĄCY EKRAN
-========================================================= */
+/* ==========================================================
+   TYPING
+========================================================== */
 
-setInterval(()=>{
+let typed=0;
 
-    if(!running) return;
+answer.addEventListener(
+    "input",
+    ()=>{
 
-    const chance=Math.random();
+        if(!running)
+            return;
 
-    if(chance<.20){
-        randomParticle("·");
-    }
+        typed++;
 
-    if(chance>.82){
-        randomParticle(
-            ["—","/","\\","0","1","?"][Math.floor(Math.random()*6)]
-        );
-    }
+        moveDot();
 
-    if(chance>.93){
-        redCornerPulse();
-    }
-
-},700);
-
-
-/* =========================================================
-   MIKRO-ZDARZENIA
-========================================================= */
-
-setInterval(()=>{
-
-    if(!running) return;
-
-    const chance=Math.random();
-
-    if(chance<.04){
-
-        tone(
-            1500+Math.random()*1000,
-            .04,
-            .012,
-            "sine"
-        );
-
-        flicker(100);
-    }
-
-    if(chance>.97){
-
-        const x=Math.random()*window.innerWidth;
-        const y=Math.random()*window.innerHeight;
-
-        moveCursor(
-            x,
-            y,
-            3,
-            "#555"
-        );
-
-        setTimeout(hideCursor,150);
-    }
-
-},1200);
-
-
-/* =========================================================
-   FINAŁ
-========================================================= */
-
-function strongestWords(){
-
-    const result=[];
-
-    /* Najpierw rzeczy najbardziej osobiste */
-
-    if(memory.fears.length){
-        result.push(memory.fears[memory.fears.length-1]);
-    }
-
-    if(memory.people.length){
-        result.push(memory.people[memory.people.length-1]);
-    }
-
-    if(memory.emotions.length){
-        result.push(memory.emotions[memory.emotions.length-1]);
-    }
-
-    /* potem krótkie własne odpowiedzi */
-
-    for(let i=memory.answers.length-1;i>=0;i--){
-
-        const w=wordsOf(memory.answers[i]);
-
-        for(let j=w.length-1;j>=0;j--){
-
-            if(
-                w[j].length>=5 &&
-                !result.includes(w[j])
-            ){
-                result.push(w[j]);
-            }
-
-            if(result.length>=3) break;
+        if(typed%7===0){
+            softClick();
         }
 
-        if(result.length>=3) break;
+        if(typed===14){
+
+            tone(
+                1400,
+                .04,
+                .018,
+                "square"
+            );
+
+            particle("?");
+        }
+
+        if(typed===28){
+
+            needle();
+
+            flicker(150);
+        }
+
     }
+);
 
-    return result.slice(0,3);
-}
 
-async function finalSequence(){
+/* ==========================================================
+   START
+========================================================== */
+
+start.addEventListener(
+    "click",
+    async()=>{
+
+        if(running)
+            return;
+
+        running=true;
+
+        initAudio();
+
+        try{
+            await AC.resume();
+        }catch(e){}
+
+        start.style.display="none";
+
+        music(.018);
+
+        click();
+
+        await wait(700);
+
+        text(
+            "Zaczynamy.",
+            "Nie szukaj tutaj poprawnej odpowiedzi.",
+            "MIRROR"
+        );
+
+        await wait(1100);
+
+        text(
+            "Odpowiadaj szybko.",
+            "Najlepiej jednym słowem.",
+            "ZASADA"
+        );
+
+        await wait(1000);
+
+        qIndex=0;
+
+        showQuestion();
+    }
+);
+
+
+/* ==========================================================
+   FINAŁ — WSZYSTKO WRACA DO POCZĄTKU
+========================================================== */
+
+async function finale(){
 
     locked=true;
 
-    inputArea.style.opacity="0";
-    inputArea.style.pointerEvents="none";
+    input.style.opacity="0";
+    input.style.pointerEvents="none";
 
-    await wait(700);
+    /* muzyka zaczyna narastać */
 
-    /* CISZA */
+    musicRestore(.06);
 
-    silenceAudio();
+    await wait(900);
 
-    blackout(900);
+    text(
+        "Koniec pytań.",
+        "",
+        ""
+    );
+
+    await wait(850);
+
+    /* pauza */
+
+    musicDrop();
+
+    await wait(900);
+
+    text(
+        "Ale nie koniec.",
+        "",
+        "MIRROR"
+    );
+
+    await wait(1000);
+
+    /* ------------------------------------------------------
+       PIERWSZA REKONSTRUKCJA
+    ------------------------------------------------------ */
+
+    text(
+        "Zaczęliśmy od zwykłego pytania.",
+        memory.morning || "—",
+        "POCZĄTEK"
+    );
+
+    ownWord(memory.morning);
 
     await wait(1100);
 
-    showText(
-        "WYSTARCZY.",
+    text(
+        "Potem pojawiła się osoba.",
+        memory.person || "—",
+        "LUDZIE"
+    );
+
+    ownWord(memory.person);
+
+    await wait(1100);
+
+    /* ------------------------------------------------------
+       STRACH
+    ------------------------------------------------------ */
+
+    redMode(true);
+
+    bass(38,1.2,.18);
+
+    text(
+        "Potem strach.",
+        memory.fear || "—",
+        "PĘKNIĘCIE"
+    );
+
+    await wait(1200);
+
+    particleBurst(30);
+
+    await wait(700);
+
+    redMode(false);
+
+    /* ------------------------------------------------------
+       STRATA
+    ------------------------------------------------------ */
+
+    musicRestore(.045);
+
+    text(
+        "A potem strata.",
+        memory.loss || "—",
+        "PĘKNIĘCIE"
+    );
+
+    await wait(1100);
+
+    /* ------------------------------------------------------
+       POWRÓT
+    ------------------------------------------------------ */
+
+    musicDrop();
+
+    await wait(600);
+
+    text(
+        "I teraz najważniejsze.",
         "",
         ""
     );
 
     await wait(800);
 
-    mainText.classList.add("glitch");
-
-    await wait(350);
-
-    mainText.classList.remove("glitch");
-
-    showText(
-        "Nie potrzebuję więcej odpowiedzi.",
-        "",
-        "MIRROR"
-    );
-
-    await wait(1100);
-
-    /* przywracamy dźwięk bardzo delikatnie */
-
-    restoreAudio();
-
-    await wait(500);
-
-    const words=strongestWords();
-
-    if(words.length){
-
-        showText(
-            "ZOSTAŁY MI TE.",
-            words.join("  /  "),
-            "REKONSTRUKCJA"
-        );
-
-        await wait(1300);
-
-        particleBurst(25);
-
-        for(const word of words){
-
-            floatingWord(word.toUpperCase());
-
-            tone(
-                150+Math.random()*300,
-                .3,
-                .025,
-                "triangle"
-            );
-
-            await wait(350);
-        }
-
-    }else{
-
-        showText(
-            "ZAPAMIĘTAŁEM SPOSÓB.",
-            "Nie słowa.",
-            "REKONSTRUKCJA"
-        );
-
-        await wait(1100);
-    }
-
-    /* główna rekonstrukcja */
-
-    await wait(600);
-
-    redMode(true);
-
-    bass(40,1.2,.2);
-
-    showText(
-        "Najciekawsze nie jest to, co napisałeś.",
-        "Tylko to, na co odpowiedziałeś od razu.",
-        "MIRROR"
-    );
-
-    await wait(1500);
-
-    redMode(false);
-
-    /* zależna narracja */
-
-    let line1=
-        "Nie wygląda to jak przypadkowe odpowiedzi.";
-
-    if(memory.fears.length){
-
-        line1=
-            "Wróciłeś do słowa: "+
-            memory.fears[memory.fears.length-1]+".";
-    }
-
-    showText(
-        line1,
-        "To tylko wzorzec. Nie diagnoza.",
-        "ANALIZA"
-    );
-
-    await wait(1400);
-
-    if(memory.people.length){
-
-        showText(
-            "Kiedy pytam o ludzi...",
-            "Twoja odpowiedź też coś zmienia.",
-            "ANALIZA"
-        );
-
-        await wait(1000);
-
-        showText(
-            "Nie muszę wiedzieć dlaczego.",
-            memory.people[memory.people.length-1].toUpperCase(),
-            "ANALIZA"
-        );
-
-        await wait(1200);
-    }
-
-    /* najcięższy moment */
-
-    silenceAudio();
-
-    await wait(700);
-
-    showText(
-        "Jest jeszcze jedna rzecz.",
+    text(
+        "Wróćmy do początku.",
         "",
         ""
     );
 
-    await wait(1100);
+    await wait(700);
 
-    showText(
-        "Twoja odpowiedź na pytanie o samotność.",
+    /* pokazujemy rzeczy w odwrotnej kolejności */
+
+    const selected=[
+        memory.finalChoice || "",
+        memory.need || "",
+        memory.change || "",
+        memory.loss || "",
+        memory.fear || "",
+        memory.person || "",
+        memory.morning || ""
+    ].filter(Boolean);
+
+    for(let i=0;i<Math.min(5,selected.length);i++){
+
+        musicRestore(.025);
+
+        text(
+            selected[i].toUpperCase(),
+            "",
+            "ODPOWIEDŹ"
+        );
+
+        ownWord(selected[i]);
+
+        await wait(650);
+
+        musicDrop();
+
+        await wait(230);
+
+    }
+
+    /* ------------------------------------------------------
+       NAJWAŻNIEJSZA CZĘŚĆ
+    ------------------------------------------------------ */
+
+    musicRestore(.055);
+
+    await wait(600);
+
+    text(
+        "Widzisz wzór?",
+        "",
+        ""
+    );
+
+    risingTension();
+
+    await wait(1400);
+
+    text(
+        "Ja też.",
+        "",
+        "MIRROR"
+    );
+
+    await wait(900);
+
+    /* ------------------------------------------------------
+       NIE "DIAGNOZA", TYLKO WNIOSKI Z ODPOWIEDZI
+    ------------------------------------------------------ */
+
+    if(
+        memory.fear &&
+        memory.loss &&
+        memory.fear.toLowerCase()===
+        memory.loss.toLowerCase()
+    ){
+
+        musicDrop();
+
+        await wait(650);
+
+        giant(
+            "WRÓCIŁO.",
+            "#fff",
+            700
+        );
+
+        heavyImpact();
+
+        await wait(850);
+
+    }else{
+
+        musicDrop();
+
+        await wait(700);
+
+        text(
+            "Nie odpowiedziałeś dwa razy tak samo.",
+            "Ale pewne rzeczy wracały.",
+            "MIRROR"
+        );
+
+        await wait(1000);
+    }
+
+    /* ------------------------------------------------------
+       SAMOTNOŚĆ
+    ------------------------------------------------------ */
+
+    musicDrop();
+
+    await wait(800);
+
+    text(
+        "A teraz ostatnia rzecz.",
+        "",
+        ""
+    );
+
+    await wait(900);
+
+    text(
+        "Jesteś teraz sam?",
         memory.alone || "—",
         "MIRROR"
     );
 
-    await wait(1500);
+    await wait(1200);
 
-    /* finał */
+    /* ------------------------------------------------------
+       CISZA
+    ------------------------------------------------------ */
 
-    blackout(700);
-
-    await wait(900);
-
-    restoreAudio();
-
-    showText(
-        "Czy nadal jesteś pewien?",
-        "",
-        ""
-    );
+    blackout(900);
 
     await wait(1000);
 
-    showText(
-        "Że jesteś tutaj sam.",
-        "",
-        ""
-    );
+    /* absolutna cisza */
 
-    await wait(1200);
+    musicDrop();
 
-    /* wielki finał audio-wizualny */
+    if(AC && master){
 
-    silenceAudio();
+        master.gain.cancelScheduledValues(t());
 
-    await wait(500);
+        master.gain.linearRampToValueAtTime(
+            .0001,
+            t()+.1
+        );
+    }
 
-    flashScreen("#fff",70);
+    await wait(1400);
 
-    explosion();
+    /* ------------------------------------------------------
+       FAŁSZYWE ZAKOŃCZENIE
+    ------------------------------------------------------ */
 
-    shake(700,true);
-
-    redMode(true);
-
-    particleBurst(55);
-
-    giantWarning(
-        "MIRROR",
-        "#fff",
-        850
-    );
-
-    await wait(1100);
-
-    redMode(false);
-
-    blackout(1000);
-
-    await wait(1200);
-
-    /* ostatni ekran */
-
-    restoreAudio();
-
-    showText(
-        "KONIEC",
-        "Możesz zamknąć tę stronę.",
+    text(
+        "KONIEC.",
+        "Możesz zamknąć stronę.",
         ""
     );
 
     await wait(1800);
 
-    showText(
-        "Albo zacząć jeszcze raz.",
-        "Tym razem odpowiadając inaczej.",
+    /* ------------------------------------------------------
+       OSTATNI ATAK
+    ------------------------------------------------------ */
+
+    /* nic przez chwilę */
+
+    await wait(1200);
+
+    restoreMaster();
+
+    risingTension();
+
+    await wait(800);
+
+    flashScreen("white",35);
+
+    heavyImpact();
+
+    shake(700,true);
+
+    redMode(true);
+
+    giant(
+        "NIE ODPISUJ.",
+        "#fff",
+        700
+    );
+
+    await wait(950);
+
+    musicDrop();
+
+    redMode(false);
+
+    blackout(1000);
+
+    await wait(1100);
+
+    /* ------------------------------------------------------
+       OSTATNI TEKST
+    ------------------------------------------------------ */
+
+    text(
+        "Nie ma drugiego dna.",
+        "",
+        ""
+    );
+
+    await wait(900);
+
+    text(
+        "Jest tylko to, co sam tutaj zostawiłeś.",
+        "",
         "MIRROR"
     );
 
-    /* reset */
+    await wait(1200);
 
-    const restart=document.createElement("button");
+    /* bardzo cichy powrót */
 
-    restart.textContent="JESZCZE RAZ";
+    musicRestore(.012);
 
-    restart.style.marginTop="35px";
-    restart.style.padding="12px 25px";
-    restart.style.background="#eee";
-    restart.style.color="#000";
-    restart.style.border="0";
-    restart.style.cursor="pointer";
-    restart.style.letterSpacing="2px";
+    text(
+        "Tym razem...",
+        "",
+        ""
+    );
 
-    content.appendChild(restart);
+    await wait(900);
 
-    restart.addEventListener("click",()=>{
-        location.reload();
-    });
+    text(
+        "nie odpowiadaj.",
+        "",
+        ""
+    );
+
+    await wait(1200);
+
+    /* restart */
+
+    const again=document.createElement("button");
+
+    again.textContent="ZACZNIJ OD NOWA";
+
+    again.style.marginTop="38px";
+    again.style.padding="13px 28px";
+    again.style.background="#eee";
+    again.style.color="#000";
+    again.style.border="0";
+    again.style.cursor="pointer";
+    again.style.letterSpacing="3px";
+
+    content.appendChild(again);
+
+    again.addEventListener(
+        "click",
+        ()=>{
+            location.reload();
+        }
+    );
+
+    locked=false;
 }
 
 
-/* =========================================================
-   MOUSE — EKRAN REAGUJE
-========================================================= */
+/* ==========================================================
+   MASTER AUDIO
+========================================================== */
 
-document.addEventListener("mousemove",e=>{
+function restoreMaster(){
 
-    if(!running) return;
+    if(!master)
+        return;
 
-    /* bardzo subtelne */
+    master.gain.cancelScheduledValues(t());
 
-    const dx=(e.clientX/window.innerWidth-.5)*2;
-    const dy=(e.clientY/window.innerHeight-.5)*2;
+    master.gain.linearRampToValueAtTime(
+        .32,
+        t()+.7
+    );
+}
 
-    if(Math.random()<.04){
 
-        vignetteParallax(dx,dy);
+/* ==========================================================
+   LOSOWE ŻYCIE EKRANU
+========================================================== */
+
+setInterval(()=>{
+
+    if(!running)
+        return;
+
+    const r=Math.random();
+
+    if(r<.15)
+        particle("·");
+
+    if(r>.86)
+        particle(
+            ["—","/","\\","?","0","1"][Math.floor(Math.random()*6)]
+        );
+
+    if(r>.965)
+        dot();
+
+},650);
+
+
+/* ==========================================================
+   MIKRO-ZAKŁÓCENIA
+========================================================== */
+
+setInterval(()=>{
+
+    if(!running)
+        return;
+
+    const r=Math.random();
+
+    if(r<.035){
+
+        digitalNoise();
+
+        flicker(100);
     }
 
-});
+    if(r>.985){
 
-function vignetteParallax(dx,dy){
+        const old=main.textContent;
 
-    app.style.transform=
-        `translate(${dx*1.5}px,${dy*1.5}px)`;
+        main.textContent="";
 
-    setTimeout(()=>{
-        app.style.transform="";
-    },80);
-}
+        setTimeout(()=>{
+            main.textContent=old;
+        },60);
+    }
+
+},1400);
 
 
-/* =========================================================
-   KONIEC
-========================================================= */
+/* ==========================================================
+   DELIKATNY PARALLAX
+========================================================== */
+
+document.addEventListener(
+    "mousemove",
+    e=>{
+
+        if(!running)
+            return;
+
+        if(Math.random()<.035){
+
+            const x=
+                (e.clientX/window.innerWidth-.5)*2;
+
+            const y=
+                (e.clientY/window.innerHeight-.5)*2;
+
+            app.style.transform=
+                `translate(${x*1.5}px,${y*1.5}px)`;
+
+            setTimeout(()=>{
+                app.style.transform="";
+            },90);
+        }
+    }
+);
 
 </script>
 
