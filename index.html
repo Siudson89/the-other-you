@@ -3,6 +3,4144 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MIRROR — psychological experience</title>
+
+<style>
+:root{
+    --bg:#030303;
+    --white:#f1f1f1;
+    --gray:#686868;
+    --dark:#292929;
+    --red:#c90000;
+    --red2:#ff1515;
+}
+
+*{
+    box-sizing:border-box;
+}
+
+html,
+body{
+    margin:0;
+    width:100%;
+    height:100%;
+    overflow:hidden;
+    background:#030303;
+    color:var(--white);
+    font-family:
+        Arial,
+        Helvetica,
+        sans-serif;
+}
+
+body{
+    position:relative;
+}
+
+/* =========================
+   CINEMATIC LAYERS
+   ========================= */
+
+#grain{
+    position:fixed;
+    inset:0;
+    pointer-events:none;
+    z-index:90;
+    opacity:.075;
+    background-image:
+        url("data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.45'/%3E%3C/svg%3E");
+    mix-blend-mode:screen;
+}
+
+#scanlines{
+    position:fixed;
+    inset:0;
+    pointer-events:none;
+    z-index:91;
+    opacity:.055;
+    background:
+        repeating-linear-gradient(
+            to bottom,
+            transparent 0px,
+            transparent 3px,
+            rgba(255,255,255,.5) 4px
+        );
+}
+
+#vignette{
+    position:fixed;
+    inset:0;
+    pointer-events:none;
+    z-index:92;
+    background:
+        radial-gradient(
+            ellipse at center,
+            transparent 28%,
+            rgba(0,0,0,.72) 100%
+        );
+}
+
+#flash{
+    position:fixed;
+    inset:0;
+    background:#fff;
+    opacity:0;
+    pointer-events:none;
+    z-index:100;
+}
+
+#redFlash{
+    position:fixed;
+    inset:0;
+    background:#a00000;
+    opacity:0;
+    pointer-events:none;
+    z-index:101;
+    mix-blend-mode:screen;
+}
+
+#blackout{
+    position:fixed;
+    inset:0;
+    background:#000;
+    opacity:0;
+    pointer-events:none;
+    z-index:102;
+}
+
+#noiseOverlay{
+    position:fixed;
+    inset:0;
+    pointer-events:none;
+    z-index:95;
+    opacity:0;
+    background:
+        repeating-linear-gradient(
+            0deg,
+            rgba(255,255,255,.10) 0px,
+            rgba(255,255,255,.10) 1px,
+            transparent 1px,
+            transparent 3px
+        );
+}
+
+#app{
+    width:100%;
+    height:100%;
+    position:relative;
+    z-index:10;
+}
+
+/* =========================
+   TOP UI
+   ========================= */
+
+#topLeft{
+    position:fixed;
+    left:24px;
+    top:20px;
+    font-size:9px;
+    letter-spacing:4px;
+    color:#333;
+    z-index:20;
+}
+
+#topRight{
+    position:fixed;
+    right:24px;
+    top:20px;
+    font-size:9px;
+    letter-spacing:3px;
+    color:#333;
+    z-index:20;
+}
+
+#progress{
+    position:fixed;
+    left:50%;
+    bottom:24px;
+    transform:translateX(-50%);
+    width:160px;
+    height:1px;
+    background:#171717;
+    z-index:20;
+}
+
+#progressBar{
+    width:0%;
+    height:100%;
+    background:#777;
+    transition:width 1s ease;
+}
+
+/* =========================
+   SCREENS
+   ========================= */
+
+.screen{
+    position:absolute;
+    inset:0;
+
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+
+    text-align:center;
+
+    padding:
+        80px
+        max(7vw,30px)
+        90px;
+
+    opacity:1;
+}
+
+.hidden{
+    display:none !important;
+}
+
+/* =========================
+   INTRO
+   ========================= */
+
+#intro{
+    transition:opacity 1.2s ease;
+}
+
+.logo{
+    font-size:
+        clamp(
+            60px,
+            13vw,
+            150px
+        );
+
+    font-weight:900;
+    letter-spacing:
+        clamp(
+            10px,
+            3vw,
+            30px
+        );
+
+    line-height:.85;
+}
+
+.logoLine{
+    width:0;
+    height:1px;
+    background:#444;
+    margin:34px auto;
+    animation:lineGrow 2s ease forwards;
+}
+
+@keyframes lineGrow{
+    to{
+        width:260px;
+    }
+}
+
+.introSub{
+    color:#555;
+    letter-spacing:5px;
+    font-size:10px;
+}
+
+.introInfo{
+    margin-top:55px;
+    max-width:500px;
+    color:#606060;
+    line-height:2;
+    font-size:12px;
+}
+
+.start{
+    margin-top:38px;
+    padding:15px 45px;
+    background:transparent;
+    border:1px solid #444;
+    color:#aaa;
+    font-size:10px;
+    letter-spacing:5px;
+    cursor:pointer;
+    transition:
+        background .3s,
+        color .3s,
+        border .3s;
+}
+
+.start:hover{
+    color:#000;
+    background:#eee;
+    border-color:#eee;
+}
+
+/* =========================
+   GAME
+   ========================= */
+
+#game{
+    transition:
+        transform .1s,
+        filter .2s;
+}
+
+.sceneCounter{
+    position:absolute;
+    top:95px;
+    left:50%;
+    transform:translateX(-50%);
+    color:#303030;
+    font-size:9px;
+    letter-spacing:5px;
+}
+
+.questionWrap{
+    width:min(900px,90vw);
+}
+
+.question{
+    font-size:
+        clamp(
+            27px,
+            4.3vw,
+            58px
+        );
+
+    line-height:1.18;
+
+    font-weight:400;
+
+    letter-spacing:-1px;
+
+    min-height:140px;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    text-wrap:balance;
+
+    text-shadow:
+        0 0 20px rgba(255,255,255,.025);
+}
+
+.question.red{
+    color:var(--red2);
+}
+
+.sub{
+    color:#4a4a4a;
+    font-size:10px;
+    letter-spacing:3px;
+    margin-top:12px;
+    min-height:18px;
+}
+
+.answerWrap{
+    width:min(720px,85vw);
+    margin-top:40px;
+}
+
+textarea{
+    width:100%;
+    height:105px;
+
+    resize:none;
+
+    border:none;
+    outline:none;
+
+    background:transparent;
+
+    color:#e9e9e9;
+
+    text-align:center;
+
+    font-size:20px;
+
+    line-height:1.5;
+
+    caret-color:#fff;
+
+    border-bottom:1px solid #292929;
+
+    padding:12px 5px;
+
+    transition:
+        border .3s,
+        color .3s;
+}
+
+textarea:focus{
+    border-bottom-color:#666;
+}
+
+textarea::placeholder{
+    color:#292929;
+}
+
+.controls{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    margin-top:17px;
+}
+
+#validation{
+    min-height:18px;
+    color:#4c4c4c;
+    font-size:10px;
+    letter-spacing:2px;
+}
+
+#continue{
+    position:absolute;
+    bottom:55px;
+
+    border:1px solid #292929;
+    background:transparent;
+    color:#777;
+
+    padding:11px 28px;
+
+    font-size:9px;
+    letter-spacing:4px;
+
+    cursor:pointer;
+
+    opacity:0;
+    pointer-events:none;
+
+    transition:
+        opacity .3s,
+        border .3s,
+        color .3s;
+}
+
+#continue.show{
+    opacity:1;
+    pointer-events:auto;
+}
+
+#continue:hover{
+    border-color:#888;
+    color:#eee;
+}
+
+/* =========================
+   EVENT SCREEN
+   ========================= */
+
+#event{
+    background:#030303;
+}
+
+.eventTag{
+    color:#303030;
+    font-size:9px;
+    letter-spacing:5px;
+    margin-bottom:45px;
+}
+
+.eventMain{
+    width:min(1000px,90vw);
+
+    font-size:
+        clamp(
+            28px,
+            5vw,
+            70px
+        );
+
+    line-height:1.1;
+
+    text-wrap:balance;
+
+    min-height:120px;
+}
+
+.eventSub{
+    color:#454545;
+    font-size:10px;
+    letter-spacing:4px;
+    margin-top:35px;
+}
+
+.eventContinue{
+    margin-top:55px;
+
+    background:transparent;
+    border:1px solid #292929;
+
+    color:#666;
+
+    padding:13px 32px;
+
+    letter-spacing:4px;
+    font-size:9px;
+
+    cursor:pointer;
+
+    opacity:0;
+}
+
+.eventContinue.show{
+    opacity:1;
+}
+
+.eventContinue:hover{
+    color:#fff;
+    border-color:#777;
+}
+
+/* =========================
+   FINAL
+   ========================= */
+
+#final{
+    text-align:center;
+}
+
+.finalTag{
+    color:#333;
+    letter-spacing:5px;
+    font-size:9px;
+    margin-bottom:35px;
+}
+
+.finalTitle{
+    width:min(950px,90vw);
+
+    font-size:
+        clamp(
+            30px,
+            5vw,
+            66px
+        );
+
+    line-height:1.13;
+}
+
+.finalAnalysis{
+    margin-top:40px;
+
+    width:min(700px,85vw);
+
+    color:#666;
+
+    font-size:13px;
+
+    line-height:1.9;
+}
+
+.finalQuote{
+    margin-top:30px;
+
+    color:#aaa;
+
+    font-size:15px;
+
+    line-height:1.6;
+}
+
+.restart{
+    margin-top:50px;
+
+    background:transparent;
+
+    border:1px solid #292929;
+
+    color:#555;
+
+    padding:12px 30px;
+
+    font-size:9px;
+
+    letter-spacing:4px;
+
+    cursor:pointer;
+}
+
+.restart:hover{
+    color:#fff;
+    border-color:#777;
+}
+
+/* =========================
+   EFFECTS
+   ========================= */
+
+.glitch{
+    animation:
+        glitch .12s steps(2) 8;
+}
+
+@keyframes glitch{
+    0%{
+        transform:translate(0);
+        filter:none;
+    }
+    20%{
+        transform:translate(-8px,2px);
+        filter:contrast(2);
+    }
+    40%{
+        transform:translate(7px,-2px);
+    }
+    60%{
+        transform:translate(-3px,3px);
+        filter:hue-rotate(50deg);
+    }
+    80%{
+        transform:translate(5px,-1px);
+    }
+    100%{
+        transform:translate(0);
+        filter:none;
+    }
+}
+
+.shake{
+    animation:
+        shake .055s linear 12;
+}
+
+@keyframes shake{
+    0%{transform:translate(0,0)}
+    25%{transform:translate(-5px,3px)}
+    50%{transform:translate(5px,-3px)}
+    75%{transform:translate(-3px,-2px)}
+    100%{transform:translate(0,0)}
+}
+
+.flicker{
+    animation:
+        flicker .09s steps(2) 14;
+}
+
+@keyframes flicker{
+    0%,100%{opacity:1}
+    50%{opacity:.08}
+}
+
+.pulse{
+    animation:
+        pulse 1.2s ease-in-out 4;
+}
+
+@keyframes pulse{
+    0%,100%{
+        transform:scale(1);
+    }
+    50%{
+        transform:scale(1.012);
+    }
+}
+
+.redPulse{
+    animation:
+        redPulse .6s ease-in-out 4;
+}
+
+@keyframes redPulse{
+    0%,100%{
+        color:#eee;
+    }
+    50%{
+        color:#d00000;
+    }
+}
+
+/* =========================
+   MOBILE
+   ========================= */
+
+@media(max-width:600px){
+
+    .screen{
+        padding:
+            70px
+            20px
+            80px;
+    }
+
+    .question{
+        font-size:28px;
+    }
+
+    .eventMain{
+        font-size:32px;
+    }
+
+    textarea{
+        font-size:18px;
+    }
+
+    .sceneCounter{
+        top:80px;
+    }
+
+    #topLeft,
+    #topRight{
+        font-size:7px;
+    }
+
+}
+</style>
+</head>
+
+<body>
+
+<div id="grain"></div>
+<div id="scanlines"></div>
+<div id="vignette"></div>
+
+<div id="flash"></div>
+<div id="redFlash"></div>
+<div id="blackout"></div>
+<div id="noiseOverlay"></div>
+
+<div id="topLeft">MIRROR</div>
+<div id="topRight">LOCAL / SESSION</div>
+
+<div id="progress">
+    <div id="progressBar"></div>
+</div>
+
+<div id="app">
+
+<!-- =====================================================
+     INTRO
+     ===================================================== -->
+
+<section id="intro" class="screen">
+
+    <div class="logo">
+        MIRROR
+    </div>
+
+    <div class="logoLine"></div>
+
+    <div class="introSub">
+        NIE JESTEŚ TUTAJ, ŻEBY ZDAĆ TEST
+    </div>
+
+    <div class="introInfo">
+        Odpowiadaj normalnie.<br>
+        Nie próbuj przewidzieć następnego pytania.<br>
+        Nie wpisuj tego, co według Ciebie powinno tutaj być.
+        <br><br>
+        Jeżeli czegoś nie chcesz napisać — właśnie to jest informacją.
+    </div>
+
+    <button id="start" class="start">
+        WEJDŹ
+    </button>
+
+</section>
+
+
+<!-- =====================================================
+     GAME
+     ===================================================== -->
+
+<section id="game" class="screen hidden">
+
+    <div id="counter" class="sceneCounter">
+        01 / 15
+    </div>
+
+    <div class="questionWrap">
+
+        <div id="question" class="question"></div>
+
+        <div id="sub" class="sub"></div>
+
+    </div>
+
+    <div class="answerWrap">
+
+        <textarea
+            id="answer"
+            autocomplete="off"
+            spellcheck="false"
+            placeholder="odpowiedź..."
+        ></textarea>
+
+        <div class="controls">
+            <div id="validation"></div>
+        </div>
+
+    </div>
+
+    <button id="continue">
+        DALEJ
+    </button>
+
+</section>
+
+
+<!-- =====================================================
+     EVENT
+     ===================================================== -->
+
+<section id="event" class="screen hidden">
+
+    <div id="eventTag" class="eventTag">
+        SYSTEM
+    </div>
+
+    <div id="eventMain" class="eventMain"></div>
+
+    <div id="eventSub" class="eventSub"></div>
+
+    <button id="eventContinue" class="eventContinue">
+        KONTYNUUJ
+    </button>
+
+</section>
+
+
+<!-- =====================================================
+     FINAL
+     ===================================================== -->
+
+<section id="final" class="screen hidden">
+
+    <div class="finalTag">
+        REKONSTRUKCJA ZAKOŃCZONA
+    </div>
+
+    <div id="finalTitle" class="finalTitle"></div>
+
+    <div id="finalAnalysis" class="finalAnalysis"></div>
+
+    <div id="finalQuote" class="finalQuote"></div>
+
+    <button
+        class="restart"
+        onclick="location.reload()"
+    >
+        WYJDŹ
+    </button>
+
+</section>
+
+</div>
+
+
+<script>
+
+/* =========================================================
+   MIRROR
+   v3 — PSYCHOLOGICAL HORROR ENGINE
+   ========================================================= */
+
+
+/* =========================================================
+   DOM
+   ========================================================= */
+
+const intro =
+    document.getElementById("intro");
+
+const game =
+    document.getElementById("game");
+
+const eventScreen =
+    document.getElementById("event");
+
+const finalScreen =
+    document.getElementById("final");
+
+const start =
+    document.getElementById("start");
+
+const question =
+    document.getElementById("question");
+
+const sub =
+    document.getElementById("sub");
+
+const answer =
+    document.getElementById("answer");
+
+const continueBtn =
+    document.getElementById("continue");
+
+const validation =
+    document.getElementById("validation");
+
+const counter =
+    document.getElementById("counter");
+
+const eventTag =
+    document.getElementById("eventTag");
+
+const eventMain =
+    document.getElementById("eventMain");
+
+const eventSub =
+    document.getElementById("eventSub");
+
+const eventContinue =
+    document.getElementById("eventContinue");
+
+const finalTitle =
+    document.getElementById("finalTitle");
+
+const finalAnalysis =
+    document.getElementById("finalAnalysis");
+
+const finalQuote =
+    document.getElementById("finalQuote");
+
+const progressBar =
+    document.getElementById("progressBar");
+
+const flash =
+    document.getElementById("flash");
+
+const redFlash =
+    document.getElementById("redFlash");
+
+const blackout =
+    document.getElementById("blackout");
+
+const noiseOverlay =
+    document.getElementById("noiseOverlay");
+
+
+/* =========================================================
+   STATE
+   ========================================================= */
+
+let currentScene = 0;
+
+let busy = false;
+
+let started = false;
+
+let answers = [];
+
+let audio = null;
+
+let typingTimer = null;
+
+let userTyping = false;
+
+let lastTypedAt = 0;
+
+let eventResolver = null;
+
+
+/* =========================================================
+   QUESTION DATABASE
+   ========================================================= */
+
+const scenes = [
+
+    {
+        type:"normal",
+        question:
+            "Jaka była pierwsza rzecz, o której pomyślałeś dzisiaj po przebudzeniu?",
+        sub:
+            "Nie chodzi o to, co zrobiłeś. Chodzi o pierwszą myśl."
+    },
+
+    {
+        type:"normal",
+        question:
+            "Co dzisiaj zrobiłeś tylko dlatego, że tak należało?",
+        sub:
+            "Nie musiało Ci się podobać."
+    },
+
+    {
+        type:"contradiction",
+        question:
+            "Kiedy ostatnio powiedziałeś „nic się nie stało”, mimo że coś się stało?",
+        sub:
+            "Nie musisz podawać komu."
+    },
+
+    {
+        type:"memory",
+        question:
+            "Jaki jeden szczegół z ostatnich kilku dni pamiętasz wyraźniej, niż powinieneś?",
+        sub:
+            "Miejsce. Osoba. Zdanie. Dźwięk. Cokolwiek."
+    },
+
+    {
+        type:"alone",
+        question:
+            "Czy jesteś teraz sam?",
+        sub:
+            "Tak / nie."
+    },
+
+    {
+        type:"prediction",
+        question:
+            "Napisz jedną rzecz, której nie powiedziałbyś przypadkowej osobie poznanej pięć minut temu.",
+        sub:
+            "Nie musi być wielka."
+    },
+
+    {
+        type:"control",
+        question:
+            "Co robisz, kiedy czujesz, że tracisz kontrolę nad sytuacją?",
+        sub:
+            "Nie co powinieneś robić. Co naprawdę robisz."
+    },
+
+    {
+        type:"shame",
+        question:
+            "Jaka rzecz w Tobie najbardziej Ci przeszkadza, ale nauczyłeś się ją ukrywać?",
+        sub:
+            "Jedno zdanie wystarczy."
+    },
+
+    {
+        type:"relationship",
+        question:
+            "Kogo najtrudniej byłoby Ci zobaczyć rozczarowanego Tobą?",
+        sub:
+            "Nie potrzebuję nazwiska."
+    },
+
+    {
+        type:"loss",
+        question:
+            "Co musiałoby zniknąć z Twojego życia, żeby naprawdę zabolało?",
+        sub:
+            "Nie odpowiadaj tym, co brzmi rozsądnie."
+    },
+
+    {
+        type:"future",
+        question:
+            "Jeżeli za pięć lat wszystko wyglądałoby dokładnie tak samo jak teraz — co byłoby w tym najgorsze?",
+        sub:
+            ""
+    },
+
+    {
+        type:"deep",
+        question:
+            "Co robisz, kiedy nikt nie patrzy, czego nie pokazałbyś większości ludzi?",
+        sub:
+            ""
+    },
+
+    {
+        type:"identity",
+        question:
+            "Jaka część Ciebie jest prawdziwa, ale prawie nikt jej nie zna?",
+        sub:
+            ""
+    },
+
+    {
+        type:"prediction2",
+        question:
+            "Dokończ bez zastanowienia: „Gdybym przestał się bać, to…”",
+        sub:
+            "Nie poprawiaj pierwszej odpowiedzi."
+    },
+
+    {
+        type:"final",
+        question:
+            "Teraz zobaczymy, czy naprawdę odpowiadałeś szczerze.",
+        sub:
+            ""
+    }
+
+];
+
+
+/* =========================================================
+   AUDIO ENGINE
+   ========================================================= */
+
+function initAudio(){
+
+    if(audio) return;
+
+    try{
+
+        audio =
+            new (
+                window.AudioContext ||
+                window.webkitAudioContext
+            )();
+
+    }catch(e){
+
+        audio=null;
+
+    }
+
+}
+
+
+function resumeAudio(){
+
+    if(!audio) return;
+
+    if(audio.state==="suspended"){
+
+        audio.resume().catch(()=>{});
+
+    }
+
+}
+
+
+/* -------------------------
+   MASTER GAIN
+   ------------------------- */
+
+function gainNode(volume){
+
+    const gain =
+        audio.createGain();
+
+    gain.gain.value=volume;
+
+    gain.connect(audio.destination);
+
+    return gain;
+
+}
+
+
+/* -------------------------
+   TONE
+   ------------------------- */
+
+function tone(
+    frequency,
+    duration=.1,
+    type="sine",
+    volume=.03,
+    detune=0
+){
+
+    if(!audio) return;
+
+    try{
+
+        const osc =
+            audio.createOscillator();
+
+        const gain =
+            audio.createGain();
+
+        osc.type=type;
+
+        osc.frequency.value=frequency;
+
+        osc.detune.value=detune;
+
+        gain.gain.setValueAtTime(
+            0.0001,
+            audio.currentTime
+        );
+
+        gain.gain.exponentialRampToValueAtTime(
+            volume,
+            audio.currentTime+.015
+        );
+
+        gain.gain.exponentialRampToValueAtTime(
+            0.0001,
+            audio.currentTime+duration
+        );
+
+        osc.connect(gain);
+
+        gain.connect(audio.destination);
+
+        osc.start();
+
+        osc.stop(
+            audio.currentTime+
+            duration+
+            .03
+        );
+
+    }catch(e){}
+
+}
+
+
+/* -------------------------
+   LOW DRONE
+   ------------------------- */
+
+function drone(
+    frequency=38,
+    duration=1.5,
+    volume=.035
+){
+
+    if(!audio) return;
+
+    try{
+
+        const osc =
+            audio.createOscillator();
+
+        const osc2 =
+            audio.createOscillator();
+
+        const gain =
+            audio.createGain();
+
+        osc.type="sine";
+        osc2.type="triangle";
+
+        osc.frequency.value=frequency;
+
+        osc2.frequency.value=
+            frequency*1.51;
+
+        gain.gain.setValueAtTime(
+            .0001,
+            audio.currentTime
+        );
+
+        gain.gain.exponentialRampToValueAtTime(
+            volume,
+            audio.currentTime+.25
+        );
+
+        gain.gain.exponentialRampToValueAtTime(
+            .0001,
+            audio.currentTime+duration
+        );
+
+        osc.connect(gain);
+        osc2.connect(gain);
+
+        gain.connect(audio.destination);
+
+        osc.start();
+        osc2.start();
+
+        osc.stop(
+            audio.currentTime+
+            duration+
+            .1
+        );
+
+        osc2.stop(
+            audio.currentTime+
+            duration+
+            .1
+        );
+
+    }catch(e){}
+
+}
+
+
+/* -------------------------
+   HEARTBEAT
+   ------------------------- */
+
+function heartbeat(){
+
+    if(!audio) return;
+
+    tone(55,.11,"sine",.07);
+
+    setTimeout(()=>{
+        tone(47,.13,"sine",.055);
+    },145);
+
+}
+
+
+/* -------------------------
+   HEARTBEAT SERIES
+   ------------------------- */
+
+function heartbeatSeries(
+    count=5,
+    interval=650
+){
+
+    for(let i=0;i<count;i++){
+
+        setTimeout(
+            heartbeat,
+            i*interval
+        );
+
+    }
+
+}
+
+
+/* -------------------------
+   METAL HIT
+   ------------------------- */
+
+function metalHit(){
+
+    if(!audio) return;
+
+    tone(
+        180,
+        .09,
+        "square",
+        .025,
+        20
+    );
+
+    setTimeout(()=>{
+        tone(
+            83,
+            .32,
+            "triangle",
+            .035
+        );
+    },35);
+
+}
+
+
+/* -------------------------
+   CLICK
+   ------------------------- */
+
+function clickSound(){
+
+    tone(
+        950,
+        .025,
+        "square",
+        .012
+    );
+
+}
+
+
+/* -------------------------
+   GLITCH SOUND
+   ------------------------- */
+
+function glitchSound(){
+
+    if(!audio) return;
+
+    const frequencies=[
+        90,
+        137,
+        211,
+        73,
+        301
+    ];
+
+    frequencies.forEach(
+        (f,i)=>{
+
+            setTimeout(()=>{
+
+                tone(
+                    f,
+                    .045,
+                    "square",
+                    .018,
+                    Math.random()*80-40
+                );
+
+            },i*45);
+
+        }
+    );
+
+}
+
+
+/* -------------------------
+   REVERSE-LIKE SWELL
+   ------------------------- */
+
+function swell(){
+
+    if(!audio) return;
+
+    try{
+
+        const osc =
+            audio.createOscillator();
+
+        const gain =
+            audio.createGain();
+
+        osc.type="sawtooth";
+
+        osc.frequency.setValueAtTime(
+            35,
+            audio.currentTime
+        );
+
+        osc.frequency.exponentialRampToValueAtTime(
+            220,
+            audio.currentTime+1.3
+        );
+
+        gain.gain.setValueAtTime(
+            .0001,
+            audio.currentTime
+        );
+
+        gain.gain.exponentialRampToValueAtTime(
+            .045,
+            audio.currentTime+1.1
+        );
+
+        gain.gain.exponentialRampToValueAtTime(
+            .0001,
+            audio.currentTime+1.5
+        );
+
+        osc.connect(gain);
+
+        gain.connect(audio.destination);
+
+        osc.start();
+
+        osc.stop(
+            audio.currentTime+1.6
+        );
+
+    }catch(e){}
+
+}
+
+
+/* -------------------------
+   IMPACT
+   ------------------------- */
+
+function impact(){
+
+    drone(29,.8,.07);
+
+    tone(
+        70,
+        .4,
+        "sawtooth",
+        .05
+    );
+
+    setTimeout(()=>{
+        metalHit();
+    },70);
+
+    setTimeout(()=>{
+        glitchSound();
+    },180);
+
+}
+
+
+/* -------------------------
+   SILENCE BREAK
+   ------------------------- */
+
+function silenceBreak(){
+
+    if(!audio) return;
+
+    /* intentionally empty:
+       removing expected sound
+       is part of the horror */
+
+}
+
+
+/* =========================================================
+   UTILITY
+   ========================================================= */
+
+function sleep(ms){
+
+    return new Promise(
+        resolve=>setTimeout(resolve,ms)
+    );
+
+}
+
+
+function clamp(
+    value,
+    min,
+    max
+){
+
+    return Math.max(
+        min,
+        Math.min(max,value)
+    );
+
+}
+
+
+/* =========================================================
+   VISUAL EFFECT ENGINE
+   ========================================================= */
+
+function screenFlash(
+    color="white",
+    opacity=.8,
+    duration=70
+){
+
+    const element =
+        color==="red"
+        ? redFlash
+        : flash;
+
+    element.style.opacity=opacity;
+
+    setTimeout(()=>{
+        element.style.opacity=0;
+    },duration);
+
+}
+
+
+function blackoutFor(
+    duration
+){
+
+    blackout.style.opacity="1";
+
+    setTimeout(()=>{
+        blackout.style.opacity="0";
+    },duration);
+
+}
+
+
+function glitch(){
+
+    game.classList.add("glitch");
+
+    noiseOverlay.style.opacity=".55";
+
+    glitchSound();
+
+    setTimeout(()=>{
+
+        game.classList.remove("glitch");
+
+        noiseOverlay.style.opacity="0";
+
+    },850);
+
+}
+
+
+function shake(){
+
+    game.classList.add("shake");
+
+    setTimeout(()=>{
+
+        game.classList.remove("shake");
+
+    },800);
+
+}
+
+
+function flicker(){
+
+    document.body.classList.add("flicker");
+
+    setTimeout(()=>{
+
+        document.body.classList.remove("flicker");
+
+    },1000);
+
+}
+
+
+/* =========================================================
+   TYPEWRITER
+   ========================================================= */
+
+async function typeText(
+    element,
+    text,
+    speed=35,
+    sound=false
+){
+
+    element.textContent="";
+
+    for(
+        let i=0;
+        i<text.length;
+        i++
+    ){
+
+        element.textContent +=
+            text.charAt(i);
+
+        if(sound && text.charAt(i)!==" "){
+
+            tone(
+                900+
+                Math.random()*200,
+                .015,
+                "square",
+                .006
+            );
+
+        }
+
+        await sleep(speed);
+
+    }
+
+}
+
+
+/* =========================================================
+   ANSWER QUALITY CHECK
+   ========================================================= */
+
+function cleanText(text){
+
+    return text
+        .trim()
+        .replace(/\s+/g," ");
+
+}
+
+
+/* Detect obvious keyboard smashing */
+
+function looksLikeGibberish(text){
+
+    const t=
+        cleanText(text)
+        .toLowerCase()
+        .replace(/[^a-ząćęłńóśźż0-9 ]/gi,"");
+
+    if(t.length<4) return false;
+
+    const letters=
+        t.replace(/[^a-ząćęłńóśźż]/gi,"");
+
+    const digits=
+        t.replace(/[^0-9]/g,"");
+
+    const vowels=
+        letters.match(/[aeiouyąęó]/gi) || [];
+
+    const unique=
+        new Set(
+            letters.split("")
+        ).size;
+
+    if(
+        digits.length>0 &&
+        digits.length >
+        letters.length*.45
+    ){
+
+        return true;
+
+    }
+
+    if(
+        letters.length>7 &&
+        vowels.length===0
+    ){
+
+        return true;
+
+    }
+
+    if(
+        letters.length>8 &&
+        unique<=3
+    ){
+
+        return true;
+
+    }
+
+    /* repeated random pattern */
+
+    if(
+        /(.)\1{4,}/.test(t)
+    ){
+
+        return true;
+
+    }
+
+    /* suspicious consonant blocks */
+
+    const blocks=
+        t.match(
+            /[bcdfghjklmnpqrstvwxyz]{7,}/gi
+        );
+
+    if(blocks) return true;
+
+    return false;
+
+}
+
+
+/* -------------------------
+   ANSWER VALIDATION
+   ------------------------- */
+
+function validateAnswer(){
+
+    const raw=
+        cleanText(answer.value);
+
+    if(!raw){
+
+        validation.textContent=
+            "Najpierw odpowiedz.";
+
+        return false;
+
+    }
+
+    const sceneData=
+        scenes[currentScene];
+
+    /* YES / NO */
+
+    if(sceneData.type==="alone"){
+
+        const normalized=
+            raw.toLowerCase();
+
+        if(
+            ![
+                "tak",
+                "nie",
+                "t",
+                "n"
+            ].includes(normalized)
+        ){
+
+            validation.textContent=
+                "Tylko „tak” albo „nie”.";
+
+            shake();
+
+            return false;
+
+        }
+
+    }
+
+    /* gibberish */
+
+    if(
+        raw.length>=6 &&
+        looksLikeGibberish(raw)
+    ){
+
+        validation.textContent=
+            "To nie wygląda jak odpowiedź.";
+
+        glitch();
+
+        setTimeout(()=>{
+
+            validation.textContent=
+                "Spróbuj jeszcze raz. Normalnie.";
+
+        },900);
+
+        return false;
+
+    }
+
+    /* meaningful minimum */
+
+    const deepTypes=[
+        "contradiction",
+        "memory",
+        "control",
+        "shame",
+        "relationship",
+        "loss",
+        "future",
+        "deep",
+        "identity"
+    ];
+
+    if(
+        deepTypes.includes(sceneData.type) &&
+        raw.length<8
+    ){
+
+        validation.textContent=
+            "To jest unik. Spróbuj odpowiedzieć naprawdę.";
+
+        tone(
+            58,
+            .25,
+            "sine",
+            .035
+        );
+
+        return false;
+
+    }
+
+    validation.textContent=
+        "";
+
+    return true;
+
+}
+
+
+/* =========================================================
+   SAVE ANSWER
+   ========================================================= */
+
+function saveCurrentAnswer(){
+
+    const text=
+        cleanText(answer.value);
+
+    answers.push({
+
+        scene:currentScene,
+
+        type:scenes[currentScene].type,
+
+        text:text,
+
+        timestamp:Date.now()
+
+    });
+
+}
+
+
+/* =========================================================
+   DATA HELPERS
+   ========================================================= */
+
+function allText(){
+
+    return answers
+        .map(a=>a.text)
+        .join(" ")
+        .toLowerCase();
+
+}
+
+
+function getAnswer(type){
+
+    for(
+        let i=answers.length-1;
+        i>=0;
+        i--
+    ){
+
+        if(
+            answers[i].type===type
+        ){
+
+            return answers[i].text;
+
+        }
+
+    }
+
+    return "";
+
+}
+
+
+function previousAnswers(){
+
+    return answers
+        .map(a=>a.text)
+        .filter(Boolean);
+
+}
+
+
+/* =========================================================
+   PERSONAL PATTERN ENGINE
+   ========================================================= */
+
+function analyzePattern(){
+
+    const text=
+        allText();
+
+    const scores={
+        control:0,
+        loss:0,
+        isolation:0,
+        relationships:0,
+        ambition:0,
+        avoidance:0,
+        uncertainty:0
+    };
+
+
+    if(
+        /kontrol|kontrolować|panow|plan|muszę|musieć|ogarni|porządek/i.test(text)
+    ){
+
+        scores.control+=3;
+
+    }
+
+
+    if(
+        /strac|utrac|odejd|znik|śmier|umr|bez.*(kogo|czego)|boję/i.test(text)
+    ){
+
+        scores.loss+=3;
+
+    }
+
+
+    if(
+        /sam|samot|cisza|nikt|nikogo|pust|odcin/i.test(text)
+    ){
+
+        scores.isolation+=3;
+
+    }
+
+
+    if(
+        /mama|tata|rodzin|brat|siostr|partner|partnerk|dziewczyn|chłopak|przyjac|przyjaciół/i.test(text)
+    ){
+
+        scores.relationships+=3;
+
+    }
+
+
+    if(
+        /pieniądz|pieniądze|kasa|sukces|praca|zarab|lepszy|wygr|cel|karier/i.test(text)
+    ){
+
+        scores.ambition+=3;
+
+    }
+
+
+    if(
+        /nie wiem|nieważne|obojęt|nic|jakoś|chyba|może|wszystko|cokolwiek/i.test(text)
+    ){
+
+        scores.avoidance+=2;
+
+    }
+
+
+    if(
+        /jutro|przysz|nie wiem co|co będzie|zmieni|boję się że/i.test(text)
+    ){
+
+        scores.uncertainty+=3;
+
+    }
+
+
+    let strongest=
+        Object.keys(scores)
+        .sort(
+            (a,b)=>
+                scores[b]-scores[a]
+        )[0];
+
+    return strongest;
+
+}
+
+
+/* =========================================================
+   KEYWORD EXTRACTION
+   ========================================================= */
+
+function extractInterestingWords(){
+
+    const text=
+        allText();
+
+    const stopWords=new Set([
+        "jest",
+        "nie",
+        "tak",
+        "ale",
+        "że",
+        "to",
+        "i",
+        "w",
+        "na",
+        "z",
+        "do",
+        "się",
+        "jak",
+        "co",
+        "mam",
+        "mi",
+        "mnie",
+        "bo",
+        "tego",
+        "tym",
+        "jestem",
+        "być",
+        "dla",
+        "czy",
+        "po",
+        "już",
+        "bardzo"
+    ]);
+
+    const words=
+        text
+        .replace(/[^a-ząćęłńóśźż ]/gi," ")
+        .split(/\s+/)
+        .filter(
+            w=>
+                w.length>=6 &&
+                !stopWords.has(w)
+        );
+
+    const counts={};
+
+    words.forEach(w=>{
+        counts[w]=(counts[w]||0)+1;
+    });
+
+    return Object.keys(counts)
+        .sort(
+            (a,b)=>
+                counts[b]-counts[a] ||
+                b.length-a.length
+        )
+        .slice(0,5);
+
+}
+
+
+/* =========================================================
+   PREDICTION ENGINE
+   ========================================================= */
+
+function prediction(){
+
+    const pattern=
+        analyzePattern();
+
+    if(pattern==="control"){
+
+        return "„kontrola”";
+
+    }
+
+    if(pattern==="loss"){
+
+        return "„strata”";
+
+    }
+
+    if(pattern==="isolation"){
+
+        return "„sam”";
+
+    }
+
+    if(pattern==="relationships"){
+
+        return "„ktoś”";
+
+    }
+
+    if(pattern==="ambition"){
+
+        return "„więcej”";
+
+    }
+
+    if(pattern==="avoidance"){
+
+        return "„nie wiem”";
+
+    }
+
+    if(pattern==="uncertainty"){
+
+        return "„przyszłość”";
+
+    }
+
+    return "„boję się”";
+
+}
+
+
+/* =========================================================
+   SHOW GAME
+   ========================================================= */
+
+function showGame(){
+
+    intro.classList.add("hidden");
+
+    eventScreen.classList.add("hidden");
+
+    finalScreen.classList.add("hidden");
+
+    game.classList.remove("hidden");
+
+}
+
+
+/* =========================================================
+   SHOW EVENT
+   ========================================================= */
+
+function showEvent(){
+
+    game.classList.add("hidden");
+
+    finalScreen.classList.add("hidden");
+
+    eventScreen.classList.remove("hidden");
+
+    eventMain.textContent="";
+
+    eventSub.textContent="";
+
+    eventContinue.classList.remove("show");
+
+}
+
+
+/* =========================================================
+   EVENT RESOLVE
+   ========================================================= */
+
+function resolveEvent(){
+
+    if(eventResolver){
+
+        const resolver=
+            eventResolver;
+
+        eventResolver=null;
+
+        resolver();
+
+    }
+
+}
+
+
+eventContinue.addEventListener(
+    "click",
+    resolveEvent
+);
+
+
+/* =========================================================
+   RUN EVENT
+   ========================================================= */
+
+async function eventTextSequence(
+    tag,
+    lines,
+    options={}
+){
+
+    showEvent();
+
+    eventTag.textContent=
+        tag || "SYSTEM";
+
+    if(options.sound)
+        options.sound();
+
+    for(
+        let i=0;
+        i<lines.length;
+        i++
+    ){
+
+        const line=
+            lines[i];
+
+        eventMain.textContent="";
+
+        await typeText(
+            eventMain,
+            line.text,
+            line.speed || 35,
+            line.keySound || false
+        );
+
+        if(line.effect)
+            await line.effect();
+
+        if(line.pause)
+            await sleep(line.pause);
+
+    }
+
+}
+
+
+/* =========================================================
+   ALONE EVENT
+   ========================================================= */
+
+async function aloneEvent(){
+
+    showEvent();
+
+    eventTag.textContent=
+        "ODPOWIEDŹ ZAPISANA";
+
+    await sleep(800);
+
+    await typeText(
+        eventMain,
+        "Dobrze.",
+        100
+    );
+
+    clickSound();
+
+    await sleep(1100);
+
+    eventMain.textContent="";
+
+    await sleep(850);
+
+    await typeText(
+        eventMain,
+        "To było proste pytanie.",
+        45
+    );
+
+    await sleep(1300);
+
+    eventMain.textContent="";
+
+    await typeText(
+        eventMain,
+        "A mimo tego właśnie na nim większość ludzi zaczyna się zastanawiać.",
+        28
+    );
+
+    await sleep(1500);
+
+    eventMain.textContent="";
+
+    await sleep(900);
+
+    await typeText(
+        eventMain,
+        "Czy na pewno jesteś sam?",
+        65
+    );
+
+    heartbeatSeries(3,520);
+
+    await sleep(1900);
+
+    blackoutFor(230);
+
+    await sleep(350);
+
+    eventMain.textContent="";
+
+    await typeText(
+        eventMain,
+        "Nieważne.",
+        100
+    );
+
+    await sleep(900);
+
+    eventMain.textContent="";
+
+    await typeText(
+        eventMain,
+        "Nie sprawdzaj.",
+        85
+    );
+
+    await sleep(1300);
+
+    eventMain.textContent="";
+
+    await typeText(
+        eventMain,
+        "Jeszcze nie.",
+        100
+    );
+
+    await sleep(1400);
+
+    eventContinue.classList.add("show");
+
+}
+
+
+/* =========================================================
+   PREDICTION EVENT
+   ========================================================= */
+
+async function predictionEvent(){
+
+    showEvent();
+
+    eventTag.textContent=
+        "ANALIZA ODPOWIEDZI";
+
+    await sleep(700);
+
+    await typeText(
+        eventMain,
+        "Mam już pewne przypuszczenie.",
+        40
+    );
+
+    await sleep(1200);
+
+    eventMain.textContent="";
+
+    await typeText(
+        eventMain,
+        "Wiem, w którą stronę najprawdopodobniej pójdziesz.",
+        35
+    );
+
+    await sleep(1500);
+
+    eventMain.textContent="";
+
+    await typeText(
+        eventMain,
+        "Prawdopodobnie napiszesz coś o...",
+        38
+    );
+
+    await sleep(1100);
+
+    eventMain.textContent="";
+
+    const predicted=
+        prediction();
+
+    await typeText(
+        eventMain,
+        predicted,
+        90
+    );
+
+    await sleep(1400);
+
+    eventMain.textContent="";
+
+    await typeText(
+        eventMain,
+        "Teraz odpowiedz.",
+        65
+    );
+
+    eventSub.textContent=
+        "I nie próbuj mnie poprawić.";
+
+    await waitForEvent();
+
+}
+
+
+/* =========================================================
+   PREDICTION RESULT
+   ========================================================= */
+
+async function predictionResult(){
+
+    showEvent();
+
+    eventTag.textContent=
+        "PORÓWNANIE";
+
+    const latest=
+        answers[answers.length-1]?.text || "";
+
+    const predicted=
+        prediction();
+
+    await sleep(900);
+
+    await typeText(
+        eventMain,
+        "Przewidywałem:",
+        55
+    );
+
+    await sleep(600);
+
+    eventMain.textContent="";
+
+    await typeText(
+        eventMain,
+        predicted,
+        80
+    );
+
+    await sleep(1200);
+
+    eventMain.textContent="";
+
+    await typeText(
+        eventMain,
+        "Napisałeś:",
+        55
+    );
+
+    await sleep(700);
+
+    eventMain.textContent="";
+
+    await typeText(
+        eventMain,
+        "„" +
+        latest.slice(0,120) +
+        "”",
+        30
+    );
+
+    await sleep(1800);
+
+    eventMain.textContent="";
+
+    await typeText(
+        eventMain,
+        "Nie przewidziałem słów.",
+        50
+    );
+
+    await sleep(900);
+
+    eventMain.textContent="";
+
+    await typeText(
+        eventMain,
+        "Przewidziałem kierunek.",
+        55
+    );
+
+    await sleep(1500);
+
+    glitch();
+    tone(39,.5,"sine",.05);
+
+    await sleep(600);
+
+    eventMain.textContent="";
+
+    await typeText(
+        eventMain,
+        "I to jest znacznie ciekawsze.",
+        42
+    );
+
+    await sleep(1600);
+
+    eventContinue.classList.add("show");
+
+}
+
+
+/* =========================================================
+   CONTROL EVENT
+   ========================================================= */
+
+async function controlEvent(){
+
+    showEvent();
+
+    eventTag.textContent=
+        "WZORZEC";
+
+    const words=
+        extractInterestingWords();
+
+    await sleep(900);
+
+    await typeText(
+        eventMain,
+        "Zaczynam widzieć mechanizm.",
+        42
+    );
+
+    await sleep(1200);
+
+    eventMain.textContent="";
+
+    await typeText(
+        eventMain,
+        "Kiedy sytuacja wymyka Ci się spod kontroli...",
+        38
+    );
+
+    await sleep(1100);
+
+    eventMain.textContent="";
+
+    await typeText(
+        eventMain,
+        "robisz coś, żeby odzyskać poczucie, że nadal możesz coś zrobić.",
+        31
+    );
+
+    await sleep(1600);
+
+    eventMain.textContent="";
+
+    if(words.length){
+
+        await typeText(
+            eventMain,
+            "I użyłeś już wcześniej słowa: „"+
+            words[0]+
+            "”.",
+            35
+        );
+
+    }else{
+
+        await typeText(
+            eventMain,
+            "I już wcześniej zostawiłeś ślad.",
+            40
+        );
+
+    }
+
+    await sleep(1800);
+
+    eventMain.textContent="";
+
+    await typeText(
+        eventMain,
+        "Nie zmieniaj odpowiedzi.",
+        65
+    );
+
+    await sleep(1100);
+
+    eventMain.textContent="";
+
+    await typeText(
+        eventMain,
+        "Zostaw ją dokładnie taką, jaka jest.",
+        45
+    );
+
+    await sleep(1300);
+
+    eventContinue.classList.add("show");
+
+}
+
+
+/* =========================================================
+   SHAME EVENT
+   ========================================================= */
+
+async function shameEvent(){
+
+    showEvent();
+
+    eventTag.textContent=
+        "NIE OCENIAM";
+
+    await sleep(1000);
+
+    await typeText(
+        eventMain,
+        "To było trudniejsze.",
+        50
+    );
+
+    await sleep(1100);
+
+    eventMain.textContent="";
+
+    await typeText(
+        eventMain,
+        "Wiesz dlaczego?",
+        80
+    );
+
+    await sleep(1200);
+
+    eventMain.textContent="";
+
+    await typeText(
+        eventMain,
+        "Bo łatwiej powiedzieć, czego boisz się w świecie...",
+        33
+    );
+
+    await sleep(1000);
+
+    eventMain.textContent="";
+
+    await typeText(
+        eventMain,
+        "...niż powiedzieć, czego nie lubisz w sobie.",
+        33
+    );
+
+    await sleep(1700);
+
+    swell();
+
+    eventMain.textContent="";
+
+    await sleep(900);
+
+    await typeText(
+        eventMain,
+        "A jednak to właśnie tam pojawia się najwięcej informacji.",
+        31
+    );
+
+    await sleep(1700);
+
+    eventContinue.classList.add("show");
+
+}
+
+
+/* =========================================================
+   LOSS EVENT
+   ========================================================= */
+
+async function lossEvent(){
+
+    showEvent();
+
+    eventTag.textContent=
+        "NIE USUWAJ ODPOWIEDZI";
+
+    await sleep(1000);
+
+    await typeText(
+        eventMain,
+        "Zatrzymaj się.",
+        75
+    );
+
+    heartbeatSeries(4,570);
+
+    await sleep(1400);
+
+    eventMain.textContent="";
+
+    await typeText(
+        eventMain,
+        "Przeczytaj swoją poprzednią odpowiedź jeszcze raz.",
+        36
+    );
+
+    await sleep(1800);
+
+    eventMain.textContent="";
+
+    await typeText(
+        eventMain,
+        "Teraz wyobraź sobie, że jutro jej nie masz.",
+        35
+    );
+
+    await sleep(1500);
+
+    eventMain.textContent="";
+
+    await typeText(
+        eventMain,
+        "Nie osoby.",
+        75
+    );
+
+    await sleep(500);
+
+    eventMain.textContent="";
+
+    await typeText(
+        eventMain,
+        "Nie rzeczy.",
+        75
+    );
+
+    await sleep(500);
+
+    eventMain.textContent="";
+
+    await typeText(
+        eventMain,
+        "Tylko możliwość.",
+        75
+    );
+
+    await sleep(1300);
+
+    impact();
+
+    screenFlash("white",.35,45);
+
+    shake();
+
+    await sleep(600);
+
+    eventMain.textContent="";
+
+    await typeText(
+        eventMain,
+        "Dobra.",
+        100
+    );
+
+    await sleep(1000);
+
+    eventMain.textContent="";
+
+    await typeText(
+        eventMain,
+        "Wracamy.",
+        90
+    );
+
+    await sleep(1300);
+
+    eventContinue.classList.add("show");
+
+}
+
+
+/* =========================================================
+   RELATIONSHIP EVENT
+   ========================================================= */
+
+async function relationshipEvent(){
+
+    showEvent();
+
+    eventTag.textContent=
+        "RELACJA";
+
+    const person=
+        getAnswer("relationship");
+
+    await sleep(900);
+
+    await typeText(
+        eventMain,
+        "Nie podałeś nazwiska.",
+        50
+    );
+
+    await sleep(900);
+
+    eventMain.textContent="";
+
+    await typeText(
+        eventMain,
+        "Nie było potrzebne.",
+        50
+    );
+
+    await sleep(1200);
+
+    eventMain.textContent="";
+
+    if(person){
+
+        await typeText(
+            eventMain,
+            "Ty już wiesz, o kim mowa.",
+            55
+        );
+
+    }else{
+
+        await typeText(
+            eventMain,
+            "Ty już wiesz, o kim mowa.",
+            55
+        );
+
+    }
+
+    await sleep(1300);
+
+    eventMain.textContent="";
+
+    await typeText(
+        eventMain,
+        "I właśnie dlatego nie będę tego powtarzać.",
+        40
+    );
+
+    await sleep(1500);
+
+    eventMain.textContent="";
+
+    await typeText(
+        eventMain,
+        "Bo kiedy coś nazywamy...",
+        40
+    );
+
+    await sleep(700);
+
+    eventMain.textContent="";
+
+    await typeText(
+        eventMain,
+        "...przestaje być tylko myślą.",
+        42
+    );
+
+    await sleep(1600);
+
+    eventContinue.classList.add("show");
+
+}
+
+
+/* =========================================================
+   NORMAL INTERRUPTION
+   ========================================================= */
+
+async function interruption(){
+
+    answer.blur();
+
+    await sleep(400);
+
+    screenFlash(
+        "white",
+        .18,
+        35
+    );
+
+    glitch();
+
+    await sleep(500);
+
+    showEvent();
+
+    eventTag.textContent=
+        "PRZERWANIE";
+
+    await typeText(
+        eventMain,
+        "Nie odpowiadaj automatycznie.",
+        42
+    );
+
+    await sleep(1200);
+
+    eventMain.textContent="";
+
+    await typeText(
+        eventMain,
+        "Właśnie to robisz.",
+        75
+    );
+
+    await sleep(1200);
+
+    eventMain.textContent="";
+
+    await typeText(
+        eventMain,
+        "Piszesz, żeby przejść dalej.",
+        45
+    );
+
+    await sleep(1300);
+
+    eventMain.textContent="";
+
+    await typeText(
+        eventMain,
+        "A nie dlatego, że chcesz odpowiedzieć.",
+        40
+    );
+
+    await sleep(1400);
+
+    eventMain.textContent="";
+
+    await typeText(
+        eventMain,
+        "Spróbuj jeszcze raz.",
+        60
+    );
+
+    await sleep(1200);
+
+    eventContinue.classList.add("show");
+
+}
+
+
+/* =========================================================
+   WAIT FOR EVENT BUTTON
+   ========================================================= */
+
+function waitForEvent(){
+
+    return new Promise(
+        resolve=>{
+            eventResolver=resolve;
+        }
+    );
+
+}
+
+
+/* =========================================================
+   NEXT SCENE
+   ========================================================= */
+
+async function nextScene(){
+
+    if(busy) return;
+
+    if(!validateAnswer()){
+
+        answer.focus();
+
+        return;
+
+    }
+
+    busy=true;
+
+    saveCurrentAnswer();
+
+    answer.disabled=true;
+
+    continueBtn.classList.remove("show");
+
+    /* -------------------------
+       EVENTS BY SCENE
+       ------------------------- */
+
+    const type=
+        scenes[currentScene].type;
+
+
+    if(type==="alone"){
+
+        await aloneEvent();
+
+    }
+
+    else if(type==="prediction"){
+
+        await predictionEvent();
+
+        currentScene++;
+
+        await loadScene();
+
+        busy=false;
+
+        return;
+
+    }
+
+    else if(type==="control"){
+
+        await controlEvent();
+
+    }
+
+    else if(type==="shame"){
+
+        await shameEvent();
+
+    }
+
+    else if(type==="relationship"){
+
+        await relationshipEvent();
+
+    }
+
+    else if(type==="loss"){
+
+        await lossEvent();
+
+    }
+
+    else if(type==="prediction2"){
+
+        await predictionResult();
+
+    }
+
+    else if(type==="contradiction"){
+
+        await contradictionEvent();
+
+    }
+
+    else if(type==="memory"){
+
+        await memoryEvent();
+
+    }
+
+    else if(type==="future"){
+
+        await futureEvent();
+
+    }
+
+    else if(type==="deep"){
+
+        await deepEvent();
+
+    }
+
+    else if(type==="identity"){
+
+        await identityEvent();
+
+    }
+
+
+    /* -------------------------
+       FINAL
+       ------------------------- */
+
+    if(
+        type==="final"
+    ){
+
+        await finalSequence();
+
+        busy=false;
+
+        return;
+
+    }
+
+
+    currentScene++;
+
+    await sleep(500);
+
+    loadScene();
+
+    busy=false;
+
+}
+
+
+/* =========================================================
+   CONTRADICTION EVENT
+   ========================================================= */
+
+async function contradictionEvent(){
+
+    showEvent();
+
+    eventTag.textContent=
+        "SPRZECZNOŚĆ";
+
+    const text=
+        getAnswer("contradiction");
+
+    await sleep(800);
+
+    await typeText(
+        eventMain,
+        "Dobrze.",
+        90
+    );
+
+    await sleep(900);
+
+    eventMain.textContent="";
+
+    await typeText(
+        eventMain,
+        "Czyli potrafisz powiedzieć „nic się nie stało”, kiedy jednak coś się stało.",
+        32
+    );
+
+    await sleep(1500);
+
+    eventMain.textContent="";
+
+    await typeText(
+        eventMain,
+        "To nie jest zarzut.",
+        55
+    );
+
+    await sleep(900);
+
+    eventMain.textContent="";
+
+    await typeText(
+        eventMain,
+        "To mechanizm.",
+        65
+    );
+
+    await sleep(1000);
+
+    eventMain.textContent="";
+
+    await typeText(
+        eventMain,
+        "I każdy ma jakiś.",
+        55
+    );
+
+    await sleep(1200);
+
+    eventMain.textContent="";
+
+    await typeText(
+        eventMain,
+        "Ciekawe tylko, co robisz z nim tutaj.",
+        40
+    );
+
+    await sleep(1400);
+
+    if(text){
+
+        eventMain.textContent="";
+
+        await typeText(
+            eventMain,
+            "Twoje słowa zostają.",
+            55
+        );
+
+        await sleep(1000);
+
+    }
+
+    eventContinue.classList.add("show");
+
+}
+
+
+/* =========================================================
+   MEMORY EVENT
+   ========================================================= */
+
+async function memoryEvent(){
+
+    showEvent();
+
+    eventTag.textContent=
+        "PAMIĘĆ";
+
+    await sleep(800);
+
+    await typeText(
+        eventMain,
+        "Szczegóły są ciekawsze niż historie.",
+        40
+    );
+
+    await sleep(1200);
+
+    eventMain.textContent="";
+
+    await typeText(
+        eventMain,
+        "Bo szczegółu zwykle nie przygotowujemy.",
+        38
+    );
+
+    await sleep(1100);
+
+    eventMain.textContent="";
+
+    await typeText(
+        eventMain,
+        "Po prostu zostaje.",
+        60
+    );
+
+    await sleep(1300);
+
+    eventMain.textContent="";
+
+    const words=
+        extractInterestingWords();
+
+    if(words.length){
+
+        await typeText(
+            eventMain,
+            "A Ty już zostawiłeś kilka.",
+            45
+        );
+
+        await sleep(800);
+
+        eventMain.textContent="";
+
+        await typeText(
+            eventMain,
+            words
+            .slice(0,3)
+            .map(w=>"„"+w+"”")
+            .join("   "),
+            65
+        );
+
+    }else{
+
+        await typeText(
+            eventMain,
+            "Niektóre rzeczy zostają nawet wtedy, kiedy nie chcemy ich pamiętać.",
+            35
+        );
+
+    }
+
+    await sleep(1600);
+
+    eventContinue.classList.add("show");
+
+}
+
+
+/* =========================================================
+   FUTURE EVENT
+   ========================================================= */
+
+async function futureEvent(){
+
+    showEvent();
+
+    eventTag.textContent=
+        "PRZYSZŁOŚĆ";
+
+    await sleep(900);
+
+    await typeText(
+        eventMain,
+        "To pytanie nie dotyczy przyszłości.",
+        42
+    );
+
+    await sleep(1100);
+
+    eventMain.textContent="";
+
+    await typeText(
+        eventMain,
+        "Dotyczy tego, czy obecne życie jest naprawdę Twoje.",
+        34
+    );
+
+    await sleep(1600);
+
+    eventMain.textContent="";
+
+    await typeText(
+        eventMain,
+        "Bo jeśli nic się nie zmieni...",
+        43
+    );
+
+    await sleep(900);
+
+    eventMain.textContent="";
+
+    await typeText(
+        eventMain,
+        "to nie będzie przypadek.",
+        55
+    );
+
+    await sleep(1500);
+
+    swell();
+
+    eventMain.textContent="";
+
+    await sleep(700);
+
+    await typeText(
+        eventMain,
+        "Będzie wybór.",
+        80
+    );
+
+    await sleep(1600);
+
+    eventContinue.classList.add("show");
+
+}
+
+
+/* =========================================================
+   DEEP EVENT
+   ========================================================= */
+
+async function deepEvent(){
+
+    showEvent();
+
+    eventTag.textContent=
+        "PRYWATNE";
+
+    await sleep(800);
+
+    await typeText(
+        eventMain,
+        "Tego pytania większość ludzi nie lubi.",
+        38
+    );
+
+    await sleep(1300);
+
+    eventMain.textContent="";
+
+    await typeText(
+        eventMain,
+        "Nie dlatego, że odpowiedź jest straszna.",
+        38
+    );
+
+    await sleep(900);
+
+    eventMain.textContent="";
+
+    await typeText(
+        eventMain,
+        "Tylko dlatego, że jest konkretna.",
+        50
+    );
+
+    await sleep(1400);
+
+    eventMain.textContent="";
+
+    await typeText(
+        eventMain,
+        "I nie można jej poprawić po fakcie.",
+        42
+    );
+
+    await sleep(1500);
+
+    eventContinue.classList.add("show");
+
+}
+
+
+/* =========================================================
+   IDENTITY EVENT
+   ========================================================= */
+
+async function identityEvent(){
+
+    showEvent();
+
+    eventTag.textContent=
+        "TOŻSAMOŚĆ";
+
+    await sleep(900);
+
+    await typeText(
+        eventMain,
+        "To była jedna z najważniejszych odpowiedzi.",
+        38
+    );
+
+    await sleep(1300);
+
+    eventMain.textContent="";
+
+    await typeText(
+        eventMain,
+        "Nie dlatego, że powiedziałeś dużo.",
+        38
+    );
+
+    await sleep(900);
+
+    eventMain.textContent="";
+
+    await typeText(
+        eventMain,
+        "Tylko dlatego, że powiedziałeś coś, czego zwykle nie pokazujesz.",
+        32
+    );
+
+    await sleep(1500);
+
+    eventMain.textContent="";
+
+    await typeText(
+        eventMain,
+        "I teraz robi się ciekawie.",
+        55
+    );
+
+    await sleep(1400);
+
+    eventContinue.classList.add("show");
+
+}
+
+
+/* =========================================================
+   LOAD SCENE
+   ========================================================= */
+
+async function loadScene(){
+
+    game.classList.remove("hidden");
+    eventScreen.classList.add("hidden");
+
+    answer.disabled=false;
+
+    answer.value="";
+
+    validation.textContent="";
+
+    question.className="question";
+
+    sub.textContent="";
+
+    continueBtn.classList.remove("show");
+
+    counter.textContent=
+        String(currentScene+1)
+        .padStart(2,"0")
+        +
+        " / "
+        +
+        scenes.length;
+
+    progressBar.style.width=
+        (
+            currentScene /
+            (scenes.length-1)
+        )*100
+        +
+        "%";
+
+
+    const data=
+        scenes[currentScene];
+
+
+    if(data.type==="final"){
+
+        answer.style.display="none";
+
+        sub.style.display="none";
+
+        await typeText(
+            question,
+            data.question,
+            45
+        );
+
+        await sleep(1300);
+
+        continueBtn.classList.add("show");
+
+        answer.style.display="none";
+
+        return;
+
+    }
+
+
+    answer.style.display="block";
+
+    sub.style.display="block";
+
+
+    await typeText(
+        question,
+        data.question,
+        28
+    );
+
+
+    await sleep(250);
+
+    sub.textContent=
+        data.sub || "";
+
+
+    answer.focus();
+
+
+    /* subtle scene-specific ambience */
+
+    if(data.type==="alone"){
+
+        drone(36,1.3,.018);
+
+    }
+
+    if(data.type==="loss"){
+
+        drone(30,1.5,.018);
+
+    }
+
+    if(data.type==="identity"){
+
+        drone(43,1.2,.012);
+
+    }
+
+}
+
+
+/* =========================================================
+   FINAL SEQUENCE
+   ========================================================= */
+
+async function finalSequence(){
+
+    game.classList.add("hidden");
+
+    eventScreen.classList.add("hidden");
+
+    finalScreen.classList.remove("hidden");
+
+    progressBar.style.width="100%";
+
+    const pattern=
+        analyzePattern();
+
+    const interesting=
+        extractInterestingWords();
+
+    const longest=
+        answers
+        .filter(a=>a.text.length>12)
+        .sort(
+            (a,b)=>
+                b.text.length-a.text.length
+        )[0]?.text || "";
+
+
+    finalTitle.textContent="";
+
+    finalAnalysis.textContent="";
+
+    finalQuote.textContent="";
+
+
+    await sleep(1000);
+
+    await typeText(
+        finalTitle,
+        "ZEBRANO WYSTARCZAJĄCO DUŻO.",
+        45
+    );
+
+    await sleep(1800);
+
+    finalTitle.textContent="";
+
+    await typeText(
+        finalTitle,
+        "Nie potrzebuję kolejnych odpowiedzi.",
+        40
+    );
+
+    await sleep(1700);
+
+    finalTitle.textContent="";
+
+    await typeText(
+        finalTitle,
+        "Potrzebuję tylko sprawdzić jedną rzecz.",
+        38
+    );
+
+    await sleep(1800);
+
+
+    /* -------------------------
+       PERSONAL ANALYSIS
+       ------------------------- */
+
+    let analysis="";
+
+
+    if(pattern==="control"){
+
+        analysis=
+            "W Twoich odpowiedziach wraca potrzeba odzyskania kontroli. " +
+            "Nie wygląda to jak zwykła potrzeba porządku. " +
+            "Bardziej jak niechęć do sytuacji, w której nie wiesz, co wydarzy się za chwilę.";
+
+    }
+
+    else if(pattern==="loss"){
+
+        analysis=
+            "Najmocniejszy wzorzec prowadzi w stronę utraty. " +
+            "Nie tyle strachu przed bólem, ile przed momentem, w którym coś ważnego przestanie być dostępne.";
+
+    }
+
+    else if(pattern==="isolation"){
+
+        analysis=
+            "W Twoich odpowiedziach pojawiała się samotność i dystans. " +
+            "Możliwy lęk nie polega na samym byciu samemu. " +
+            "Bardziej niepokojąca wydaje się możliwość, że nikt nie zauważy, kiedy coś zacznie się z Tobą dziać.";
+
+    }
+
+    else if(pattern==="relationships"){
+
+        analysis=
+            "W centrum pojawiają się ludzie. " +
+            "To sugeruje, że ważniejsze od tego, co stanie się z Tobą, może być to, co stanie się z relacjami, których nie chcesz stracić.";
+
+    }
+
+    else if(pattern==="ambition"){
+
+        analysis=
+            "W odpowiedziach pojawia się potrzeba ruchu, wyniku i zmiany. " +
+            "Możliwa obawa nie dotyczy porażki tak bardzo, jak utknięcia w miejscu.";
+
+    }
+
+    else if(pattern==="avoidance"){
+
+        analysis=
+            "W odpowiedziach pojawiały się próby zostawienia sobie wyjścia. " +
+            "„Nie wiem”, „nieważne”, „jakoś”. " +
+            "To może być zwykły styl odpowiedzi — albo sposób, żeby nie zamknąć sobie żadnej drogi.";
+
+    }
+
+    else{
+
+        analysis=
+            "Najbardziej widoczny jest motyw niepewności. " +
+            "Nie wygląda na zwykły brak odpowiedzi. " +
+            "Bardziej na potrzebę zostawienia sobie możliwości zmiany zdania.";
+
+    }
+
+
+    await typeText(
+        finalAnalysis,
+        analysis,
+        18
+    );
+
+    await sleep(1800);
+
+
+    /* -------------------------
+       PERSONAL WORDS
+       ------------------------- */
+
+    if(interesting.length){
+
+        finalQuote.textContent=
+            "W Twoich odpowiedziach zostały: " +
+            interesting
+            .slice(0,4)
+            .map(
+                word=>"„"+word+"”"
+            )
+            .join("   ");
+
+        await sleep(1800);
+
+    }
+
+
+    /* -------------------------
+       STRONG QUOTE
+       ------------------------- */
+
+    if(longest){
+
+        finalQuote.textContent=
+            "„"+
+            longest.slice(0,220)+
+            "”";
+
+        await sleep(1900);
+
+    }
+
+
+    /* -------------------------
+       BIG BREAK
+       ------------------------- */
+
+    finalTitle.textContent="";
+
+    finalAnalysis.textContent="";
+
+    finalQuote.textContent="";
+
+    await sleep(800);
+
+    swell();
+
+    await sleep(800);
+
+    await typeText(
+        finalTitle,
+        "ALE JEST PROBLEM.",
+        65
+    );
+
+    await sleep(1500);
+
+    screenFlash(
+        "white",
+        .65,
+        55
+    );
+
+    impact();
+
+    shake();
+
+    await sleep(650);
+
+    finalTitle.textContent="";
+
+    await typeText(
+        finalTitle,
+        "CAŁY CZAS MYŚLAŁEŚ, ŻE TO APLIKACJA CIĘ ANALIZUJE.",
+        27
+    );
+
+    await sleep(1800);
+
+    finalTitle.textContent="";
+
+    await typeText(
+        finalTitle,
+        "A Ty cały czas analizowałeś siebie.",
+        43
+    );
+
+    await sleep(1900);
+
+
+    /* -------------------------
+       NORMALITY RETURN
+       ------------------------- */
+
+    blackoutFor(900);
+
+    await sleep(1100);
+
+    finalTitle.textContent="";
+
+    await typeText(
+        finalTitle,
+        "KONIEC.",
+        100
+    );
+
+    await sleep(1800);
+
+    finalTitle.textContent="";
+
+    await typeText(
+        finalTitle,
+        "Możesz już zamknąć stronę.",
+        40
+    );
+
+    await sleep(2200);
+
+
+    /* -------------------------
+       LAST INTERRUPTION
+       ------------------------- */
+
+    finalTitle.textContent="";
+
+    await typeText(
+        finalTitle,
+        "Chyba że...",
+        80
+    );
+
+    await sleep(1800);
+
+    finalTitle.textContent="";
+
+    await typeText(
+        finalTitle,
+        "nadal jesteś ciekawy.",
+        60
+    );
+
+    await sleep(1800);
+
+    blackoutFor(500);
+
+    await sleep(650);
+
+    finalTitle.textContent="";
+
+    await typeText(
+        finalTitle,
+        "Czy po tym wszystkim nadal jesteś pewien, że jesteś tutaj sam?",
+        34
+    );
+
+    heartbeatSeries(5,520);
+
+    await sleep(2600);
+
+    finalAnalysis.textContent=
+        "MIRROR nie ma dostępu do Twojej kamery, mikrofonu ani lokalizacji. " +
+        "Wszystko, co zobaczyłeś, powstało z odpowiedzi wpisanych przez Ciebie.";
+
+    await sleep(1000);
+
+}
+
+
+/* =========================================================
+   START
+   ========================================================= */
+
+start.addEventListener(
+    "click",
+    async()=>{
+
+        if(started) return;
+
+        started=true;
+
+        initAudio();
+
+        resumeAudio();
+
+        clickSound();
+
+        await sleep(250);
+
+        drone(
+            40,
+            1.4,
+            .025
+        );
+
+        intro.style.opacity="0";
+
+        await sleep(1100);
+
+        showGame();
+
+        await sleep(500);
+
+        loadScene();
+
+    }
+);
+
+
+/* =========================================================
+   CONTINUE BUTTON
+   ========================================================= */
+
+continueBtn.addEventListener(
+    "click",
+    ()=>{
+
+        clickSound();
+
+        nextScene();
+
+    }
+);
+
+
+/* =========================================================
+   ENTER
+   ========================================================= */
+
+answer.addEventListener(
+    "keydown",
+    e=>{
+
+        if(
+            e.key==="Enter" &&
+            !e.shiftKey
+        ){
+
+            e.preventDefault();
+
+            nextScene();
+
+        }
+
+    }
+);
+
+
+/* =========================================================
+   TYPING BEHAVIOUR
+   ========================================================= */
+
+answer.addEventListener(
+    "input",
+    ()=>{
+
+        userTyping=true;
+
+        lastTypedAt=
+            Date.now();
+
+        validation.textContent="";
+
+        /*
+           subtle mechanical typing sound
+           not on every keystroke,
+           otherwise it becomes annoying
+        */
+
+        clearTimeout(typingTimer);
+
+        typingTimer=
+            setTimeout(
+                ()=>{
+                    userTyping=false;
+                },
+                450
+            );
+
+    }
+);
+
+
+/* =========================================================
+   RANDOM MICRO-INTERRUPTIONS
+   ========================================================= */
+
+setInterval(
+    ()=>{
+
+        if(
+            !started ||
+            busy ||
+            game.classList.contains("hidden")
+        ){
+
+            return;
+
+        }
+
+        /*
+           Only after enough progress.
+        */
+
+        if(
+            currentScene<3 ||
+            currentScene>13
+        ){
+
+            return;
+
+        }
+
+        /*
+           Very low probability.
+        */
+
+        if(
+            Math.random()<.012
+        ){
+
+            interruption();
+
+        }
+
+    },
+    1400
+);
+
+
+/* =========================================================
+   SILENCE WATCHER
+   ========================================================= */
+
+setInterval(
+    ()=>{
+
+        if(
+            !started ||
+            busy ||
+            game.classList.contains("hidden")
+        ){
+
+            return;
+
+        }
+
+        /*
+           If user stopped typing in a psychologically
+           important scene, create tension.
+        */
+
+        if(
+            currentScene>=5 &&
+            currentScene<=12 &&
+            answer.value.length>4 &&
+            Date.now()-lastTypedAt>7000 &&
+            Math.random()<.18
+        ){
+
+            tone(
+                42,
+                .45,
+                "sine",
+                .012
+            );
+
+        }
+
+    },
+    1800
+);
+
+
+/* =========================================================
+   MOUSE / CURSOR EFFECT
+   ========================================================= */
+
+document.addEventListener(
+    "mousemove",
+    e=>{
+
+        if(
+            !started ||
+            busy
+        ) return;
+
+        /*
+           Extremely subtle movement of vignette.
+           It makes the screen feel less static.
+        */
+
+        const x=
+            e.clientX/window.innerWidth;
+
+        const y=
+            e.clientY/window.innerHeight;
+
+        document.documentElement.style
+            .setProperty(
+                "--mx",
+                (x*100)+"%"
+            );
+
+        document.documentElement.style
+            .setProperty(
+                "--my",
+                (y*100)+"%"
+            );
+
+    }
+);
+
+
+/* =========================================================
+   ESC = QUIET EXIT
+   ========================================================= */
+
+document.addEventListener(
+    "keydown",
+    e=>{
+
+        if(e.key==="Escape"){
+
+            blackout.style.opacity="1";
+
+            setTimeout(
+                ()=>{
+                    location.reload();
+                },
+                500
+            );
+
+        }
+
+    }
+);
+
+</script>
+
+</body>
+</html><!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>MIRROR</title>
 
 <style>
