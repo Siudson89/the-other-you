@@ -1,1 +1,474 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>THE OTHER YOU</title>
 
+<style>
+* {
+    box-sizing: border-box;
+}
+
+html, body {
+    margin: 0;
+    width: 100%;
+    height: 100%;
+    background: #020202;
+    color: #f5f5f5;
+    font-family: Arial, Helvetica, sans-serif;
+    overflow: hidden;
+}
+
+body {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+#app {
+    width: 100%;
+    height: 100%;
+    position: relative;
+    overflow: hidden;
+}
+
+.noise {
+    position: absolute;
+    inset: 0;
+    opacity: .035;
+    pointer-events: none;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.7'/%3E%3C/svg%3E");
+}
+
+.screen {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 30px;
+    transition: opacity 1s ease, transform 1s ease;
+}
+
+.hidden {
+    opacity: 0;
+    pointer-events: none;
+    transform: scale(1.04);
+}
+
+.content {
+    width: min(850px, 92vw);
+    text-align: center;
+}
+
+.eyebrow {
+    font-size: 11px;
+    letter-spacing: 5px;
+    color: #777;
+    margin-bottom: 28px;
+}
+
+h1 {
+    margin: 0;
+    font-size: clamp(55px, 11vw, 145px);
+    line-height: .85;
+    letter-spacing: -8px;
+    font-weight: 800;
+}
+
+.subtitle {
+    margin-top: 35px;
+    color: #888;
+    font-size: 14px;
+    letter-spacing: 2px;
+}
+
+button {
+    margin-top: 55px;
+    border: 1px solid #444;
+    background: transparent;
+    color: white;
+    padding: 17px 34px;
+    font-size: 12px;
+    letter-spacing: 4px;
+    cursor: pointer;
+    transition: .3s;
+}
+
+button:hover {
+    background: white;
+    color: black;
+    border-color: white;
+}
+
+.question {
+    font-size: clamp(25px, 4vw, 48px);
+    line-height: 1.15;
+    max-width: 750px;
+    margin: auto;
+}
+
+.options {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    justify-content: center;
+    margin-top: 45px;
+}
+
+.option {
+    margin: 0;
+    min-width: 150px;
+}
+
+.progress {
+    position: absolute;
+    top: 30px;
+    left: 30px;
+    color: #444;
+    font-size: 11px;
+    letter-spacing: 3px;
+}
+
+.scan {
+    font-family: monospace;
+    color: #777;
+    font-size: 13px;
+    line-height: 2;
+    min-height: 130px;
+}
+
+.cursor {
+    display: inline-block;
+    width: 7px;
+    height: 15px;
+    background: white;
+    animation: blink .7s infinite;
+}
+
+@keyframes blink {
+    50% { opacity: 0; }
+}
+
+.result-title {
+    font-size: clamp(35px, 7vw, 80px);
+    letter-spacing: -3px;
+    margin-bottom: 25px;
+}
+
+.result-text {
+    color: #aaa;
+    line-height: 1.8;
+    max-width: 650px;
+    margin: auto;
+    font-size: 16px;
+}
+
+.signature {
+    margin-top: 55px;
+    font-size: 10px;
+    letter-spacing: 4px;
+    color: #444;
+}
+</style>
+</head>
+
+<body>
+
+<div id="app">
+
+<div class="noise"></div>
+
+<!-- START -->
+<section id="start" class="screen">
+    <div class="content">
+        <div class="eyebrow">EXPERIMENT 001</div>
+
+        <h1>THE<br>OTHER YOU</h1>
+
+        <div class="subtitle">
+            A simulation of the life you didn't live.
+        </div>
+
+        <button onclick="begin()">BEGIN</button>
+    </div>
+</section>
+
+<!-- QUESTIONS -->
+<section id="questions" class="screen hidden">
+    <div class="progress" id="progress">01 / 05</div>
+
+    <div class="content">
+        <div class="question" id="question"></div>
+        <div class="options" id="options"></div>
+    </div>
+</section>
+
+<!-- ANALYSIS -->
+<section id="analysis" class="screen hidden">
+    <div class="content">
+        <div class="eyebrow">SYSTEM ANALYSIS</div>
+        <div class="scan" id="scan"></div>
+        <div class="cursor"></div>
+    </div>
+</section>
+
+<!-- RESULT -->
+<section id="result" class="screen hidden">
+    <div class="content">
+        <div class="eyebrow">TRAJECTORY FOUND</div>
+
+        <div class="result-title" id="resultTitle"></div>
+
+        <div class="result-text" id="resultText"></div>
+
+        <div class="signature">
+            THE OTHER YOU // EXPERIMENT 001
+        </div>
+
+        <button onclick="location.reload()">RUN AGAIN</button>
+    </div>
+</section>
+
+</div>
+
+<script>
+
+const questions = [
+    {
+        text: "If nobody could judge you, what would you change first?",
+        options: [
+            "My work",
+            "My location",
+            "My relationships",
+            "Almost everything"
+        ]
+    },
+    {
+        text: "What scares you more?",
+        options: [
+            "Failure",
+            "Being trapped",
+            "Losing someone",
+            "Wasting my life"
+        ]
+    },
+    {
+        text: "Choose the life that feels most dangerous.",
+        options: [
+            "Freedom",
+            "Love",
+            "Money",
+            "Adventure"
+        ]
+    },
+    {
+        text: "If you knew you could not fail, what would you do?",
+        options: [
+            "Leave",
+            "Build something",
+            "Become someone new",
+            "I don't know yet"
+        ]
+    },
+    {
+        text: "One last question. Are you happy with who you are becoming?",
+        options: [
+            "Yes",
+            "Not really",
+            "I don't know",
+            "I want to change"
+        ]
+    }
+];
+
+let current = 0;
+let answers = [];
+
+function begin() {
+    document.getElementById("start").classList.add("hidden");
+
+    setTimeout(() => {
+        document.getElementById("questions").classList.remove("hidden");
+        showQuestion();
+    }, 700);
+}
+
+function showQuestion() {
+
+    const q = questions[current];
+
+    document.getElementById("question").innerText = q.text;
+
+    document.getElementById("progress").innerText =
+        String(current + 1).padStart(2, "0") + " / " +
+        String(questions.length).padStart(2, "0");
+
+    const options = document.getElementById("options");
+
+    options.innerHTML = "";
+
+    q.options.forEach(option => {
+
+        const button = document.createElement("button");
+
+        button.className = "option";
+        button.innerText = option;
+
+        button.onclick = () => choose(option);
+
+        options.appendChild(button);
+    });
+}
+
+function choose(answer) {
+
+    answers.push(answer);
+
+    current++;
+
+    if (current < questions.length) {
+
+        document.getElementById("questions").classList.add("hidden");
+
+        setTimeout(() => {
+
+            showQuestion();
+
+            document.getElementById("questions").classList.remove("hidden");
+
+        }, 500);
+
+    } else {
+
+        document.getElementById("questions").classList.add("hidden");
+
+        setTimeout(startAnalysis, 700);
+    }
+}
+
+function startAnalysis() {
+
+    document.getElementById("analysis").classList.remove("hidden");
+
+    const scan = document.getElementById("scan");
+
+    const lines = [
+        "collecting behavioral signals...",
+        "mapping decision patterns...",
+        "comparing alternate trajectories...",
+        "detecting recurring impulses...",
+        "simulating probability branches...",
+        "searching 14,208 possible futures...",
+        "discarding unstable timelines...",
+        "one trajectory remains..."
+    ];
+
+    let i = 0;
+
+    function nextLine() {
+
+        if (i < lines.length) {
+
+            scan.innerHTML += lines[i] + "<br>";
+
+            i++;
+
+            setTimeout(nextLine, 650);
+
+        } else {
+
+            setTimeout(showResult, 1000);
+        }
+    }
+
+    nextLine();
+}
+
+function showResult() {
+
+    document.getElementById("analysis").classList.add("hidden");
+
+    setTimeout(() => {
+
+        const result = generateResult();
+
+        document.getElementById("resultTitle").innerText =
+            result.title;
+
+        document.getElementById("resultText").innerText =
+            result.text;
+
+        document.getElementById("result").classList.remove("hidden");
+
+    }, 800);
+}
+
+function generateResult() {
+
+    const joined = answers.join(" ").toLowerCase();
+
+    if (
+        joined.includes("freedom") ||
+        joined.includes("leave") ||
+        joined.includes("location")
+    ) {
+
+        return {
+            title: "THE ESCAPE",
+            text:
+            "You were never looking for a perfect life. " +
+            "You were looking for a life that actually felt like yours. " +
+            "At some point, you will choose uncertainty over comfort. " +
+            "And the strange thing is — you already know when."
+        };
+
+    }
+
+    if (
+        joined.includes("money") ||
+        joined.includes("build") ||
+        joined.includes("work")
+    ) {
+
+        return {
+            title: "THE BUILDER",
+            text:
+            "You don't really want more money. " +
+            "You want proof that you can create something that did not exist before. " +
+            "Your alternate life begins when you stop asking for permission."
+        };
+
+    }
+
+    if (
+        joined.includes("love") ||
+        joined.includes("someone") ||
+        joined.includes("relationships")
+    ) {
+
+        return {
+            title: "THE CONNECTION",
+            text:
+            "Your biggest decisions were never really about places or money. " +
+            "They were about people. " +
+            "In another timeline, one conversation changes everything."
+        };
+
+    }
+
+    return {
+        title: "THE UNKNOWN",
+        text:
+        "The system cannot confidently predict you. " +
+        "Your answers contain conflicting trajectories. " +
+        "That usually means one thing: " +
+        "you have not made the decision that defines your next chapter yet."
+    };
+}
+
+</script>
+
+</body>
+</html>
